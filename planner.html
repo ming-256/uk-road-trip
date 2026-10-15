@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UK Road Trip Planner</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --cream:#faf7f2;--brown:#5c4033;--gold:#c8923c;--rust:#a0522d;
+  --green:#2d4a3e;--grey:#8a8a8a;--border:#e8e0d4;--card:#fff;
+  --waterfall:#3b82f6;--hike:#22c55e;--viewpoint:#f59e0b;--village:#8b5cf6;
+  --pub:#ef4444;--hotel:#06b6d4;--abbey:#a855f7;--drive:#f97316;--activity:#14b8a6;
+}
+body{font-family:'Inter',sans-serif;background:var(--cream);color:#3a3a3a;line-height:1.6;font-size:14px;overflow:hidden;height:100vh}
+#app{display:flex;height:100vh}
+
+/* SIDEBAR */
+#sidebar{width:440px;min-width:440px;background:#fff;border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:100}
+#sidebar-header{padding:16px 18px 12px;border-bottom:1px solid var(--border);background:linear-gradient(135deg,#2d3a2e,#3d4a35);color:#fff}
+#sidebar-header h1{font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:2px}
+#sidebar-header p{font-size:.75rem;opacity:.75}
+
+/* TABS */
+.tabs{display:flex;gap:0;border-bottom:2px solid var(--border);padding:0 8px}
+.tab{padding:10px 12px;font-size:.75rem;font-weight:600;color:var(--grey);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;text-transform:uppercase;letter-spacing:.5px}
+.tab:hover{color:var(--brown)}
+.tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+
+/* FILTERS */
+.filters{padding:8px 12px;display:flex;flex-wrap:wrap;gap:4px;border-bottom:1px solid var(--border)}
+.filter-btn{padding:3px 9px;border-radius:12px;font-size:.68rem;font-weight:600;cursor:pointer;border:1.5px solid transparent;transition:all .15s;opacity:.5}
+.filter-btn:hover{opacity:.8}
+.filter-btn.active{opacity:1;border-color:currentColor}
+
+/* WEATHER TOGGLE */
+.weather-toggle{display:flex;gap:5px;padding:8px 12px;border-bottom:1px solid var(--border);align-items:center}
+.weather-toggle span{font-size:.7rem;color:var(--grey);font-weight:600;margin-right:4px}
+.wt-btn{padding:3px 9px;border-radius:8px;font-size:.68rem;font-weight:600;cursor:pointer;border:1.5px solid transparent;transition:all .15s}
+.wt-btn.rain{background:#e8f5e9;color:#16a34a;border-color:#16a34a}
+.wt-btn.dry{background:#fef3e2;color:#d97706;border-color:#d97706}
+.wt-btn.all{background:#f5f0ea;color:var(--brown);border-color:var(--border)}
+.wt-btn.active{opacity:1}
+.wt-btn:not(.active){opacity:.4}
+
+/* LIST */
+.list-container{flex:1;overflow-y:auto;padding:10px}
+
+/* ACTIVITY CARD */
+.activity-card{background:#fff;border:1.5px solid var(--border);border-radius:12px;margin-bottom:10px;overflow:hidden;cursor:pointer;transition:all .2s}
+.activity-card:hover{border-color:var(--gold);box-shadow:0 2px 12px rgba(200,146,60,.12)}
+.activity-card.in-itinerary{border-color:var(--green);background:#f0fdf4}
+.activity-card .img-wrap{height:110px;overflow:hidden;position:relative}
+.activity-card .img-wrap img{width:100%;height:100%;object-fit:cover}
+.activity-card .img-wrap .cat-badge{position:absolute;top:6px;left:6px;padding:2px 7px;border-radius:8px;font-size:.6rem;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:.5px}
+.activity-card .img-wrap .weather-badge{position:absolute;top:6px;right:6px;padding:2px 7px;border-radius:8px;font-size:.6rem;font-weight:600}
+.weather-badge.rain-ok{background:rgba(34,197,94,.85);color:#fff}
+.weather-badge.dry-only{background:rgba(245,158,11,.85);color:#fff}
+.weather-badge.either{background:rgba(107,114,128,.7);color:#fff}
+.activity-card .card-body{padding:8px 10px}
+.activity-card .card-body h3{font-family:'Playfair Display',serif;font-size:.88rem;color:var(--brown);margin-bottom:1px}
+.activity-card .card-body .meta{font-size:.68rem;color:var(--grey);margin-bottom:4px}
+.activity-card .card-body p{font-size:.75rem;color:#666;line-height:1.4;margin-bottom:6px}
+.activity-card .card-actions{display:flex;gap:4px;align-items:center}
+.btn-add{padding:4px 10px;border-radius:8px;font-size:.68rem;font-weight:600;cursor:pointer;border:none;transition:all .15s}
+.btn-add:hover{opacity:.8}
+.btn-add.d1{background:#fef3e2;color:var(--gold);border:1.5px solid var(--gold)}
+.btn-add.d2{background:#e8f5e9;color:var(--green);border:1.5px solid var(--green)}
+.btn-add.d3{background:#e0f2fe;color:#0284c7;border:1.5px solid #0284c7}
+.btn-add.remove{background:#fef2f2;color:#dc2626;border:1.5px solid #dc2626}
+.btn-show{padding:4px 8px;border-radius:8px;font-size:.68rem;font-weight:500;cursor:pointer;background:#f5f0ea;color:var(--brown);border:1px solid var(--border)}
+
+/* PRESETS */
+.presets-section{padding:10px 12px;border-bottom:1px solid var(--border)}
+.presets-section h3{font-family:'Playfair Display',serif;font-size:.9rem;color:var(--brown);margin-bottom:8px}
+.preset-cards{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+.preset-card{min-width:140px;padding:8px 10px;border-radius:10px;border:1.5px solid var(--border);cursor:pointer;transition:all .2s;background:#fff}
+.preset-card:hover{border-color:var(--gold);box-shadow:0 2px 8px rgba(200,146,60,.1)}
+.preset-card h4{font-size:.78rem;font-weight:600;color:var(--brown);margin-bottom:2px}
+.preset-card p{font-size:.65rem;color:var(--grey);line-height:1.3}
+.preset-card .preset-emoji{font-size:1.2rem;margin-bottom:4px}
+
+/* ITINERARY DAY */
+.itinerary-day{margin-bottom:14px}
+.itinerary-day-header{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:10px;margin-bottom:6px}
+.itinerary-day-header.d1{background:linear-gradient(135deg,#fef3e2,#fde68a33)}
+.itinerary-day-header.d2{background:linear-gradient(135deg,#e8f5e9,#bbf7d033)}
+.itinerary-day-header.d3{background:linear-gradient(135deg,#e0f2fe,#bae6fd33)}
+.itinerary-day-header h3{font-family:'Playfair Display',serif;font-size:.92rem;color:var(--brown)}
+.itinerary-day-header .day-num{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;color:rgba(0,0,0,.1)}
+.itinerary-day-header .total-time{margin-left:auto;font-size:.72rem;color:var(--grey);font-weight:600}
+
+/* ITIN STOP CARD */
+.itin-stop{background:#fff;border:1.5px solid var(--border);border-radius:12px;margin-bottom:4px;overflow:hidden;transition:all .2s}
+.itin-stop:hover{box-shadow:0 2px 10px rgba(0,0,0,.06)}
+.itin-stop .itin-top{display:flex;gap:10px;padding:8px 10px;cursor:pointer;position:relative}
+.itin-stop .itin-img{width:90px;height:70px;object-fit:cover;border-radius:8px;flex-shrink:0}
+.itin-stop .itin-num-overlay{position:absolute;top:6px;left:6px;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff;z-index:2;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.itin-stop .itin-info{flex:1;min-width:0}
+.itin-stop .itin-info h4{font-family:'Playfair Display',serif;font-size:.88rem;color:var(--brown);margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.itin-stop .itin-info .itin-meta{font-size:.68rem;color:var(--grey);margin-bottom:2px}
+.itin-stop .itin-info .itin-desc{font-size:.72rem;color:#666;line-height:1.35;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.itin-stop .itin-actions{display:flex;gap:5px;padding:0 10px 8px;align-items:center}
+.itin-stop .action-btn{padding:3px 8px;border-radius:6px;font-size:.65rem;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:#fff;color:var(--grey);transition:all .15s}
+.itin-stop .action-btn:hover{border-color:var(--gold);color:var(--gold)}
+.itin-stop .itin-badges{flex:1;display:flex;gap:3px;flex-wrap:wrap}
+.itin-stop .itin-actions .itin-badges span{padding:1px 6px;border-radius:6px;font-size:.6rem;font-weight:600}
+.move-btn{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--border);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.8rem;color:var(--grey);transition:all .15s}
+.move-btn:hover{border-color:var(--gold);color:var(--gold);background:#fef3e2}
+.stop-remove{width:24px;height:24px;border-radius:50%;border:1.5px solid #fecaca;background:#fff;color:#dc2626;cursor:pointer;font-size:.8rem;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.stop-remove:hover{background:#fef2f2}
+
+.travel-time{font-size:.68rem;color:var(--grey);text-align:center;padding:3px 0;display:flex;align-items:center;justify-content:center;gap:6px}
+.travel-time .line{flex:1;height:1px;background:var(--border)}
+
+.empty-day{padding:16px;text-align:center;color:var(--grey);font-size:.78rem;font-style:italic}
+
+/* ADD BAR */
+.itin-stop-add{display:flex;gap:5px;padding:6px 10px;flex-wrap:wrap;justify-content:center;border-top:1px dashed var(--border);background:#faf7f2}
+.itin-stop-add .itin-add-btn{padding:3px 8px;border-radius:6px;font-size:.65rem;font-weight:600;cursor:pointer;border:1.5px solid transparent;transition:all .15s;background:#fff}
+.itin-stop-add .itin-add-btn:hover{opacity:.8}
+
+/* SEARCH */
+.search-add{padding:8px 12px;border-bottom:1px solid var(--border)}
+.search-add input{width:100%;padding:7px 10px;border-radius:8px;border:1.5px solid var(--border);font-family:'Inter',sans-serif;font-size:.8rem;background:#faf7f2;outline:none;transition:border-color .2s}
+.search-add input:focus{border-color:var(--gold)}
+.search-add input::placeholder{color:#ccc}
+.search-results{max-height:220px;overflow-y:auto;border-bottom:1px solid var(--border);background:#fff}
+.search-result{display:flex;align-items:center;gap:8px;padding:7px 12px;cursor:pointer;transition:background .15s}
+.search-result:hover{background:#fef9f0}
+.search-result img{width:36px;height:28px;object-fit:cover;border-radius:5px;flex-shrink:0}
+.search-result .sr-info{flex:1}
+.search-result .sr-info .sr-name{font-size:.78rem;font-weight:600;color:var(--brown)}
+.search-result .sr-info .sr-meta{font-size:.65rem;color:var(--grey)}
+.search-result .sr-day-btns{display:flex;gap:3px}
+.search-result .sr-day-btns button{padding:2px 7px;border-radius:6px;font-size:.6rem;font-weight:600;cursor:pointer;border:1.5px solid transparent}
+
+/* DAY LABEL EDIT */
+.day-label-edit{display:flex;gap:4px;align-items:center;margin-left:auto}
+.day-label-edit input{width:100px;padding:2px 6px;border:1px solid var(--border);border-radius:6px;font-size:.7rem;font-family:'Inter',sans-serif;outline:none}
+.day-label-edit input:focus{border-color:var(--gold)}
+
+/* MAP */
+#map-wrap{flex:1;position:relative}
+#map{width:100%;height:100%}
+#map-legend{position:absolute;bottom:16px;left:16px;background:rgba(255,255,255,.92);border-radius:10px;padding:10px 14px;z-index:500;box-shadow:0 2px 10px rgba(0,0,0,.1);font-size:.68rem}
+#map-legend h4{font-family:'Playfair Display',serif;font-size:.8rem;color:var(--brown);margin-bottom:4px}
+.legend-item{display:flex;align-items:center;gap:5px;margin-bottom:2px}
+.legend-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+
+/* POPUP */
+.leaflet-popup-content-wrapper{border-radius:12px!important;box-shadow:0 4px 20px rgba(0,0,0,.15)!important}
+.leaflet-popup-content{margin:10px!important;font-family:'Inter',sans-serif!important;font-size:.8rem!important}
+.popup-img{width:100%;height:100px;object-fit:cover;border-radius:8px;margin-bottom:6px}
+.popup-title{font-family:'Playfair Display',serif;font-size:.95rem;color:var(--brown);margin-bottom:2px}
+.popup-meta{font-size:.7rem;color:var(--grey);margin-bottom:4px}
+.popup-desc{font-size:.75rem;color:#555;margin-bottom:6px}
+.popup-btn{padding:4px 10px;border-radius:8px;font-size:.68rem;font-weight:600;cursor:pointer;border:none;transition:all .15s}
+
+/* DETAIL MODAL */
+#detail-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center}
+#detail-modal.open{display:flex}
+.detail-content{background:#fff;border-radius:16px;width:480px;max-height:85vh;overflow-y:auto;position:relative}
+.detail-content .detail-img{width:100%;height:220px;object-fit:cover;border-radius:16px 16px 0 0}
+.detail-content .detail-body{padding:20px}
+.detail-content .detail-body h2{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--brown);margin-bottom:4px}
+.detail-content .detail-body .detail-meta{font-size:.8rem;color:var(--grey);margin-bottom:10px}
+.detail-content .detail-body p{font-size:.88rem;color:#555;line-height:1.7;margin-bottom:14px}
+.detail-content .detail-body .detail-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px}
+.detail-content .detail-body .detail-tags span{padding:2px 8px;border-radius:8px;font-size:.68rem;font-weight:600}
+.detail-close{position:absolute;top:10px;right:10px;width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.9);border:none;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10}
+.detail-actions{display:flex;gap:6px;margin-top:14px}
+.detail-actions .btn-add{flex:1;padding:8px 14px;font-size:.78rem;border-radius:10px}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="sidebar">
+    <div id="sidebar-header">
+      <div style="display:flex;align-items:flex-start;gap:8px">
+        <div style="flex:1">
+          <h1>UK Road Trip Planner</h1>
+          <p>Cotswolds · Wye Valley · Bannau Brycheiniog — 20–22 Nov 2026</p>
+        </div>
+        <button id="share-btn" onclick="openShare()" style="flex-shrink:0;padding:6px 12px;border-radius:8px;border:1.5px solid rgba(255,255,255,.35);background:rgba(255,255,255,.12);color:#fff;font-size:.72rem;font-weight:600;cursor:pointer;font-family:Inter,sans-serif">Share</button>
+      </div>
+    </div>
+    <div class="tabs">
+      <div class="tab active" data-tab="explore">Explore</div>
+      <div class="tab" data-tab="itinerary">My Itinerary</div>
+      <div class="tab" data-tab="presets">Ideas</div>
+    </div>
+    <div class="weather-toggle" id="weather-bar">
+      <span>Weather:</span>
+      <div class="wt-btn all active" data-weather="all">All</div>
+      <div class="wt-btn rain" data-weather="rain">🌧️ Rain OK</div>
+      <div class="wt-btn dry" data-weather="dry">☀️ Dry Only</div>
+    </div>
+    <div class="filters" id="filters"></div>
+    <div class="list-container" id="list-container"></div>
+  </div>
+  <div id="map-wrap">
+    <div id="map"></div>
+    <div id="map-legend">
+      <h4>Legend</h4>
+      <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div> Waterfall</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#22c55e"></div> Hike</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div> Viewpoint</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#8b5cf6"></div> Village</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div> Pub / Food</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#a855f7"></div> Abbey / Ruin</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#f97316"></div> Scenic Drive</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#14b8a6"></div> Activity</div>
+    </div>
+  </div>
+</div>
+
+<div id="detail-modal">
+  <div class="detail-content">
+    <button class="detail-close" onclick="closeDetail()">×</button>
+    <img class="detail-img" id="detail-img" src="" alt="">
+    <div class="detail-body">
+      <h2 id="detail-title"></h2>
+      <div class="detail-meta" id="detail-meta"></div>
+      <div class="detail-tags" id="detail-tags"></div>
+      <p id="detail-desc"></p>
+      <div class="detail-actions" id="detail-actions"></div>
+    </div>
+  </div>
+</div>
+
+<div id="share-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center">
+  <div class="detail-content" style="width:420px">
+    <button class="detail-close" onclick="closeShare()">×</button>
+    <div class="detail-body">
+      <h2>Share this trip</h2>
+      <div class="detail-meta">Send the plan — file, link, or a quick message</div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+        <button class="btn-add d2" style="padding:12px 16px;font-size:.85rem;border-radius:10px" onclick="downloadShareHTML()">📥 Download shareable page</button>
+        <button class="btn-add d1" style="padding:12px 16px;font-size:.85rem;border-radius:10px" onclick="copyShareLink()">🔗 Copy share link</button>
+        <button class="btn-show" style="padding:12px 16px;font-size:.85rem;border-radius:10px;width:100%" onclick="copyShareText()">📋 Copy as message text</button>
+      </div>
+      <p id="share-status" style="margin-top:12px;font-size:.78rem;color:var(--green);min-height:1.2em"></p>
+      <p style="font-size:.72rem;color:var(--grey);margin-top:8px;line-height:1.5">The page download works offline — AirDrop, iMessage, email, WhatsApp document. The link keeps your itinerary if this planner is hosted.</p>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// Placeholder gradient for each category
+const PLACEHOLDER = {
+  waterfall:'linear-gradient(135deg,#1e3a5f,#3b82f6)',hike:'linear-gradient(135deg,#1a3c2a,#22c55e)',
+  viewpoint:'linear-gradient(135deg,#5c4a1e,#f59e0b)',village:'linear-gradient(135deg,#3c1f5c,#8b5cf6)',
+  pub:'linear-gradient(135deg,#5c1e1e,#ef4444)',hotel:'linear-gradient(135deg,#1e4a5c,#06b6d4)',
+  abbey:'linear-gradient(135deg,#3c1e5c,#a855f7)',drive:'linear-gradient(135deg,#5c3a1e,#f97316)',
+  activity:'linear-gradient(135deg,#1e5c4a,#14b8a6)'
+};
+
+// ===================== DATA =====================
+const A = [
+  // COTSWOLDS
+  {id:"bibury",name:"Bibury",cat:"village",lat:51.7597,lng:-1.8336,region:"Cotswolds",wiki:"Arlington_Row",weather:"either",duration:"1-2 hrs",rating:4.7,desc:"Arlington Row — the most photographed street in England. A tiny honey-stone village on the River Coln.",tips:"Arrive before 10am to avoid coach groups."},
+  {id:"bourton",name:"Bourton-on-the-Water",cat:"village",lat:51.8853,lng:-1.7602,region:"Cotswolds",wiki:"Bourton-on-the-Water",weather:"either",duration:"1-2 hrs",rating:4.5,desc:"The 'Venice of the Cotswolds' — shallow river with five stone bridges. Model village and lovely cafés.",tips:"Try Bakery on the Water for lunch."},
+  {id:"slSlaughters",name:"Lower & Upper Slaughter",cat:"village",lat:51.8783,lng:-1.7917,region:"Cotswolds",wiki:"Lower_Slaughter",weather:"either",duration:"1-2 hrs",rating:4.8,desc:"Two of the most unspoiled villages in England, connected by a riverside walk along the River Eye.",tips:"Walk from Lower to Upper Slaughter along the river."},
+  {id:"broadway-tower",name:"Broadway Tower",cat:"viewpoint",lat:52.0197,lng:-1.8414,region:"Cotswolds",wiki:"Broadway,_Worcestershire",weather:"dry",duration:"1-2 hrs",rating:4.6,desc:"A folly tower on a ridge — views across 16 counties on a clear day. Short walk up from the car park.",tips:"Best on a clear morning. The ridge walk towards Snowshill is wonderful."},
+  {id:"cleeve-hill",name:"Cleeve Hill",cat:"hike",lat:51.9256,lng:-2.0067,region:"Cotswolds",wiki:"Cotswolds",weather:"dry",duration:"2-3 hrs",rating:4.4,desc:"The highest point in the Cotswolds (330m). 4-5 mile loop walk with panoramic views to the Malvern Hills and Wales.",tips:"Moderate walk. Start from the Cleeve Hill car park."},
+  {id:"windrush",name:"Windrush Way",cat:"hike",lat:51.8800,lng:-1.7750,region:"Cotswolds",wiki:"Upper_Slaughter",weather:"either",duration:"2-3 hrs",rating:4.5,desc:"Gentle 5-mile riverside walk from Bourton through the Slaughters. Flat, easy, beautiful in autumn colour.",tips:"Perfect in light drizzle. Wear walking boots."},
+  {id:"sudeley",name:"Sudeley Castle",cat:"abbey",lat:51.9492,lng:-1.8728,region:"Cotswolds",wiki:"Sudeley_Castle",weather:"rain-ok",duration:"2-3 hrs",rating:4.3,desc:"Tudor castle with beautiful gardens and the tomb of Katherine Parr. Extensive interiors.",tips:"Great rainy-day backup."},
+
+  // WYE VALLEY
+  {id:"symonds-yat",name:"Symonds Yat Rock",cat:"viewpoint",lat:51.8400,lng:-2.6383,region:"Wye Valley",wiki:"Symonds_Yat",weather:"dry",duration:"1-2 hrs",rating:4.8,desc:"The iconic viewpoint over the River Wye gorge. The river loops through a deep limestone valley — dramatic.",tips:"20-min uphill walk on paved path."},
+  {id:"symonds-yat-walk",name:"Symonds Yat Circular",cat:"hike",lat:51.8390,lng:-2.6370,region:"Wye Valley",wiki:"Symonds_Yat",weather:"either",duration:"2-3 hrs",rating:4.7,desc:"Cross on the hand ferry, walk through ancient woodland to the viewpoint, return through the forest. 3-4 miles.",tips:"The hand ferry is a fun experience."},
+  {id:"biblins",name:"Biblins Bridge & Woods",cat:"hike",lat:51.8330,lng:-2.6220,region:"Wye Valley",wiki:"Wye_Valley",weather:"either",duration:"1-2 hrs",rating:4.6,desc:"A suspension footbridge over the Wye through ancient oak woodland. Magical in autumn colour.",tips:"Beautiful in any weather. The canopy provides shelter from rain."},
+  {id:"tintern",name:"Tintern Abbey",cat:"abbey",lat:51.6967,lng:-2.6772,region:"Wye Valley",wiki:"Tintern_Abbey",weather:"rain-ok",duration:"1-2 hrs",rating:4.7,desc:"Cistercian abbey ruins in the Wye Valley. Gothic arches open to the sky. Hauntingly beautiful in grey light.",tips:"Free exterior. ~£10 for interior."},
+  {id:"goodrich",name:"Goodrich Castle",cat:"abbey",lat:51.8592,lng:-2.6228,region:"Wye Valley",wiki:"Goodrich_Castle",weather:"rain-ok",duration:"1-2 hrs",rating:4.5,desc:"One of the best-preserved medieval castles in England. English Heritage. Views over the Wye.",tips:"Lots to explore indoors. Good tea room."},
+  {id:"sarahs-bridge",name:"The Saracens Head",cat:"pub",lat:51.8410,lng:-2.6400,region:"Wye Valley",wiki:"Symonds_Yat",weather:"rain-ok",duration:"1-2 hrs",rating:4.5,desc:"Fire-lit riverside pub at Symonds Yat. One of the best lunch stops in the valley. Window tables have river views.",tips:"Sunday roast is excellent. Book a window seat."},
+
+  // BLACK MOUNTAINS
+  {id:"hay",name:"Hay-on-Wye",cat:"village",lat:52.0767,lng:-3.1269,region:"Black Mountains",wiki:"Hay-on-Wye",weather:"rain-ok",duration:"2-3 hrs",rating:4.6,desc:"The 'Town of Books' — over 20 independent bookshops. Castle ruins, riverside walks, lovely cafés.",tips:"Perfect rainy-day destination. Richard Booth's and Murder & Mayhem are highlights."},
+  {id:"hay-river",name:"Hay Riverside Walk",cat:"hike",lat:52.0770,lng:-3.1200,region:"Black Mountains",wiki:"River_Wye",weather:"either",duration:"1 hr",rating:4.3,desc:"A gentle walk along the River Wye from Hay. Peaceful, flat, lovely views of the Black Mountains foothills.",tips:"Nice easy walk before or after bookshops."},
+  {id:"hay-bluff",name:"Hay Bluff & Twmpa",cat:"hike",lat:52.0350,lng:-3.1050,region:"Black Mountains",wiki:"Hay_Bluff",weather:"dry",duration:"3-4 hrs",rating:4.8,desc:"The classic Black Mountains ridge walk. 4-5 miles along Offa's Dyke with huge views into England and Wales.",tips:"Exposed ridge — skip in high wind or heavy rain. Stunning on a clear day."},
+  {id:"cats-back",name:"The Cat's Back",cat:"hike",lat:51.9700,lng:-3.0500,region:"Black Mountains",wiki:"Offa%27s_Dyke_Path",weather:"dry",duration:"2-3 hrs",rating:4.9,desc:"A thrilling knife-edge ridge walk with steep drops both sides. One of the best ridge walks in Wales. 4 miles.",tips:"Not for vertigo sufferers! Best in clear weather."},
+  {id:"gospel-pass",name:"Gospel Pass Drive",cat:"drive",lat:52.0100,lng:-3.0800,region:"Black Mountains",wiki:"Gospel_Pass",weather:"dry",duration:"1-2 hrs",rating:4.9,desc:"The highest road in Wales (549m). Winding mountain pass from Hay into the Vale of Ewyas. Spectacular views.",tips:"Fill up petrol before! Not suitable in ice or fog."},
+  {id:"llanthony",name:"Llanthony Priory",cat:"abbey",lat:51.9430,lng:-3.0350,region:"Black Mountains",wiki:"Llanthony_Priory",weather:"either",duration:"1-2 hrs",rating:4.7,desc:"Half-ruined medieval priory in a remote mountain valley. Have a pint in the priory bar among the medieval walls.",tips:"Very atmospheric in mist. The priory bar is a unique experience."},
+  {id:"llanthony-walk",name:"Vale of Ewyas Walk",cat:"hike",lat:51.9400,lng:-3.0400,region:"Black Mountains",wiki:"Llanthony_Priory",weather:"either",duration:"2-3 hrs",rating:4.5,desc:"Walk up the remote Vale of Ewyas to the ruined priory. Surrounded by the Black Mountains. Very atmospheric.",tips:"A gentle valley walk with big mountain scenery."},
+  {id:"sugar-loaf",name:"Sugar Loaf Mountain",cat:"hike",lat:51.8750,lng:-3.0300,region:"Black Mountains",wiki:"Abergavenny",weather:"dry",duration:"1-2 hrs",rating:4.5,desc:"A conical hill near Abergavenny with 360° panoramic views. About 1 hour up. Great sunset spot.",tips:"Short but rewarding. Start from the car park near Abergavenny."},
+  {id:"crickhowell",name:"Crickhowell",cat:"village",lat:51.8580,lng:-3.1370,region:"Black Mountains",wiki:"Crickhowell",weather:"either",duration:"1-2 hrs",rating:4.5,desc:"A lovely market town with a bridge over the Usk. Great independent shops and pubs. The Bear Hotel is a highlight.",tips:"Nice relaxed lunch stop. The Bear Hotel has excellent food."},
+
+  // BRECON BEACONS / WATERFALL COUNTRY
+  {id:"waterfall-country",name:"Waterfall Country",cat:"waterfall",lat:51.7750,lng:-3.5800,region:"Brecon Beacons",wiki:"Ystradfellte",weather:"rain-ok",duration:"2-4 hrs",rating:4.9,desc:"A series of stunning waterfalls in the Brecon Beacons. At their BEST in autumn rain — powerful, dramatic, unforgettable.",tips:"Wear waterproofs! Paths can be slippery. November is peak flow."},
+  {id:"sgwd-yr-eira",name:"Sgwd yr Eira (Walk Behind!)",cat:"waterfall",lat:51.7820,lng:-3.5850,region:"Brecon Beacons",wiki:"Ystradfellte",weather:"rain-ok",duration:"1-2 hrs",rating:5.0,desc:"Walk BEHIND a waterfall. The path goes directly behind the curtain of water. One of the most magical experiences in Wales.",tips:"You WILL get wet. Bring waterproofs and a sense of adventure."},
+  {id:"four-falls",name:"Four Falls Walk",cat:"waterfall",lat:51.7780,lng:-3.5750,region:"Brecon Beacons",wiki:"Ystradfellte",weather:"rain-ok",duration:"3-4 hrs",rating:4.8,desc:"A 4-5 mile walk past four major waterfalls. Each one is different and spectacular.",tips:"The best waterfall walk in Wales. Start from Ystradfellte car park."},
+  {id:"henryhd",name:"Henryhd Waterfall",cat:"waterfall",lat:51.7680,lng:-3.4500,region:"Brecon Beacons",wiki:"Henrhyd_Falls",weather:"rain-ok",duration:"30-60 min",rating:4.5,desc:"The tallest single-drop waterfall in Wales (90ft). Short 1-mile walk from the car park.",tips:"Quick and easy — great for a waterfall fix without a long hike."},
+  {id:"llyn-y-fan",name:"Llyn y Fan Fach",cat:"hike",lat:51.8750,lng:-3.6800,region:"Brecon Beacons",wiki:"Llyn_y_Fan_Fach",weather:"dry",duration:"2-3 hrs",rating:4.8,desc:"A glacial lake in the western Brecon Beacons. Setting of the Welsh 'Lady of the Lake' legend. Fairy-tale mountain lake.",tips:"About 1.5 hours up. Stunning in autumn with mist rolling over ridges."},
+  {id:"pen-y-fan",name:"Pen y Fan",cat:"hike",lat:51.8840,lng:-3.4380,region:"Brecon Beacons",wiki:"Pen_y_Fan",weather:"dry",duration:"3-4 hrs",rating:4.7,desc:"The highest peak in southern Britain (886m). 5 miles return from Pont ar Daf. Huge summit views.",tips:"Cold and windy at summit. Check conditions. Start early."},
+  {id:"penderyn",name:"Penderyn Distillery",cat:"activity",lat:51.7720,lng:-3.5150,region:"Brecon Beacons",wiki:"Penderyn_distillery",weather:"rain-ok",duration:"1-2 hrs",rating:4.3,desc:"Welsh whisky distillery with tours and tastings. A great rainy-day option.",tips:"Book a tour in advance. Good gift shop."},
+  {id:"dan-yr-ogof",name:"Dan yr Ogof Caves",cat:"activity",lat:51.8250,lng:-3.6700,region:"Brecon Beacons",wiki:"Brecon_Beacons_National_Park",weather:"rain-ok",duration:"2-3 hrs",rating:4.0,desc:"A massive show cave system. Underground waterfalls, dramatic chambers. Entirely undercover.",tips:"Perfect for a complete washout day."},
+
+  // FOREST OF DEAN
+  {id:"puzzlewood",name:"Puzzlewood",cat:"hike",lat:51.7840,lng:-2.6200,region:"Forest of Dean",wiki:"Puzzlewood",weather:"either",duration:"1-2 hrs",rating:4.8,desc:"An ancient woodland with moss-covered rocks, twisted trees, and winding paths. Used as a filming location for Star Wars, Doctor Who, and Merlin. Genuinely magical.",tips:"Feels like stepping into a fantasy world. Paths can be muddy. Small entry fee."},
+  {id:"cannop-ponds",name:"Cannop Ponds",cat:"hike",lat:51.7800,lng:-2.5600,region:"Forest of Dean",wiki:"Cannop_Ponds",weather:"either",duration:"1-2 hrs",rating:4.4,desc:"Two lakes in the heart of the Forest of Dean. Easy woodland walk. Mandarin ducks, dragonflies, and beautiful reflections in autumn.",tips:"Gentle flat walk around the ponds. Combined with Puzzlewood for a Forest of Dean half-day."},
+  {id:"the-kymin",name:"The Kymin",cat:"viewpoint",lat:51.8130,lng:-2.6900,region:"Wye Valley",wiki:"The_Kymin",weather:"dry",duration:"30-60 min",rating:4.5,desc:"A hilltop viewpoint above Monmouth with 360° views across the Wye Valley, the Brecon Beacons, and the Malvern Hills. A small Roundhouse and Naval Temple at the top.",tips:"Short walk from the car park. One of the best viewpoints in the Wye Valley."},
+  {id:"ross-on-wye",name:"Ross-on-Wye",cat:"village",lat:51.9140,lng:-2.5870,region:"Wye Valley",wiki:"Ross-on-Wye",weather:"either",duration:"1-2 hrs",rating:4.3,desc:"A market town perched on a cliff above the River Wye. Panoramic views from the Prospect gardens. The starting point of the original 'Wye Tour'.",tips:"Nice lunch stop. The Prospect has stunning river views."},
+  {id:"skirrid",name:"Ysgyryd Fawr (The Skirrid)",cat:"hike",lat:51.8420,lng:-2.9600,region:"Black Mountains",wiki:"Skirrid_Fawr",weather:"dry",duration:"1-2 hrs",rating:4.6,desc:"A dramatic lone hill near Abergavenny with a rocky, craggy summit. One of the most distinctive peaks in the Black Mountains. About 45 minutes up. Big views from the top.",tips:"Short but steep. The rocky summit is exciting. Start from the car park on the minor road."},
+  {id:"pontsticill",name:"Pontsticill Reservoir",cat:"hike",lat:51.8600,lng:-3.3700,region:"Brecon Beacons",wiki:"Pontsticill_Reservoir",weather:"either",duration:"1-2 hrs",rating:4.3,desc:"A large reservoir at the foot of the Brecon Beacons. Easy flat walk along the water with Pen y Fan and the Beacons as a backdrop. Beautiful reflections.",tips:"Gentle and accessible. Good alternative if the mountain summits are clagged in."},
+  {id:"sgwd-ddwli",name:"Sgwd Ddwli (Waterfall)",cat:"waterfall",lat:51.7770,lng:-3.5780,region:"Brecon Beacons",wiki:"Ystradfellte",weather:"rain-ok",duration:"1-2 hrs",rating:4.6,desc:"A wide, powerful waterfall in Waterfall Country. Less visited than Sgwd yr Eira but equally impressive. A shorter walk from the car park.",tips:"A good option if you want a waterfall without the longer Four Falls walk."},
+  {id:"clearwell-caves",name:"Clearwell Caves",cat:"activity",lat:51.7740,lng:-2.6100,region:"Forest of Dean",wiki:"Clearwell_Caves",weather:"rain-ok",duration:"1-2 hrs",rating:4.1,desc:"Ancient iron mines open to the public. Walk through atmospheric underground caverns. Used as a filming location for Doctor Who and Sherlock.",tips:"Entirely underground — perfect for rain. Combined with Puzzlewood for a Forest of Dean day."},
+
+  // PUBS & FOOD
+  {id:"wild-rabbit",name:"The Wild Rabbit",cat:"pub",lat:51.8750,lng:-1.6000,region:"Cotswolds",wiki:"Kingham",weather:"rain-ok",duration:"2-3 hrs",rating:4.8,desc:"The best food in the Cotswolds. Gastropub in Kingham with seasonal menu and roaring fire.",tips:"Book well in advance. The tasting menu is exceptional."},
+  {id:"old-black-lion",name:"The Old Black Lion",cat:"pub",lat:52.0760,lng:-3.1280,region:"Black Mountains",wiki:"Hay-on-Wye",weather:"rain-ok",duration:"2-3 hrs",rating:4.6,desc:"17th-century coaching inn in Hay. Candlelit dining room, log fires. The most romantic dinner spot in Hay.",tips:"Book for dinner. Try the Welsh lamb."},
+];
+
+const CATEGORIES = [
+  {id:"all",label:"All",color:"#6b7280"},{id:"waterfall",label:"Waterfalls",color:"#3b82f6"},
+  {id:"hike",label:"Hikes",color:"#22c55e"},{id:"viewpoint",label:"Viewpoints",color:"#f59e0b"},
+  {id:"abbey",label:"Abbeys & Ruins",color:"#a855f7"},{id:"village",label:"Villages",color:"#8b5cf6"},
+  {id:"pub",label:"Pubs & Food",color:"#ef4444"},
+  {id:"drive",label:"Scenic Drives",color:"#f97316"},{id:"activity",label:"Activities",color:"#14b8a6"},
+];
+
+// Days are fully flexible — no pre-scoped region
+let DAYS = [
+  {id:1,label:"Fri 20 — Waterfall Country",color:"#c8923c"},
+  {id:2,label:"Sat 21 — Wye Valley",color:"#2d4a3e"},
+  {id:3,label:"Sun 22 — Cotswolds → Home",color:"#0284c7"},
+];
+
+// Pre-built itineraries
+const PRESETS = [
+  {name:"Farthest First",emoji:"🗺️",desc:"Waterfalls first, Cotswolds on the way home — the loop that saves ~1.5hrs driving",
+   itin:{1:["waterfall-country","sgwd-yr-eira","four-falls","sgwd-ddwli","old-black-lion"],
+         2:["hay","symonds-yat","biblins","sarahs-bridge","tintern","wild-rabbit"],
+         3:["slSlaughters","windrush","bourton","bibury"]}},
+  {name:"Waterfalls & Nature",emoji:"💧",desc:"Waterfall Country, river gorges, woodland walks",
+   itin:{1:["bibury","slSlaughters","broadway-tower","wild-rabbit"],
+         2:["symonds-yat","puzzlewood","sarahs-bridge","tintern","hay","old-black-lion"],
+         3:["waterfall-country","sgwd-yr-eira","sgwd-ddwli","four-falls","crickhowell"]}},
+  {name:"Castles & Ruins",emoji:"🏰",desc:"Medieval castles, abbey ruins, Gothic atmosphere",
+   itin:{1:["bibury","bourton","sudeley","wild-rabbit"],
+         2:["goodrich","tintern","symonds-yat","the-kymin","hay","old-black-lion"],
+         3:["llanthony","llanthony-walk","skirrid","crickhowell"]}},
+  {name:"Gentle & Scenic",emoji:"🌿",desc:"Gentle walks, cosy pubs, bookshops — works in any weather",
+   itin:{1:["bibury","slSlaughters","windrush","wild-rabbit"],
+         2:["biblins","hay-river","hay","old-black-lion"],
+         3:["henryhd","waterfall-country","sgwd-yr-eira","pontsticill","crickhowell"]}},
+  {name:"Full Adventure",emoji:"⛰️",desc:"The complete experience — ridges, waterfalls, everything",
+   itin:{1:["broadway-tower","cleeve-hill","symonds-yat","symonds-yat-walk","sarahs-bridge"],
+         2:["hay-bluff","cats-back","gospel-pass","llanthony","hay","old-black-lion"],
+         3:["waterfall-country","four-falls","sgwd-yr-eira","pen-y-fan"]}},
+];
+
+const TRAVEL_TIMES = {
+  "bibury|bourton":15,"bibury|slSlaughters":20,"bourton|slSlaughters":10,"bourton|broadway-tower":15,
+  "bourton|cleeve-hill":15,"bourton|windrush":5,"broadway-tower|slSlaughters":15,
+  "slSlaughters|lords-manor":5,"slSlaughters|sudeley":15,"slSlaughters|wild-rabbit":15,
+  "sudeley|wild-rabbit":10,"wild-rabbit|lords-manor":10,
+  "broadway-tower|symonds-yat":55,"bourton|symonds-yat":70,"slSlaughters|symonds-yat":55,
+  "lords-manor|symonds-yat":55,"sudeley|symonds-yat":50,
+  "symonds-yat|symonds-yat-walk":2,"symonds-yat|biblins":10,"symonds-yat|sarahs-bridge":5,
+  "symonds-yat|tintern":20,"biblins|tintern":15,"tintern|goodrich":15,
+  "symonds-yat|goodrich":15,"symonds-yat|hay":45,"tintern|hay":40,
+  "goodrich|hay":35,"symonds-yat|llanthony":50,"tintern|llanthony":45,
+  "hay|hay-river":5,"hay|hay-bluff":15,"hay|gospel-pass":20,"hay|cats-back":25,
+  "hay|llanthony":30,"hay|sugar-loaf":35,"hay|old-black-lion":2,"hay|old-black-lion-stay":2,
+  "hay-bluff|gospel-pass":10,"cats-back|gospel-pass":15,"llanthony|gospel-pass":15,
+  "llanthony|llanthony-walk":5,"llanthony|sugar-loaf":25,"cats-back|llanthony":20,
+  "gospel-pass|sugar-loaf":30,"sugar-loaf|bear-hotel":15,"sugar-loaf|crickhowell":15,
+  "hay|waterfall-country":30,"hay|sgwd-yr-eira":35,"hay|four-falls":35,
+  "hay|henryhd":45,"hay|penderyn":35,"hay|dan-yr-ogof":40,"hay|llyn-y-fan":45,
+  "waterfall-country|sgwd-yr-eira":5,"waterfall-country|four-falls":5,
+  "waterfall-country|henryhd":30,"waterfall-country|penderyn":15,
+  "waterfall-country|dan-yr-ogof":20,"waterfall-country|llyn-y-fan":35,
+  "waterfall-country|pen-y-fan":30,"penderyn|bear-hotel":25,"bear-hotel|henryhd":30,
+  "bear-hotel|crickhowell":5,"crickhowell|waterfall-country":35,
+  "henryhd|pen-y-fan":20,"llyn-y-fan|pen-y-fan":35,"four-falls|sgwd-yr-eira":5,
+  "old-black-lion|waterfall-country":30,"old-black-lion-stay|waterfall-country":30,
+  "wild-rabbit|bibury":45,"wild-rabbit|bourton":20,"wild-rabbit|broadway-tower":25,
+  "hay|crickhowell":15,"llanthony|crickhowell":25,"llanthony|hay-bluff":20,
+  "sugar-loaf|penderyn":40,"crickhowell|penderyn":35,"crickhowell|henryhd":40,
+  "crickhowell|waterfall-country":40,"hay|waterfall-country":30,
+  // Forest of Dean
+  "symonds-yat|puzzlewood":15,"symonds-yat|cannop-ponds":15,"symonds-yat|clearwell-caves":12,
+  "puzzlewood|cannop-ponds":8,"puzzlewood|clearwell-caves":10,"cannop-ponds|clearwell-caves":10,
+  "puzzlewood|the-kymin":20,"cannop-ponds|the-kymin":20,"clearwell-caves|the-kymin":18,
+  "the-kymin|ross-on-wye":15,"the-kymin|goodrich":12,"the-kymin|tintern":25,
+  "ross-on-wye|goodrich":10,"ross-on-wye|symonds-yat":20,"ross-on-wye|hay":50,
+  // Black Mountains additions
+  "skirrid|sugar-loaf":10,"skirrid|crickhowell":12,"skirrid|hay":40,
+  "skirrid|llanthony":30,"skirrid|hay-bluff":35,"skirrid|cats-back":30,
+  "skirrid|penderyn":45,
+  // Beacons additions
+  "pontsticill|pen-y-fan":15,"pontsticill|waterfall-country":30,"pontsticill|henryhd":25,
+  "pontsticill|penderyn":30,"pontsticill|crickhowell":25,"pontsticill|bear-hotel":25,
+  "sgwd-ddwli|waterfall-country":5,"sgwd-ddwli|sgwd-yr-eira":10,"sgwd-ddwli|four-falls":5,
+  "sgwd-ddwli|henryhd":30,"sgwd-ddwli|hay":35,
+  // Option B (Farthest First) links
+  "biblins|sarahs-bridge":8,"sarahs-bridge|tintern":20,"tintern|wild-rabbit":55,
+  "slSlaughters|windrush":10,"windrush|bibury":20,"four-falls|old-black-lion":35,
+  "sgwd-ddwli|old-black-lion":35,"wild-rabbit|bibury":45,
+};
+
+// ===================== STATE =====================
+const DEFAULT_ITIN = {
+  1:["waterfall-country","sgwd-yr-eira","four-falls","sgwd-ddwli","old-black-lion"],
+  2:["hay","symonds-yat","biblins","sarahs-bridge","tintern","wild-rabbit"],
+  3:["slSlaughters","windrush","bourton","bibury"]
+};
+let state = {
+  activeTab:"explore", activeFilter:"all", weatherFilter:"all",
+  itinerary:{1:[...DEFAULT_ITIN[1]],2:[...DEFAULT_ITIN[2]],3:[...DEFAULT_ITIN[3]]},
+  map:null, markers:{}, routeLines:[],
+};
+
+// ===================== MAP =====================
+function initMap(){
+  state.map = L.map('map').setView([51.9,-2.8],9);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    attribution:'© OpenStreetMap',maxZoom:18
+  }).addTo(state.map);
+  A.forEach(a => {
+    const color = CATEGORIES.find(c=>c.id===a.cat)?.color||'#6b7280';
+    const icon = L.divIcon({className:'',
+      html:'<div style="width:14px;height:14px;border-radius:50%;background:'+color+';border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.3)"></div>',
+      iconSize:[14,14],iconAnchor:[7,7]});
+    const marker = L.marker([a.lat,a.lng],{icon}).addTo(state.map);
+    marker.bindPopup(
+      '<img class="popup-img" src="'+getImg(a)+'" alt="'+a.name+'" onerror="this.style.display=\'none\'">'+
+      '<div class="popup-title">'+a.name+'</div>'+
+      '<div class="popup-meta">'+a.region+' · '+a.duration+' · ⭐ '+a.rating+'</div>'+
+      '<div class="popup-desc">'+a.desc.substring(0,110)+'...</div>'+
+      '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px">'+
+        '<button class="popup-btn" style="background:#e8f5e9;color:#16a34a" onclick="openDetail(\''+a.id+'\')">Details</button>'+
+        '<button class="popup-btn" style="background:#fef3e2;color:#d97706" onclick="addToItinerary(\''+a.id+'\',1);closePopup()">+D1</button>'+
+        '<button class="popup-btn" style="background:#e8f5e9;color:#16a34a" onclick="addToItinerary(\''+a.id+'\',2);closePopup()">+D2</button>'+
+        '<button class="popup-btn" style="background:#e0f2fe;color:#0284c7" onclick="addToItinerary(\''+a.id+'\',3);closePopup()">+D3</button>'+
+      '</div>');
+    state.markers[a.id] = marker;
+  });
+}
+function closePopup(){state.map.closePopup();}
+
+// ===================== RENDER =====================
+function renderFilters(){
+  document.getElementById('filters').innerHTML = CATEGORIES.map(c =>
+    '<div class="filter-btn '+(state.activeFilter===c.id?'active':'')+'" style="color:'+c.color+';background:'+c.color+'15" onclick="setFilter(\''+c.id+'\')">'+c.label+'</div>'
+  ).join('');
+}
+
+function renderList(){
+  const el = document.getElementById('list-container');
+  if(state.activeTab==='explore') renderExplore(el);
+  else if(state.activeTab==='itinerary') renderItinerary(el);
+  else renderPresets(el);
+}
+
+function renderExplore(el){
+  const filtered = A.filter(a => {
+    const catOk = state.activeFilter==='all'||a.cat===state.activeFilter;
+    const wOk = state.weatherFilter==='all'||
+      (state.weatherFilter==='rain'&&(a.weather==='rain-ok'||a.weather==='either'))||
+      (state.weatherFilter==='dry'&&(a.weather==='dry'||a.weather==='either'));
+    return catOk && wOk;
+  });
+  el.innerHTML = filtered.map(a => {
+    const color = CATEGORIES.find(c=>c.id===a.cat)?.color||'#6b7280';
+    const catLabel = CATEGORIES.find(c=>c.id===a.cat)?.label||a.cat;
+    const wl = a.weather==='rain-ok'?'🌧️ Rain OK':a.weather==='dry'?'☀️ Dry Only':'🌤️ Either';
+    const wc = a.weather==='rain-ok'?'rain-ok':a.weather==='dry'?'dry-only':'either';
+    const inItin = Object.values(state.itinerary).flat().includes(a.id);
+    return '<div class="activity-card '+(inItin?'in-itinerary':'')+'" onclick="openDetail(\''+a.id+'\')">'+
+      '<div class="img-wrap"><img src="'+getImg(a)+'" alt="'+a.name+'">'+
+      '<div class="cat-badge" style="background:'+color+'">'+catLabel+'</div>'+
+      '<div class="weather-badge '+wc+'">'+wl+'</div></div>'+
+      '<div class="card-body"><h3>'+a.name+'</h3>'+
+      '<div class="meta">'+a.region+' · '+a.duration+' · ⭐ '+a.rating+'</div>'+
+      '<p>'+a.desc.substring(0,90)+'...</p>'+
+      '<div class="card-actions" onclick="event.stopPropagation()">'+
+        '<button class="btn-add d1" onclick="addToItinerary(\''+a.id+'\',1)">+ D1</button>'+
+        '<button class="btn-add d2" onclick="addToItinerary(\''+a.id+'\',2)">+ D2</button>'+
+        '<button class="btn-add d3" onclick="addToItinerary(\''+a.id+'\',3)">+ D3</button>'+
+      '</div></div></div>';
+  }).join('');
+}
+
+function renderItinerary(el){
+  const searchHtml =
+    '<div class="search-add"><input type="text" id="itin-search" placeholder="Search to add a new stop..." oninput="onItinSearch(this.value)"></div>'+
+    '<div class="search-results" id="search-results" style="display:none"></div>';
+
+  const daysHtml = DAYS.map(day => {
+    const stops = state.itinerary[day.id];
+    let totalTime = 0;
+    let html = '';
+    if(stops.length===0){
+      html = '<div class="empty-day">No stops yet. Search above or browse the Ideas tab!</div>';
+    } else {
+      stops.forEach((stopId,i) => {
+        const a = A.find(x=>x.id===stopId);
+        if(!a) return;
+        const color = CATEGORIES.find(c=>c.id===a.cat)?.color||'#6b7280';
+        const catLabel = CATEGORIES.find(c=>c.id===a.cat)?.label||'';
+        const wl = a.weather==='rain-ok'?'🌧️ Rain OK':a.weather==='dry'?'☀️ Dry':'🌤️ Either';
+        const wb = a.weather==='rain-ok'?'#dcfce7':a.weather==='dry'?'#fef3c7':'#f3f4f6';
+        const wc = a.weather==='rain-ok'?'#16a34a':a.weather==='dry'?'#d97706':'#6b7280';
+        if(i>0){
+          const tt = getTravelTime(stops[i-1],stopId);
+          totalTime += tt;
+          html += '<div class="travel-time"><div class="line"></div><span>🚗 '+tt+' min</span><div class="line"></div></div>';
+        }
+        html += '<div class="itin-stop">'+
+          '<div class="itin-top" onclick="openDetail(\''+a.id+'\')">'+
+            '<div class="itin-num-overlay" style="background:'+color+'">'+(i+1)+'</div>'+
+            '<img class="itin-img" src="'+getImg(a)+'" alt="'+a.name+'">'+
+            '<div class="itin-info"><h4>'+a.name+'</h4>'+
+            '<div class="itin-meta">'+a.region+' · '+a.duration+' · ⭐ '+a.rating+'</div>'+
+            '<div class="itin-desc">'+a.desc+'</div></div></div>'+
+          '<div class="itin-actions">'+
+            '<button class="action-btn map-btn" onclick="event.stopPropagation();focusMap(\''+a.id+'\')">📍 Map</button>'+
+            '<div class="itin-badges">'+
+              '<span style="background:'+color+'20;color:'+color+'">'+catLabel+'</span>'+
+              '<span style="background:'+wb+';color:'+wc+'">'+wl+'</span></div>'+
+            (i>0?'<button class="move-btn" onclick="event.stopPropagation();moveStop('+day.id+','+i+',-1)">↑</button>':'')+
+            (i<stops.length-1?'<button class="move-btn" onclick="event.stopPropagation();moveStop('+day.id+','+i+',1)">↓</button>':'')+
+            '<button class="stop-remove" onclick="event.stopPropagation();removeFromItinerary(\''+a.id+'\','+day.id+')">×</button>'+
+          '</div></div>';
+      });
+    }
+    return '<div class="itinerary-day">'+
+      '<div class="itinerary-day-header d'+day.id+'">'+
+        '<div class="day-num">0'+day.id+'</div>'+
+        '<div><h3>'+day.label+'</h3></div>'+
+        '<div class="day-label-edit"><input type="text" value="'+day.label+'" placeholder="Rename day..." onchange="renameDay('+day.id+',this.value)"></div>'+
+        (stops.length>1?'<div class="total-time">🚗 '+totalTime+' min</div>':'')+
+      '</div>'+html+
+      '<div class="itin-stop-add">'+
+        '<button class="itin-add-btn" style="color:#3b82f6;border-color:#3b82f6" onclick="switchTab(\'explore\');setFilter(\'waterfall\')">+ Waterfall</button>'+
+        '<button class="itin-add-btn" style="color:#22c55e;border-color:#22c55e" onclick="switchTab(\'explore\');setFilter(\'hike\')">+ Hike</button>'+
+        '<button class="itin-add-btn" style="color:#f59e0b;border-color:#f59e0b" onclick="switchTab(\'explore\');setFilter(\'viewpoint\')">+ View</button>'+
+        '<button class="itin-add-btn" style="color:#ef4444;border-color:#ef4444" onclick="switchTab(\'explore\');setFilter(\'pub\')">+ Pub</button>'+
+        '<button class="itin-add-btn" style="color:#a855f7;border-color:#a855f7" onclick="switchTab(\'explore\');setFilter(\'abbey\')">+ Ruin</button>'+
+      '</div></div>';
+  }).join('');
+  el.innerHTML = searchHtml + daysHtml;
+}
+
+function renderPresets(el){
+  el.innerHTML = '<div style="padding:4px 0 12px;color:var(--grey);font-size:.82rem">Load a pre-built itinerary to get started. You can then customise it freely.</div>'+
+    PRESETS.map(p =>
+      '<div class="activity-card" style="cursor:pointer" onclick="loadPreset('+PRESETS.indexOf(p)+')">'+
+        '<div style="padding:14px;display:flex;gap:12px;align-items:flex-start">'+
+          '<div style="font-size:2rem">'+p.emoji+'</div>'+
+          '<div><h3 style="font-family:Playfair Display,serif;font-size:1rem;color:var(--brown);margin-bottom:4px">'+p.name+'</h3>'+
+          '<p style="font-size:.82rem;color:#666;margin-bottom:8px">'+p.desc+'</p>'+
+          '<div style="font-size:.72rem;color:var(--grey)">'+
+            Object.keys(p.itin).map(d => 'Day '+d+': '+p.itin[d].length+' stops').join(' · ')+
+          '</div></div></div></div>'
+    ).join('');
+}
+
+// ===================== ACTIONS =====================
+function setFilter(id){state.activeFilter=id;renderFilters();renderList();updateMarkerVisibility();}
+function setWeatherFilter(w){
+  state.weatherFilter=w;
+  document.querySelectorAll('.wt-btn').forEach(b=>b.classList.toggle('active',b.dataset.weather===w));
+  renderList();
+}
+function addToItinerary(id,day){
+  Object.keys(state.itinerary).forEach(d=>{state.itinerary[d]=state.itinerary[d].filter(x=>x!==id);});
+  state.itinerary[day].push(id);
+  saveLocal();renderList();updateRouteLines();updateMarkerVisibility();
+}
+function removeFromItinerary(id,day){
+  state.itinerary[day]=state.itinerary[day].filter(x=>x!==id);
+  saveLocal();renderList();updateRouteLines();updateMarkerVisibility();
+}
+function moveStop(dayId,index,dir){
+  const arr=state.itinerary[dayId];
+  const ni=index+dir;
+  if(ni<0||ni>=arr.length) return;
+  [arr[index],arr[ni]]=[arr[ni],arr[index]];
+  saveLocal();renderList();updateRouteLines();
+}
+function renameDay(dayId,label){
+  const d=DAYS.find(x=>x.id===dayId);
+  if(d) d.label=label||('Day '+dayId);
+  saveLocal();renderList();
+}
+function loadPreset(idx){
+  const p=PRESETS[idx];
+  state.itinerary={1:[...p.itin[1]],2:[...p.itin[2]],3:[...p.itin[3]]};
+  saveLocal();
+  switchTab('itinerary');
+  updateRouteLines();updateMarkerVisibility();
+}
+function switchTab(tab){
+  state.activeTab=tab;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===tab));
+  renderList();
+}
+function focusMap(id){
+  const a=A.find(x=>x.id===id);
+  if(a){state.map.setView([a.lat,a.lng],13);state.markers[id].openPopup();}
+}
+function openDetail(id){
+  const a=A.find(x=>x.id===id);if(!a) return;
+  const color=CATEGORIES.find(c=>c.id===a.cat)?.color||'#6b7280';
+  const catLabel=CATEGORIES.find(c=>c.id===a.cat)?.label||'';
+  const wl=a.weather==='rain-ok'?'🌧️ Rain OK':a.weather==='dry'?'☀️ Dry Only':'🌤️ Either';
+  const wc=a.weather==='rain-ok'?'rain-ok':a.weather==='dry'?'dry-only':'either';
+  document.getElementById('detail-img').src=getImg(a);
+  document.getElementById('detail-title').textContent=a.name;
+  document.getElementById('detail-meta').textContent=a.region+' · '+a.duration+' · ⭐ '+a.rating;
+  document.getElementById('detail-desc').textContent=a.desc+(a.tips?' '+a.tips:'');
+  document.getElementById('detail-tags').innerHTML=
+    '<span style="background:'+color+'20;color:'+color+'">'+catLabel+'</span>'+
+    '<span class="weather-badge '+wc+'" style="position:static">'+wl+'</span>'+
+    '<span style="background:#f5f0ea;color:var(--brown)">'+a.duration+'</span>'+
+    '<span style="background:#f5f0ea;color:var(--brown)">⭐ '+a.rating+'</span>';
+  document.getElementById('detail-actions').innerHTML=
+    '<button class="btn-add d1" onclick="addToItinerary(\''+a.id+'\',1);closeDetail()">+ Day 1</button>'+
+    '<button class="btn-add d2" onclick="addToItinerary(\''+a.id+'\',2);closeDetail()">+ Day 2</button>'+
+    '<button class="btn-add d3" onclick="addToItinerary(\''+a.id+'\',3);closeDetail()">+ Day 3</button>'+
+    '<button class="btn-show" onclick="focusMap(\''+a.id+'\');closeDetail()">Map</button>';
+  document.getElementById('detail-modal').classList.add('open');
+}
+function closeDetail(){document.getElementById('detail-modal').classList.remove('open');}
+
+function onItinSearch(q){
+  const el=document.getElementById('search-results');
+  if(!q||q.length<1){el.style.display='none';return;}
+  const ql=q.toLowerCase();
+  const matches=A.filter(a=>a.name.toLowerCase().includes(ql)||a.desc.toLowerCase().includes(ql)||a.region.toLowerCase().includes(ql)||a.cat.includes(ql));
+  if(!matches.length){el.innerHTML='<div style="padding:10px 12px;color:var(--grey);font-size:.78rem;font-style:italic">No results</div>';el.style.display='block';return;}
+  el.innerHTML=matches.slice(0,8).map(a=>{
+    const color=CATEGORIES.find(c=>c.id===a.cat)?.color||'#6b7280';
+    return '<div class="search-result" onclick="openDetail(\''+a.id+'\')">'+
+      '<img src="'+getImg(a)+'" alt="">'+
+      '<div class="sr-info"><div class="sr-name">'+a.name+'</div>'+
+      '<div class="sr-meta">'+a.region+' · '+a.duration+' · '+CATEGORIES.find(c=>c.id===a.cat)?.label+'</div></div>'+
+      '<div class="sr-day-btns" onclick="event.stopPropagation()">'+
+        '<button style="background:#fef3e2;color:#d97706;border-color:#d97706" onclick="addToItinerary(\''+a.id+'\',1);clearSearch()">+D1</button>'+
+        '<button style="background:#e8f5e9;color:#16a34a;border-color:#16a34a" onclick="addToItinerary(\''+a.id+'\',2);clearSearch()">+D2</button>'+
+        '<button style="background:#e0f2fe;color:#0284c7;border-color:#0284c7" onclick="addToItinerary(\''+a.id+'\',3);clearSearch()">+D3</button>'+
+      '</div></div>';
+  }).join('');
+  el.style.display='block';
+}
+function clearSearch(){
+  document.getElementById('itin-search').value='';
+  document.getElementById('search-results').style.display='none';
+}
+
+function getTravelTime(id1,id2){
+  return TRAVEL_TIMES[id1+'|'+id2]||TRAVEL_TIMES[id2+'|'+id1]||30;
+}
+function updateRouteLines(){
+  state.routeLines.forEach(l=>state.map.removeLayer(l));
+  state.routeLines=[];
+  const dc={1:'#c8923c',2:'#2d4a3e',3:'#0284c7'};
+  DAYS.forEach(day=>{
+    const stops=state.itinerary[day.id];
+    if(stops.length<2) return;
+    const pts=stops.map(id=>{const a=A.find(x=>x.id===id);return a?[a.lat,a.lng]:null;}).filter(Boolean);
+    state.routeLines.push(L.polyline(pts,{color:dc[day.id],weight:3,opacity:.7,dashArray:'8,6'}).addTo(state.map));
+  });
+  // Update marker icons: numbered for itinerary stops, dots for others
+  A.forEach(a=>{
+    const marker=state.markers[a.id];
+    let icon;
+    const itinEntry = findItinEntry(a.id);
+    if(itinEntry){
+      const dayColor = dc[itinEntry.dayId];
+      icon = L.divIcon({className:'',
+        html:'<div style="width:28px;height:28px;border-radius:50%;background:'+dayColor+';border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;font-family:Inter,sans-serif">'+itinEntry.num+'</div>',
+        iconSize:[28,28],iconAnchor:[14,14],popupAnchor:[0,-16]});
+    } else {
+      const color=CATEGORIES.find(c=>c.id===a.cat)?.color||'#6b7280';
+      icon = L.divIcon({className:'',
+        html:'<div style="width:14px;height:14px;border-radius:50%;background:'+color+';border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.3)"></div>',
+        iconSize:[14,14],iconAnchor:[7,7]});
+    }
+    marker.setIcon(icon);
+  });
+  const allPts=Object.values(state.itinerary).flat().map(id=>{const a=A.find(x=>x.id===id);return a?[a.lat,a.lng]:null;}).filter(Boolean);
+  if(allPts.length>0) state.map.fitBounds(L.latLngBounds(allPts),{padding:[40,40]});
+}
+function findItinEntry(id){
+  for(const day of DAYS){
+    const idx = state.itinerary[day.id].indexOf(id);
+    if(idx >= 0) return {dayId:day.id, num:idx+1};
+  }
+  return null;
+}
+function updateMarkerVisibility(){
+  A.forEach(a=>{
+    const marker=state.markers[a.id];
+    const catOk=state.activeFilter==='all'||a.cat===state.activeFilter;
+    const wOk=state.weatherFilter==='all'||
+      (state.weatherFilter==='rain'&&(a.weather==='rain-ok'||a.weather==='either'))||
+      (state.weatherFilter==='dry'&&(a.weather==='dry'||a.weather==='either'));
+    const inItin=Object.values(state.itinerary).flat().includes(a.id);
+    const visible=(catOk&&wOk)||inItin;
+    if(visible&&!state.map.hasLayer(marker)) marker.addTo(state.map);
+    if(!visible&&state.map.hasLayer(marker)) state.map.removeLayer(marker);
+  });
+}
+
+// ===================== WIKI IMAGES =====================
+function fetchWikiImages(){
+  const wikiPages = [...new Set(A.map(a=>a.wiki).filter(Boolean))];
+  const batchSize = 10;
+  for(let i=0;i<wikiPages.length;i+=batchSize){
+    const batch = wikiPages.slice(i,i+batchSize);
+    const titles = batch.join('|');
+    const url = 'https://en.wikipedia.org/w/api.php?action=query&titles='+encodeURIComponent(titles)+
+      '&prop=pageimages&format=json&pithumbsize=600&origin=*';
+    fetch(url).then(r=>r.json()).then(data=>{
+      if(!data.query||!data.query.pages) return;
+      const pages = data.query.pages;
+      const imgMap = {};
+      Object.values(pages).forEach(p=>{
+        if(p.thumbnail&&p.thumbnail.source){
+          // Normalize title to match wiki field format (underscores, decode %27 etc.)
+          const key = p.title.replace(/ /g,'_');
+          imgMap[key] = p.thumbnail.source;
+          imgMap[decodeURIComponent(key)] = p.thumbnail.source;
+        }
+      });
+      A.forEach(a=>{
+        if(a.wiki){
+          const key = decodeURIComponent(a.wiki);
+          if(imgMap[key]) a.img = imgMap[key];
+          else if(imgMap[a.wiki]) a.img = imgMap[a.wiki];
+        }
+      });
+      renderList();
+      // Update any open popups
+      Object.keys(state.markers).forEach(id=>{
+        const marker = state.markers[id];
+        const act = A.find(x=>x.id===id);
+        if(act && marker.isPopupOpen()){
+          const popupImg = document.querySelector('.leaflet-popup .popup-img');
+          if(popupImg) popupImg.src = act.img;
+        }
+      });
+    }).catch(()=>{});
+  }
+}
+function getImg(a){
+  if(a.img && typeof a.img === 'string' && a.img.length > 10) return a.img;
+  // Colored placeholder with location name
+  const bg = {waterfall:'#1e4d7a',hike:'#1a5c2a',viewpoint:'#8a6d1b',village:'#5c2d82',pub:'#8a2b2b',hotel:'#1a5c6d',abbey:'#5c2d82',drive:'#8a5c1b',activity:'#1a6d5c'}[a.cat]||'#555';
+  const c = bg.replace('#','');
+  return 'data:image/svg+xml;charset=UTF-64,'+btoa('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="260"><rect fill="'+bg+'" width="400" height="260"/><text x="200" y="125" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-family="Georgia,serif" font-size="16">'+a.name+'</text><text x="200" y="150" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-family="sans-serif" font-size="11">'+a.region+'</text></svg>');
+}
+
+// ===================== SHARE & PERSIST =====================
+function openShare(){
+  const m=document.getElementById('share-modal');
+  m.style.display='flex';
+  document.getElementById('share-status').textContent='';
+}
+function closeShare(){document.getElementById('share-modal').style.display='none';}
+
+function saveLocal(){
+  try{
+    localStorage.setItem('uk-road-trip',JSON.stringify({
+      itinerary:state.itinerary, labels:DAYS.map(d=>d.label)
+    }));
+  }catch(e){}
+}
+function loadLocal(){
+  try{
+    const raw=localStorage.getItem('uk-road-trip');
+    if(!raw) return false;
+    const d=JSON.parse(raw);
+    if(d.itinerary) state.itinerary={1:[...(d.itinerary[1]||[])],2:[...(d.itinerary[2]||[])],3:[...(d.itinerary[3]||[])]};
+    if(d.labels) d.labels.forEach((l,i)=>{if(DAYS[i]) DAYS[i].label=l;});
+    return true;
+  }catch(e){return false;}
+}
+function encodePlan(){
+  const payload={i:state.itinerary,l:DAYS.map(d=>d.label)};
+  return btoa(unescape(encodeURIComponent(JSON.stringify(payload)))).replace(/=+$/,'');
+}
+function decodePlan(hash){
+  try{
+    const m=hash.match(/plan=([A-Za-z0-9+/]+)/);
+    if(!m) return false;
+    const json=decodeURIComponent(escape(atob(m[1])));
+    const d=JSON.parse(json);
+    if(d.i) state.itinerary={1:[...(d.i[1]||[])],2:[...(d.i[2]||[])],3:[...(d.i[3]||[])]};
+    if(d.l) d.l.forEach((l,i)=>{if(DAYS[i]) DAYS[i].label=l;});
+    return true;
+  }catch(e){return false;}
+}
+function copyShareLink(){
+  const url=location.href.split('#')[0]+'#plan='+encodePlan();
+  navigator.clipboard.writeText(url).then(()=>{
+    document.getElementById('share-status').textContent='Link copied — paste it anywhere.';
+  }).catch(()=>{
+    document.getElementById('share-status').textContent='Could not copy. URL: '+url;
+  });
+}
+function copyShareText(){
+  let text='UK road trip · 20–22 Nov\n\n';
+  DAYS.forEach(day=>{
+    const stops=state.itinerary[day.id].map(id=>A.find(x=>x.id===id)).filter(Boolean);
+    if(!stops.length) return;
+    text+=day.label+'\n';
+    stops.forEach((a,i)=>{text+='  '+(i+1)+'. '+a.name+'\n';});
+    text+='\n';
+  });
+  text+='(from the trip planner)';
+  navigator.clipboard.writeText(text).then(()=>{
+    document.getElementById('share-status').textContent='Message text copied.';
+  }).catch(()=>{
+    document.getElementById('share-status').textContent=text;
+  });
+}
+
+function downloadShareHTML(){
+  const dayColors={1:'#c8923c',2:'#2d4a3e',3:'#0284c7'};
+  const dayNames=DAYS.map(d=>d.label);
+  const stopsWikiMap={};
+  let totalDrive=0;
+  const daysHtml=DAYS.map(day=>{
+    const stops=state.itinerary[day.id].map(id=>A.find(x=>x.id===id)).filter(Boolean);
+    if(!stops.length) return '';
+    let drive=0;
+    const stopsHtml=stops.map((a,i)=>{
+      let travel='';
+      if(i>0){
+        const tt=getTravelTime(stops[i-1].id,a.id);
+        drive+=tt;
+        travel='<div class="travel"><span>🚗 '+tt+' min</span></div>';
+      }
+      const color=CATEGORIES.find(c=>c.id===a.cat)?.color||'#6b7280';
+      const catLabel=CATEGORIES.find(c=>c.id===a.cat)?.label||'';
+      const img=getImg(a);
+      if(a.wiki) stopsWikiMap[a.wiki]=1;
+      return travel+
+        '<article class="stop">'+
+          '<div class="num" style="background:'+dayColors[day.id]+'">'+(i+1)+'</div>'+
+          '<img src="'+img+'" alt="'+a.name+'" data-wiki="'+(a.wiki||'')+'" onerror="this.style.display=\'none\'">'+
+          '<div class="info">'+
+            '<h3>'+a.name+'</h3>'+
+            '<div class="meta"><span class="cat" style="background:'+color+'18;color:'+color+'">'+catLabel+'</span>'+a.region+' · '+a.duration+' · ⭐ '+a.rating+'</div>'+
+            '<p>'+a.desc+'</p>'+
+            (a.tips?'<p class="tips">'+a.tips+'</p>':'')+
+          '</div>'+
+        '</article>';
+    }).join('');
+    totalDrive+=drive;
+    return '<section class="day">'+
+      '<header style="border-color:'+dayColors[day.id]+'">'+
+        '<div class="day-label" style="color:'+dayColors[day.id]+'">'+day.label+'</div>'+
+        '<div class="drive">🚗 '+drive+' min driving between stops</div>'+
+      '</header>'+
+      stopsHtml+
+    '</section>';
+  }).join('');
+
+  const html='<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">'+
+    '<meta name="viewport" content="width=device-width, initial-scale=1.0">'+
+    '<title>UK Road Trip — 20–22 Nov</title>'+
+    '<style>'+
+    '@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap");'+
+    '*{margin:0;padding:0;box-sizing:border-box}'+
+    'body{font-family:Inter,sans-serif;background:#faf7f2;color:#3a3a3a;line-height:1.65;font-size:15px;padding-bottom:60px}'+
+    '.hero{background:linear-gradient(135deg,#2d3a2e,#3d4a35,#5c4a3a);color:#fff;padding:56px 24px 40px;text-align:center}'+
+    '.hero h1{font-family:"Playfair Display",serif;font-size:2.2rem;margin-bottom:8px}'+
+    '.hero .sub{opacity:.85;font-size:.95rem;letter-spacing:2px;text-transform:uppercase;font-weight:300;margin-bottom:16px}'+
+    '.hero .dates{display:inline-block;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:30px;padding:8px 22px;font-size:.95rem;letter-spacing:1px}'+
+    '.wrap{max-width:760px;margin:0 auto;padding:0 20px}'+
+    '.note{margin:28px auto 8px;max-width:760px;padding:16px 20px;background:#fff;border-radius:12px;border:1px solid #e8e0d4;font-size:.9rem;color:#666}'+
+    '.day{margin:28px 0}'+
+    '.day header{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-bottom:10px;border-bottom:2px solid #c8923c;margin-bottom:14px}'+
+    '.day-label{font-family:"Playfair Display",serif;font-size:1.35rem;font-weight:700}'+
+    '.drive{font-size:.78rem;color:#8a8a8a;font-weight:500}'+
+    '.travel{text-align:center;font-size:.78rem;color:#8a8a8a;padding:8px 0;position:relative}'+
+    '.travel::before,.travel::after{content:"";position:absolute;top:50%;width:28%;height:1px;background:#e8e0d4}'+
+    '.travel::before{left:8%}.travel::after{right:8%}'+
+    '.stop{display:flex;gap:14px;background:#fff;border:1.5px solid #e8e0d4;border-radius:14px;padding:14px;position:relative}'+
+    '.stop .num{width:28px;height:28px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex-shrink:0}'+
+    '.stop img{width:120px;height:90px;object-fit:cover;border-radius:10px;flex-shrink:0;background:#e8e0d4}'+
+    '.stop .info{flex:1;min-width:0}'+
+    '.stop h3{font-family:"Playfair Display",serif;font-size:1.1rem;color:#5c4033;margin-bottom:2px}'+
+    '.stop .meta{font-size:.75rem;color:#8a8a8a;margin-bottom:6px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}'+
+    '.stop .meta .cat{padding:2px 8px;border-radius:8px;font-size:.68rem;font-weight:600}'+
+    '.stop p{font-size:.88rem;color:#555;margin-bottom:4px}'+
+    '.stop .tips{font-size:.8rem;color:#8a8a8a;font-style:italic}'+
+    'footer{text-align:center;padding:30px 20px;color:#8a8a8a;font-size:.8rem}'+
+    '@media(max-width:560px){.stop{flex-wrap:wrap}.stop img{width:100%;height:160px}.hero h1{font-size:1.7rem}}'+
+    '</style></head><body>'+
+    '<div class="hero"><h1>UK Road Trip</h1>'+
+    '<div class="sub">Cotswolds · Wye Valley · Bannau Brycheiniog</div>'+
+    '<div class="dates">20–22 November 2026 · ~'+totalDrive+' min driving between stops</div></div>'+
+    '<div class="note">Farthest first: waterfalls on Friday, Wye Valley Saturday, Cotswolds villages on the way home Sunday. Daylight ~7:40am–3:50pm each day.</div>'+
+    '<div class="wrap">'+daysHtml+'</div>'+
+    '<footer>See you out there x</footer>'+
+    '<script>'+
+    '(function(){var w='+JSON.stringify(stopsWikiMap)+';var t=Object.keys(w).join("|");if(!t)return;'+
+    'fetch("https://en.wikipedia.org/w/api.php?action=query&titles="+encodeURIComponent(t)+"&prop=pageimages&format=json&pithumbsize=600&origin=*")'+
+    '.then(function(r){return r.json()}).then(function(d){if(!d.query||!d.query.pages)return;'+
+    'Object.values(d.query.pages).forEach(function(p){if(!p.thumbnail||!p.thumbnail.source)return;'+
+    'var k=p.title.replace(/ /g,"_");var src=p.thumbnail.source;'+
+    'document.querySelectorAll("img[data-wiki]").forEach(function(img){'+
+    'var iw=img.getAttribute("data-wiki");'+
+    'if(iw===k||iw===p.title||decodeURIComponent(iw)===k)img.src=src;'+
+    '});});}).catch(function(){})})();'+
+    '</'+'script></body></html>';
+
+  const blob=new Blob([html],{type:'text/html'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='uk-road-trip-itinerary.html';
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),2000);
+  document.getElementById('share-status').textContent='Page downloaded — send the file.';
+}
+
+// ===================== INIT =====================
+document.querySelectorAll('.tab').forEach(tab=>{
+  tab.addEventListener('click',()=>switchTab(tab.dataset.tab));
+});
+document.querySelectorAll('.wt-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>setWeatherFilter(btn.dataset.weather));
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){closeDetail();closeShare();}
+});
+window.addEventListener('load',()=>{
+  if(!decodePlan(location.hash)) loadLocal();
+  initMap();renderFilters();renderList();fetchWikiImages();
+  if(Object.values(state.itinerary).flat().length) updateRouteLines();
+});
+</script>
+</body>
+</html>

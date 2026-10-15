@@ -5,222 +5,795 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>UK Road Trip Planner</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --cream:#faf7f2;--brown:#5c4033;--gold:#c8923c;--rust:#a0522d;
-  --green:#2d4a3e;--grey:#8a8a8a;--border:#e8e0d4;--card:#fff;
-  --waterfall:#3b82f6;--hike:#22c55e;--viewpoint:#f59e0b;--village:#8b5cf6;
-  --pub:#ef4444;--hotel:#06b6d4;--abbey:#a855f7;--drive:#f97316;--activity:#14b8a6;
+  --paper:#f7f1e7;
+  --paper-2:#efe4d4;
+  --surface:#fffdf9;
+  --surface-2:#faf6f0;
+  --ink:#2c2218;
+  --ink-soft:#6b5c4c;
+  --ink-mute:#9c8b78;
+  --line:rgba(44,34,24,.09);
+  --line-strong:rgba(44,34,24,.14);
+  --accent:#c47a3e;
+  --accent-deep:#9a5524;
+  --accent-soft:#f3e2cf;
+  --green:#3f5c4c;
+  --green-soft:#e4eee7;
+  --blue:#4a6f8a;
+  --blue-soft:#e3edf3;
+  --shadow-1:0 1px 2px rgba(70,45,20,.05), 0 4px 14px rgba(70,45,20,.07);
+  --shadow-2:0 2px 4px rgba(70,45,20,.05), 0 12px 32px rgba(70,45,20,.10);
+  --shadow-3:0 4px 8px rgba(70,45,20,.06), 0 20px 48px rgba(70,45,20,.12);
+  --radius-sm:10px;
+  --radius:16px;
+  --radius-lg:22px;
+  --radius-pill:999px;
+  --waterfall:#4a7ab5;
+  --hike:#4f8f62;
+  --viewpoint:#c4892e;
+  --village:#7b63b0;
+  --pub:#c45448;
+  --hotel:#3d8fa3;
+  --abbey:#8b5cc4;
+  --drive:#d17a2e;
+  --activity:#2f9e8f;
+  --d1:#c47a3e;
+  --d2:#3f5c4c;
+  --d3:#4a6f8a;
 }
-body{font-family:'Inter',sans-serif;background:var(--cream);color:#3a3a3a;line-height:1.6;font-size:14px;overflow:hidden;height:100vh}
+body{
+  font-family:'DM Sans',-apple-system,sans-serif;
+  background:var(--paper);
+  color:var(--ink);
+  line-height:1.55;
+  font-size:14px;
+  overflow:hidden;
+  height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
 #app{display:flex;height:100vh}
 
-/* SIDEBAR */
-#sidebar{width:440px;min-width:440px;background:#fff;border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:100}
-#sidebar-header{padding:16px 18px 12px;border-bottom:1px solid var(--border);background:linear-gradient(135deg,#2d3a2e,#3d4a35);color:#fff}
-#sidebar-header h1{font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:2px}
-#sidebar-header p{font-size:.75rem;opacity:.75}
+/* ── Sidebar ─────────────────────────────────────────── */
+#sidebar{
+  width:440px;min-width:440px;
+  background:var(--surface);
+  border-right:1px solid var(--line);
+  display:flex;flex-direction:column;
+  z-index:100;
+  box-shadow:4px 0 24px rgba(70,45,20,.04);
+}
+#sidebar-header{
+  padding:18px 18px 14px;
+  background:
+    radial-gradient(120% 100% at 0% 0%, rgba(196,122,62,.18), transparent 55%),
+    linear-gradient(145deg,#3a2a1c 0%,#5a3d24 45%,#6b4426 100%);
+  color:#fff;
+  position:relative;
+  overflow:hidden;
+}
+#sidebar-header::after{
+  content:"";position:absolute;inset:0;
+  background:radial-gradient(80% 60% at 100% 100%, rgba(255,220,170,.12), transparent 60%);
+  pointer-events:none;
+}
+#sidebar-header .brand-row{display:flex;align-items:flex-start;gap:10px;position:relative;z-index:1}
+#sidebar-header .brand{flex:1}
+#sidebar-header h1{
+  font-family:'Fraunces',Georgia,serif;
+  font-size:1.35rem;
+  font-weight:600;
+  letter-spacing:-.02em;
+  margin-bottom:3px;
+  line-height:1.15;
+}
+#sidebar-header p{
+  font-size:.74rem;
+  opacity:.78;
+  font-weight:400;
+  letter-spacing:.03em;
+}
+#share-btn{
+  flex-shrink:0;
+  padding:8px 14px;
+  border-radius:var(--radius-pill);
+  border:1px solid rgba(255,255,255,.28);
+  background:rgba(255,255,255,.12);
+  backdrop-filter:blur(8px);
+  color:#fff;
+  font-size:.72rem;
+  font-weight:600;
+  cursor:pointer;
+  font-family:inherit;
+  letter-spacing:.03em;
+  transition:all .18s ease;
+}
+#share-btn:hover{background:rgba(255,255,255,.22);transform:translateY(-1px)}
+#share-btn:active{transform:translateY(0)}
 
-/* TABS */
-.tabs{display:flex;gap:0;border-bottom:2px solid var(--border);padding:0 8px}
-.tab{padding:10px 12px;font-size:.75rem;font-weight:600;color:var(--grey);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;text-transform:uppercase;letter-spacing:.5px}
-.tab:hover{color:var(--brown)}
-.tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+/* ── Tabs ────────────────────────────────────────────── */
+.tabs{
+  display:flex;gap:4px;
+  padding:10px 12px 0;
+  background:var(--surface);
+  border-bottom:1px solid var(--line);
+}
+.tab{
+  flex:1;
+  padding:10px 8px 11px;
+  font-size:.72rem;
+  font-weight:600;
+  color:var(--ink-mute);
+  cursor:pointer;
+  border-bottom:2px solid transparent;
+  margin-bottom:-1px;
+  transition:all .18s ease;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  text-align:center;
+  border-radius:10px 10px 0 0;
+}
+.tab:hover{color:var(--ink-soft);background:var(--surface-2)}
+.tab.active{color:var(--accent-deep);border-bottom-color:var(--accent);background:var(--accent-soft)}
 
-/* FILTERS */
-.filters{padding:8px 12px;display:flex;flex-wrap:wrap;gap:4px;border-bottom:1px solid var(--border)}
-.filter-btn{padding:3px 9px;border-radius:12px;font-size:.68rem;font-weight:600;cursor:pointer;border:1.5px solid transparent;transition:all .15s;opacity:.5}
-.filter-btn:hover{opacity:.8}
-.filter-btn.active{opacity:1;border-color:currentColor}
+/* ── Segmented weather / filters ─────────────────────── */
+.weather-toggle{
+  display:flex;gap:4px;
+  padding:10px 12px;
+  border-bottom:1px solid var(--line);
+  align-items:center;
+  background:var(--surface-2);
+}
+.weather-toggle .label{font-size:.68rem;color:var(--ink-mute);font-weight:600;margin-right:6px;letter-spacing:.05em;text-transform:uppercase}
+.wt-btn{
+  padding:5px 11px;
+  border-radius:var(--radius-pill);
+  font-size:.7rem;
+  font-weight:600;
+  cursor:pointer;
+  border:1.5px solid transparent;
+  transition:all .16s ease;
+  background:transparent;
+  color:var(--ink-soft);
+}
+.wt-btn:hover{background:var(--surface)}
+.wt-btn.active{background:var(--surface);border-color:var(--line-strong);box-shadow:var(--shadow-1);color:var(--ink)}
+.wt-btn.rain.active{border-color:#4f8f62;color:#3d6b4d;background:#e8f3eb}
+.wt-btn.dry.active{border-color:#c4892e;color:#9a6820;background:#faf0dc}
 
-/* WEATHER TOGGLE */
-.weather-toggle{display:flex;gap:5px;padding:8px 12px;border-bottom:1px solid var(--border);align-items:center}
-.weather-toggle span{font-size:.7rem;color:var(--grey);font-weight:600;margin-right:4px}
-.wt-btn{padding:3px 9px;border-radius:8px;font-size:.68rem;font-weight:600;cursor:pointer;border:1.5px solid transparent;transition:all .15s}
-.wt-btn.rain{background:#e8f5e9;color:#16a34a;border-color:#16a34a}
-.wt-btn.dry{background:#fef3e2;color:#d97706;border-color:#d97706}
-.wt-btn.all{background:#f5f0ea;color:var(--brown);border-color:var(--border)}
-.wt-btn.active{opacity:1}
-.wt-btn:not(.active){opacity:.4}
+.filters{padding:10px 12px;display:flex;flex-wrap:wrap;gap:6px;border-bottom:1px solid var(--line)}
+.filter-btn{
+  padding:5px 11px;
+  border-radius:var(--radius-pill);
+  font-size:.68rem;
+  font-weight:600;
+  cursor:pointer;
+  border:1.5px solid transparent;
+  transition:all .16s ease;
+  opacity:.55;
+  background:var(--surface-2);
+}
+.filter-btn:hover{opacity:.9;transform:translateY(-1px)}
+.filter-btn.active{opacity:1;box-shadow:var(--shadow-1);background:var(--surface)}
 
-/* LIST */
-.list-container{flex:1;overflow-y:auto;padding:10px}
+.list-container{flex:1;overflow-y:auto;padding:12px;scroll-behavior:smooth}
+.list-container::-webkit-scrollbar{width:8px}
+.list-container::-webkit-scrollbar-thumb{background:rgba(70,45,20,.15);border-radius:8px}
+.list-container::-webkit-scrollbar-track{background:transparent}
 
-/* ACTIVITY CARD */
-.activity-card{background:#fff;border:1.5px solid var(--border);border-radius:12px;margin-bottom:10px;overflow:hidden;cursor:pointer;transition:all .2s}
-.activity-card:hover{border-color:var(--gold);box-shadow:0 2px 12px rgba(200,146,60,.12)}
-.activity-card.in-itinerary{border-color:var(--green);background:#f0fdf4}
-.activity-card .img-wrap{height:110px;overflow:hidden;position:relative}
-.activity-card .img-wrap img{width:100%;height:100%;object-fit:cover}
-.activity-card .img-wrap .cat-badge{position:absolute;top:6px;left:6px;padding:2px 7px;border-radius:8px;font-size:.6rem;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:.5px}
-.activity-card .img-wrap .weather-badge{position:absolute;top:6px;right:6px;padding:2px 7px;border-radius:8px;font-size:.6rem;font-weight:600}
-.weather-badge.rain-ok{background:rgba(34,197,94,.85);color:#fff}
-.weather-badge.dry-only{background:rgba(245,158,11,.85);color:#fff}
-.weather-badge.either{background:rgba(107,114,128,.7);color:#fff}
-.activity-card .card-body{padding:8px 10px}
-.activity-card .card-body h3{font-family:'Playfair Display',serif;font-size:.88rem;color:var(--brown);margin-bottom:1px}
-.activity-card .card-body .meta{font-size:.68rem;color:var(--grey);margin-bottom:4px}
-.activity-card .card-body p{font-size:.75rem;color:#666;line-height:1.4;margin-bottom:6px}
-.activity-card .card-actions{display:flex;gap:4px;align-items:center}
-.btn-add{padding:4px 10px;border-radius:8px;font-size:.68rem;font-weight:600;cursor:pointer;border:none;transition:all .15s}
-.btn-add:hover{opacity:.8}
-.btn-add.d1{background:#fef3e2;color:var(--gold);border:1.5px solid var(--gold)}
-.btn-add.d2{background:#e8f5e9;color:var(--green);border:1.5px solid var(--green)}
-.btn-add.d3{background:#e0f2fe;color:#0284c7;border:1.5px solid #0284c7}
-.btn-add.remove{background:#fef2f2;color:#dc2626;border:1.5px solid #dc2626}
-.btn-show{padding:4px 8px;border-radius:8px;font-size:.68rem;font-weight:500;cursor:pointer;background:#f5f0ea;color:var(--brown);border:1px solid var(--border)}
+/* ── Activity card ───────────────────────────────────── */
+.activity-card{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  margin-bottom:12px;
+  overflow:hidden;
+  cursor:pointer;
+  transition:all .22s cubic-bezier(.2,.8,.2,1);
+  box-shadow:var(--shadow-1);
+}
+.activity-card:hover{
+  border-color:rgba(196,122,62,.35);
+  box-shadow:var(--shadow-2);
+  transform:translateY(-2px);
+}
+.activity-card.in-itinerary{border-color:rgba(63,92,76,.4);background:#f3f8f4}
+.activity-card .img-wrap{height:128px;overflow:hidden;position:relative;background:var(--paper-2)}
+.activity-card .img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .4s ease}
+.activity-card:hover .img-wrap img{transform:scale(1.04)}
+.activity-card .img-wrap .cat-badge{
+  position:absolute;top:10px;left:10px;
+  padding:3px 9px;border-radius:var(--radius-pill);
+  font-size:.62rem;font-weight:700;color:#fff;
+  text-transform:uppercase;letter-spacing:.05em;
+  box-shadow:0 2px 8px rgba(0,0,0,.18);
+}
+.activity-card .img-wrap .weather-badge{
+  position:absolute;top:10px;right:10px;
+  padding:3px 9px;border-radius:var(--radius-pill);
+  font-size:.62rem;font-weight:600;
+  backdrop-filter:blur(8px);
+}
+.weather-badge.rain-ok{background:rgba(63,92,76,.88);color:#fff}
+.weather-badge.dry-only{background:rgba(196,137,46,.9);color:#fff}
+.weather-badge.either{background:rgba(107,92,76,.72);color:#fff}
+.activity-card .card-body{padding:12px 14px 14px}
+.activity-card .card-body h3{
+  font-family:'Fraunces',Georgia,serif;
+  font-size:1.02rem;
+  color:var(--ink);
+  margin-bottom:2px;
+  letter-spacing:-.01em;
+  font-weight:600;
+}
+.activity-card .card-body .meta{font-size:.72rem;color:var(--ink-mute);margin-bottom:6px;font-weight:500}
+.activity-card .card-body p{font-size:.8rem;color:var(--ink-soft);line-height:1.5;margin-bottom:10px}
+.activity-card .card-actions{display:flex;gap:6px;align-items:center}
 
-/* PRESETS */
-.presets-section{padding:10px 12px;border-bottom:1px solid var(--border)}
-.presets-section h3{font-family:'Playfair Display',serif;font-size:.9rem;color:var(--brown);margin-bottom:8px}
-.preset-cards{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
-.preset-card{min-width:140px;padding:8px 10px;border-radius:10px;border:1.5px solid var(--border);cursor:pointer;transition:all .2s;background:#fff}
-.preset-card:hover{border-color:var(--gold);box-shadow:0 2px 8px rgba(200,146,60,.1)}
-.preset-card h4{font-size:.78rem;font-weight:600;color:var(--brown);margin-bottom:2px}
-.preset-card p{font-size:.65rem;color:var(--grey);line-height:1.3}
-.preset-card .preset-emoji{font-size:1.2rem;margin-bottom:4px}
+.btn-add{
+  padding:6px 12px;
+  border-radius:var(--radius-pill);
+  font-size:.72rem;
+  font-weight:600;
+  cursor:pointer;
+  border:1.5px solid transparent;
+  transition:all .16s ease;
+  font-family:inherit;
+}
+.btn-add:hover{transform:translateY(-1px);box-shadow:var(--shadow-1)}
+.btn-add:active{transform:translateY(0) scale(.97)}
+.btn-add.d1{background:var(--accent-soft);color:var(--accent-deep);border-color:rgba(196,122,62,.35)}
+.btn-add.d2{background:var(--green-soft);color:var(--green);border-color:rgba(63,92,76,.3)}
+.btn-add.d3{background:var(--blue-soft);color:var(--blue);border-color:rgba(74,111,138,.3)}
+.btn-add.remove{background:#fdeceb;color:#b54238;border-color:rgba(181,66,56,.25)}
+.btn-show{
+  padding:6px 12px;
+  border-radius:var(--radius-pill);
+  font-size:.72rem;
+  font-weight:600;
+  cursor:pointer;
+  background:var(--surface-2);
+  color:var(--ink-soft);
+  border:1px solid var(--line);
+  transition:all .16s ease;
+}
+.btn-show:hover{border-color:var(--line-strong);background:var(--surface)}
 
-/* ITINERARY DAY */
-.itinerary-day{margin-bottom:14px}
-.itinerary-day-header{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:10px;margin-bottom:6px}
-.itinerary-day-header.d1{background:linear-gradient(135deg,#fef3e2,#fde68a33)}
-.itinerary-day-header.d2{background:linear-gradient(135deg,#e8f5e9,#bbf7d033)}
-.itinerary-day-header.d3{background:linear-gradient(135deg,#e0f2fe,#bae6fd33)}
-.itinerary-day-header h3{font-family:'Playfair Display',serif;font-size:.92rem;color:var(--brown)}
-.itinerary-day-header .day-num{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;color:rgba(0,0,0,.1)}
-.itinerary-day-header .total-time{margin-left:auto;font-size:.72rem;color:var(--grey);font-weight:600}
+/* ── Presets ─────────────────────────────────────────── */
+.preset-card{
+  min-width:168px;
+  padding:14px;
+  border-radius:var(--radius);
+  border:1px solid var(--line);
+  cursor:pointer;
+  transition:all .2s cubic-bezier(.2,.8,.2,1);
+  background:var(--surface);
+  box-shadow:var(--shadow-1);
+}
+.preset-card:hover{border-color:rgba(196,122,62,.4);box-shadow:var(--shadow-2);transform:translateY(-2px)}
+.preset-card h4{
+  font-family:'Fraunces',Georgia,serif;
+  font-size:.95rem;
+  font-weight:600;
+  color:var(--ink);
+  margin-bottom:4px;
+}
+.preset-card p{font-size:.72rem;color:var(--ink-mute);line-height:1.45;margin-bottom:8px}
+.preset-card .preset-emoji{font-size:1.5rem;margin-bottom:8px;display:block}
 
-/* ITIN STOP CARD */
-.itin-stop{background:#fff;border:1.5px solid var(--border);border-radius:12px;margin-bottom:4px;overflow:hidden;transition:all .2s}
-.itin-stop:hover{box-shadow:0 2px 10px rgba(0,0,0,.06)}
-.itin-stop .itin-top{display:flex;gap:10px;padding:8px 10px;cursor:pointer;position:relative}
-.itin-stop .itin-img{width:90px;height:70px;object-fit:cover;border-radius:8px;flex-shrink:0}
-.itin-stop .itin-num-overlay{position:absolute;top:6px;left:6px;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff;z-index:2;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+/* ── Itinerary ───────────────────────────────────────── */
+.itinerary-day{margin-bottom:18px;animation:fadeUp .3s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.itinerary-day-header{
+  display:flex;align-items:center;gap:10px;
+  padding:12px 14px;
+  border-radius:var(--radius);
+  margin-bottom:8px;
+  border:1px solid transparent;
+  cursor:pointer;
+  user-select:none;
+  transition:all .18s ease;
+  position:sticky;top:0;z-index:5;
+}
+.itinerary-day-header.d1{background:linear-gradient(135deg,#faf0e2,#f5e4c8);border-color:rgba(196,122,62,.18)}
+.itinerary-day-header.d2{background:linear-gradient(135deg,#eaf2ec,#d7e6db);border-color:rgba(63,92,76,.15)}
+.itinerary-day-header.d3{background:linear-gradient(135deg,#e8f0f5,#d3e2ec);border-color:rgba(74,111,138,.15)}
+.itinerary-day-header:hover{filter:brightness(.98)}
+.itinerary-day-header .day-num{
+  font-family:'Fraunces',Georgia,serif;
+  font-size:1.55rem;
+  font-weight:700;
+  color:rgba(44,34,24,.12);
+  line-height:1;
+}
+.itinerary-day-header h3{font-family:'Fraunces',Georgia,serif;font-size:.98rem;font-weight:600;color:var(--ink)}
+.itinerary-day-header .total-time{
+  margin-left:auto;
+  font-size:.72rem;
+  color:var(--ink-mute);
+  font-weight:600;
+  background:rgba(255,255,255,.55);
+  padding:4px 10px;
+  border-radius:var(--radius-pill);
+}
+.itinerary-day-header .chev{
+  width:22px;height:22px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.5);
+  font-size:.7rem;color:var(--ink-mute);
+  transition:transform .2s ease;
+}
+.itinerary-day-header.collapsed .chev{transform:rotate(-90deg)}
+.itinerary-day.collapsed-day .day-body{display:none}
+
+.itin-stop{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  margin-bottom:8px;
+  overflow:hidden;
+  transition:all .22s cubic-bezier(.2,.8,.2,1);
+  box-shadow:var(--shadow-1);
+}
+.itin-stop:hover{box-shadow:var(--shadow-2);transform:translateY(-1px)}
+.itin-stop.dragging{opacity:.45;transform:scale(.98)}
+.itin-stop.drop-target{border-color:var(--accent);box-shadow:0 0 0 2px rgba(196,122,62,.25)}
+.itin-stop .itin-top{display:flex;gap:12px;padding:12px;cursor:pointer;position:relative}
+.itin-stop .itin-img{
+  width:96px;height:76px;object-fit:cover;
+  border-radius:12px;flex-shrink:0;
+  background:var(--paper-2);
+}
+.itin-stop .itin-num-overlay{
+  position:absolute;top:8px;left:8px;
+  width:28px;height:28px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.78rem;font-weight:700;color:#fff;
+  z-index:2;box-shadow:0 2px 8px rgba(0,0,0,.25);
+}
 .itin-stop .itin-info{flex:1;min-width:0}
-.itin-stop .itin-info h4{font-family:'Playfair Display',serif;font-size:.88rem;color:var(--brown);margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.itin-stop .itin-info .itin-meta{font-size:.68rem;color:var(--grey);margin-bottom:2px}
-.itin-stop .itin-info .itin-desc{font-size:.72rem;color:#666;line-height:1.35;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
-.itin-stop .itin-actions{display:flex;gap:5px;padding:0 10px 8px;align-items:center}
-.itin-stop .action-btn{padding:3px 8px;border-radius:6px;font-size:.65rem;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:#fff;color:var(--grey);transition:all .15s}
-.itin-stop .action-btn:hover{border-color:var(--gold);color:var(--gold)}
-.itin-stop .itin-badges{flex:1;display:flex;gap:3px;flex-wrap:wrap}
-.itin-stop .itin-actions .itin-badges span{padding:1px 6px;border-radius:6px;font-size:.6rem;font-weight:600}
-.move-btn{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--border);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.8rem;color:var(--grey);transition:all .15s}
-.move-btn:hover{border-color:var(--gold);color:var(--gold);background:#fef3e2}
-.stop-remove{width:24px;height:24px;border-radius:50%;border:1.5px solid #fecaca;background:#fff;color:#dc2626;cursor:pointer;font-size:.8rem;display:flex;align-items:center;justify-content:center;transition:all .15s}
-.stop-remove:hover{background:#fef2f2}
+.itin-stop .itin-info h4{
+  font-family:'Fraunces',Georgia,serif;
+  font-size:.98rem;
+  color:var(--ink);
+  margin-bottom:2px;
+  font-weight:600;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.itin-stop .itin-info .itin-meta{font-size:.7rem;color:var(--ink-mute);margin-bottom:3px;font-weight:500}
+.itin-stop .itin-info .itin-desc{
+  font-size:.76rem;color:var(--ink-soft);line-height:1.45;
+  overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+}
+.itin-stop .itin-actions{display:flex;gap:6px;padding:0 12px 12px;align-items:center;flex-wrap:wrap}
+.itin-stop .action-btn{
+  padding:4px 10px;
+  border-radius:var(--radius-pill);
+  font-size:.68rem;font-weight:600;
+  cursor:pointer;
+  border:1px solid var(--line);
+  background:var(--surface-2);
+  color:var(--ink-soft);
+  transition:all .16s ease;
+  font-family:inherit;
+}
+.itin-stop .action-btn:hover{border-color:var(--accent);color:var(--accent-deep);background:var(--accent-soft)}
+.itin-stop .itin-badges{flex:1;display:flex;gap:4px;flex-wrap:wrap}
+.itin-stop .itin-badges span{
+  padding:2px 8px;
+  border-radius:var(--radius-pill);
+  font-size:.62rem;font-weight:600;
+}
+.move-btn{
+  width:28px;height:28px;
+  border-radius:50%;
+  border:1px solid var(--line);
+  background:var(--surface);
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.85rem;color:var(--ink-mute);
+  transition:all .16s ease;
+}
+.move-btn:hover{border-color:var(--accent);color:var(--accent-deep);background:var(--accent-soft)}
+.stop-remove{
+  width:28px;height:28px;
+  border-radius:50%;
+  border:1px solid #f0cfc9;
+  background:var(--surface);
+  color:#c45448;
+  cursor:pointer;
+  font-size:.95rem;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .16s ease;
+}
+.stop-remove:hover{background:#fdeceb;transform:rotate(90deg)}
+.drag-handle{
+  width:28px;height:28px;
+  border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--ink-mute);
+  cursor:grab;
+  font-size:.95rem;
+  letter-spacing:-2px;
+  opacity:.55;
+  transition:opacity .15s;
+}
+.drag-handle:hover{opacity:1}
+.drag-handle:active{cursor:grabbing}
 
-.travel-time{font-size:.68rem;color:var(--grey);text-align:center;padding:3px 0;display:flex;align-items:center;justify-content:center;gap:6px}
-.travel-time .line{flex:1;height:1px;background:var(--border)}
+.travel-time{
+  font-size:.72rem;
+  color:var(--ink-mute);
+  text-align:center;
+  padding:6px 0;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  font-weight:500;
+}
+.travel-time .line{flex:1;height:1px;background:var(--line-strong);max-width:80px}
 
-.empty-day{padding:16px;text-align:center;color:var(--grey);font-size:.78rem;font-style:italic}
+.empty-day{
+  padding:28px 16px;
+  text-align:center;
+  color:var(--ink-mute);
+  font-size:.84rem;
+  font-style:italic;
+  background:var(--surface-2);
+  border-radius:var(--radius);
+  border:1px dashed var(--line-strong);
+}
 
-/* ADD BAR */
-.itin-stop-add{display:flex;gap:5px;padding:6px 10px;flex-wrap:wrap;justify-content:center;border-top:1px dashed var(--border);background:#faf7f2}
-.itin-stop-add .itin-add-btn{padding:3px 8px;border-radius:6px;font-size:.65rem;font-weight:600;cursor:pointer;border:1.5px solid transparent;transition:all .15s;background:#fff}
-.itin-stop-add .itin-add-btn:hover{opacity:.8}
+.itin-stop-add{
+  display:flex;gap:6px;
+  padding:10px;
+  flex-wrap:wrap;justify-content:center;
+  border-top:1px dashed var(--line);
+  background:var(--surface-2);
+}
+.itin-stop-add .itin-add-btn{
+  padding:5px 11px;
+  border-radius:var(--radius-pill);
+  font-size:.7rem;font-weight:600;
+  cursor:pointer;
+  border:1.5px solid transparent;
+  transition:all .16s ease;
+  background:var(--surface);
+  font-family:inherit;
+}
+.itin-stop-add .itin-add-btn:hover{transform:translateY(-1px);box-shadow:var(--shadow-1)}
 
-/* SEARCH */
-.search-add{padding:8px 12px;border-bottom:1px solid var(--border)}
-.search-add input{width:100%;padding:7px 10px;border-radius:8px;border:1.5px solid var(--border);font-family:'Inter',sans-serif;font-size:.8rem;background:#faf7f2;outline:none;transition:border-color .2s}
-.search-add input:focus{border-color:var(--gold)}
-.search-add input::placeholder{color:#ccc}
-.search-results{max-height:220px;overflow-y:auto;border-bottom:1px solid var(--border);background:#fff}
-.search-result{display:flex;align-items:center;gap:8px;padding:7px 12px;cursor:pointer;transition:background .15s}
-.search-result:hover{background:#fef9f0}
-.search-result img{width:36px;height:28px;object-fit:cover;border-radius:5px;flex-shrink:0}
-.search-result .sr-info{flex:1}
-.search-result .sr-info .sr-name{font-size:.78rem;font-weight:600;color:var(--brown)}
-.search-result .sr-info .sr-meta{font-size:.65rem;color:var(--grey)}
-.search-result .sr-day-btns{display:flex;gap:3px}
-.search-result .sr-day-btns button{padding:2px 7px;border-radius:6px;font-size:.6rem;font-weight:600;cursor:pointer;border:1.5px solid transparent}
+/* ── Search ──────────────────────────────────────────── */
+.search-add{padding:10px 12px;border-bottom:1px solid var(--line)}
+.search-add input{
+  width:100%;
+  padding:10px 14px;
+  border-radius:var(--radius-pill);
+  border:1.5px solid var(--line);
+  font-family:inherit;
+  font-size:.84rem;
+  background:var(--surface-2);
+  outline:none;
+  transition:all .18s ease;
+}
+.search-add input:focus{
+  border-color:var(--accent);
+  background:var(--surface);
+  box-shadow:0 0 0 4px rgba(196,122,62,.12);
+}
+.search-add input::placeholder{color:var(--ink-mute)}
+.search-results{
+  max-height:240px;overflow-y:auto;
+  border-bottom:1px solid var(--line);
+  background:var(--surface);
+}
+.search-result{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 12px;cursor:pointer;
+  transition:background .15s;
+}
+.search-result:hover{background:var(--accent-soft)}
+.search-result img{width:42px;height:32px;object-fit:cover;border-radius:8px;flex-shrink:0;background:var(--paper-2)}
+.search-result .sr-info{flex:1;min-width:0}
+.search-result .sr-info .sr-name{font-size:.82rem;font-weight:600;color:var(--ink)}
+.search-result .sr-info .sr-meta{font-size:.66rem;color:var(--ink-mute)}
+.search-result .sr-day-btns{display:flex;gap:4px}
+.search-result .sr-day-btns button{
+  padding:3px 8px;
+  border-radius:var(--radius-pill);
+  font-size:.64rem;font-weight:600;
+  cursor:pointer;
+  border:1.5px solid transparent;
+  font-family:inherit;
+  transition:transform .12s;
+}
+.search-result .sr-day-btns button:hover{transform:scale(1.06)}
 
-/* DAY LABEL EDIT */
-.day-label-edit{display:flex;gap:4px;align-items:center;margin-left:auto}
-.day-label-edit input{width:100px;padding:2px 6px;border:1px solid var(--border);border-radius:6px;font-size:.7rem;font-family:'Inter',sans-serif;outline:none}
-.day-label-edit input:focus{border-color:var(--gold)}
+.day-label-edit{display:flex;gap:4px;align-items:center;margin-left:6px}
+.day-label-edit input{
+  width:110px;
+  padding:3px 8px;
+  border:1px solid transparent;
+  border-radius:8px;
+  font-size:.72rem;
+  font-family:inherit;
+  outline:none;
+  background:rgba(255,255,255,.4);
+  transition:all .15s;
+}
+.day-label-edit input:focus{border-color:var(--accent);background:#fff}
 
-/* MAP */
-#map-wrap{flex:1;position:relative}
+/* ── Map ─────────────────────────────────────────────── */
+#map-wrap{flex:1;position:relative;background:var(--paper-2)}
 #map{width:100%;height:100%}
-#map-legend{position:absolute;bottom:16px;left:16px;background:rgba(255,255,255,.92);border-radius:10px;padding:10px 14px;z-index:500;box-shadow:0 2px 10px rgba(0,0,0,.1);font-size:.68rem}
-#map-legend h4{font-family:'Playfair Display',serif;font-size:.8rem;color:var(--brown);margin-bottom:4px}
-.legend-item{display:flex;align-items:center;gap:5px;margin-bottom:2px}
-.legend-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.map-controls{
+  position:absolute;top:16px;right:16px;z-index:500;
+  display:flex;flex-direction:column;gap:8px;
+}
+.map-ctrl-btn{
+  width:42px;height:42px;
+  border-radius:14px;
+  border:1px solid var(--line);
+  background:rgba(255,253,249,.92);
+  backdrop-filter:blur(12px);
+  box-shadow:var(--shadow-1);
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.05rem;
+  transition:all .16s ease;
+  color:var(--ink-soft);
+}
+.map-ctrl-btn:hover{
+  box-shadow:var(--shadow-2);
+  transform:translateY(-1px);
+  color:var(--accent-deep);
+}
+#map-legend{
+  position:absolute;bottom:18px;left:18px;
+  background:rgba(255,253,249,.9);
+  backdrop-filter:blur(14px);
+  border-radius:var(--radius);
+  padding:12px 16px;
+  z-index:500;
+  box-shadow:var(--shadow-2);
+  font-size:.7rem;
+  border:1px solid var(--line);
+  max-width:180px;
+}
+#map-legend h4{
+  font-family:'Fraunces',Georgia,serif;
+  font-size:.84rem;
+  color:var(--ink);
+  margin-bottom:6px;
+  font-weight:600;
+}
+.legend-item{display:flex;align-items:center;gap:7px;margin-bottom:3px;color:var(--ink-soft);font-weight:500}
+.legend-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;box-shadow:0 1px 3px rgba(0,0,0,.15)}
 
-/* POPUP */
-.leaflet-popup-content-wrapper{border-radius:12px!important;box-shadow:0 4px 20px rgba(0,0,0,.15)!important}
-.leaflet-popup-content{margin:10px!important;font-family:'Inter',sans-serif!important;font-size:.8rem!important}
-.popup-img{width:100%;height:100px;object-fit:cover;border-radius:8px;margin-bottom:6px}
-.popup-title{font-family:'Playfair Display',serif;font-size:.95rem;color:var(--brown);margin-bottom:2px}
-.popup-meta{font-size:.7rem;color:var(--grey);margin-bottom:4px}
-.popup-desc{font-size:.75rem;color:#555;margin-bottom:6px}
-.popup-btn{padding:4px 10px;border-radius:8px;font-size:.68rem;font-weight:600;cursor:pointer;border:none;transition:all .15s}
+/* ── Popup ───────────────────────────────────────────── */
+.leaflet-popup-content-wrapper{
+  border-radius:18px!important;
+  box-shadow:var(--shadow-3)!important;
+  border:1px solid var(--line);
+  padding:2px;
+}
+.leaflet-popup-content{
+  margin:12px!important;
+  font-family:'DM Sans',sans-serif!important;
+  font-size:.84rem!important;
+}
+.popup-img{width:100%;height:120px;object-fit:cover;border-radius:12px;margin-bottom:8px;background:var(--paper-2)}
+.popup-title{font-family:'Fraunces',Georgia,serif;font-size:1.05rem;color:var(--ink);margin-bottom:2px;font-weight:600}
+.popup-meta{font-size:.72rem;color:var(--ink-mute);margin-bottom:6px;font-weight:500}
+.popup-desc{font-size:.78rem;color:var(--ink-soft);margin-bottom:8px;line-height:1.45}
+.popup-btn{
+  padding:5px 12px;
+  border-radius:var(--radius-pill);
+  font-size:.72rem;font-weight:600;
+  cursor:pointer;border:none;
+  transition:all .15s;
+  font-family:inherit;
+}
+.popup-btn:hover{transform:translateY(-1px)}
 
-/* DETAIL MODAL */
-#detail-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center}
-#detail-modal.open{display:flex}
-.detail-content{background:#fff;border-radius:16px;width:480px;max-height:85vh;overflow-y:auto;position:relative}
-.detail-content .detail-img{width:100%;height:220px;object-fit:cover;border-radius:16px 16px 0 0}
-.detail-content .detail-body{padding:20px}
-.detail-content .detail-body h2{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--brown);margin-bottom:4px}
-.detail-content .detail-body .detail-meta{font-size:.8rem;color:var(--grey);margin-bottom:10px}
-.detail-content .detail-body p{font-size:.88rem;color:#555;line-height:1.7;margin-bottom:14px}
-.detail-content .detail-body .detail-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px}
-.detail-content .detail-body .detail-tags span{padding:2px 8px;border-radius:8px;font-size:.68rem;font-weight:600}
-.detail-close{position:absolute;top:10px;right:10px;width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.9);border:none;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10}
-.detail-actions{display:flex;gap:6px;margin-top:14px}
-.detail-actions .btn-add{flex:1;padding:8px 14px;font-size:.78rem;border-radius:10px}
+/* ── Modals ──────────────────────────────────────────── */
+.modal{
+  display:none;position:fixed;top:0;left:0;
+  width:100%;height:100%;
+  background:rgba(44,34,24,.42);
+  backdrop-filter:blur(6px);
+  z-index:1000;
+  align-items:center;justify-content:center;
+  animation:fadeIn .18s ease;
+}
+.modal.open{display:flex}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.detail-content{
+  background:var(--surface);
+  border-radius:24px;
+  width:480px;max-width:92vw;
+  max-height:88vh;overflow-y:auto;
+  position:relative;
+  box-shadow:var(--shadow-3);
+  animation:popIn .22s cubic-bezier(.2,.9,.3,1);
+}
+@keyframes popIn{from{opacity:0;transform:scale(.95) translateY(10px)}to{opacity:1;transform:none}}
+.detail-content .detail-img{
+  width:100%;height:230px;object-fit:cover;
+  border-radius:24px 24px 0 0;
+  background:var(--paper-2);
+  cursor:zoom-in;
+}
+.detail-content .detail-body{padding:22px 24px 24px}
+.detail-content .detail-body h2{
+  font-family:'Fraunces',Georgia,serif;
+  font-size:1.45rem;
+  color:var(--ink);
+  margin-bottom:4px;
+  letter-spacing:-.02em;
+  font-weight:600;
+}
+.detail-content .detail-body .detail-meta{font-size:.82rem;color:var(--ink-mute);margin-bottom:12px;font-weight:500}
+.detail-content .detail-body p{font-size:.92rem;color:var(--ink-soft);line-height:1.7;margin-bottom:16px}
+.detail-content .detail-body .detail-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.detail-content .detail-body .detail-tags span{
+  padding:4px 10px;
+  border-radius:var(--radius-pill);
+  font-size:.72rem;font-weight:600;
+}
+.detail-close{
+  position:absolute;top:14px;right:14px;
+  width:34px;height:34px;
+  border-radius:50%;
+  background:rgba(255,253,249,.92);
+  border:none;font-size:1.15rem;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  z-index:10;
+  box-shadow:var(--shadow-1);
+  transition:all .15s;
+}
+.detail-close:hover{transform:rotate(90deg);background:#fff}
+.detail-actions{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.detail-actions .btn-add{flex:1;min-width:90px;padding:11px 14px;font-size:.82rem;border-radius:14px}
+
+/* Lightbox */
+#lightbox{
+  display:none;position:fixed;inset:0;
+  background:rgba(20,14,8,.88);
+  z-index:1100;
+  align-items:center;justify-content:center;
+  cursor:zoom-out;
+}
+#lightbox.open{display:flex}
+#lightbox img{
+  max-width:92vw;max-height:88vh;
+  border-radius:16px;
+  box-shadow:0 30px 80px rgba(0,0,0,.5);
+}
+
+/* Share modal extras */
+.share-option{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 16px;
+  border-radius:var(--radius);
+  border:1px solid var(--line);
+  background:var(--surface-2);
+  cursor:pointer;
+  transition:all .18s ease;
+  font-family:inherit;
+  text-align:left;
+  width:100%;
+}
+.share-option:hover{
+  border-color:rgba(196,122,62,.4);
+  background:var(--surface);
+  transform:translateY(-1px);
+  box-shadow:var(--shadow-1);
+}
+.share-option .icon{
+  width:40px;height:40px;
+  border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.15rem;
+  flex-shrink:0;
+}
+.share-option .text strong{display:block;font-size:.88rem;color:var(--ink);margin-bottom:1px}
+.share-option .text span{font-size:.72rem;color:var(--ink-mute);line-height:1.4}
+
+/* Toast */
+#toast{
+  position:fixed;
+  bottom:28px;left:50%;
+  transform:translateX(-50%) translateY(20px);
+  background:var(--ink);
+  color:#fff;
+  padding:12px 22px;
+  border-radius:var(--radius-pill);
+  font-size:.84rem;
+  font-weight:500;
+  box-shadow:var(--shadow-3);
+  opacity:0;
+  pointer-events:none;
+  transition:all .28s cubic-bezier(.2,.9,.3,1);
+  z-index:1200;
+  max-width:80vw;
+  text-align:center;
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* Marker pulse */
+.pulse-ring{
+  position:absolute;
+  width:28px;height:28px;
+  border-radius:50%;
+  animation:pulse 2s ease-out infinite;
+  pointer-events:none;
+}
+@keyframes pulse{
+  0%{transform:scale(1);opacity:.55}
+  100%{transform:scale(2.1);opacity:0}
+}
+
+/* Responsive */
+@media(max-width:900px){
+  #app{flex-direction:column}
+  #sidebar{width:100%;min-width:0;height:52vh;border-right:none;border-bottom:1px solid var(--line)}
+  #map-wrap{height:48vh}
+}
 </style>
 </head>
 <body>
 <div id="app">
   <div id="sidebar">
     <div id="sidebar-header">
-      <div style="display:flex;align-items:flex-start;gap:8px">
-        <div style="flex:1">
-          <h1>UK Road Trip Planner</h1>
+      <div class="brand-row">
+        <div class="brand">
+          <h1>UK Road Trip</h1>
           <p>Cotswolds · Wye Valley · Bannau Brycheiniog — 20–22 Nov 2026</p>
         </div>
-        <button id="share-btn" onclick="openShare()" style="flex-shrink:0;padding:6px 12px;border-radius:8px;border:1.5px solid rgba(255,255,255,.35);background:rgba(255,255,255,.12);color:#fff;font-size:.72rem;font-weight:600;cursor:pointer;font-family:Inter,sans-serif">Share</button>
+        <button id="share-btn" onclick="openShare()">Share</button>
       </div>
     </div>
     <div class="tabs">
       <div class="tab active" data-tab="explore">Explore</div>
-      <div class="tab" data-tab="itinerary">My Itinerary</div>
+      <div class="tab" data-tab="itinerary">Itinerary</div>
       <div class="tab" data-tab="presets">Ideas</div>
     </div>
     <div class="weather-toggle" id="weather-bar">
-      <span>Weather:</span>
+      <span class="label">Weather</span>
       <div class="wt-btn all active" data-weather="all">All</div>
       <div class="wt-btn rain" data-weather="rain">🌧️ Rain OK</div>
-      <div class="wt-btn dry" data-weather="dry">☀️ Dry Only</div>
+      <div class="wt-btn dry" data-weather="dry">☀️ Dry</div>
     </div>
     <div class="filters" id="filters"></div>
     <div class="list-container" id="list-container"></div>
   </div>
   <div id="map-wrap">
     <div id="map"></div>
+    <div class="map-controls">
+      <button class="map-ctrl-btn" onclick="fitRoute()" title="Fit route">⤢</button>
+      <button class="map-ctrl-btn" onclick="showAllMarkers()" title="Show all">◉</button>
+    </div>
     <div id="map-legend">
       <h4>Legend</h4>
-      <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div> Waterfall</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#22c55e"></div> Hike</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div> Viewpoint</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#8b5cf6"></div> Village</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div> Pub / Food</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#a855f7"></div> Abbey / Ruin</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#f97316"></div> Scenic Drive</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#14b8a6"></div> Activity</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--waterfall)"></div> Waterfall</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--hike)"></div> Hike</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--viewpoint)"></div> Viewpoint</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--village)"></div> Village</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--pub)"></div> Pub / Food</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--abbey)"></div> Abbey / Ruin</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--drive)"></div> Scenic Drive</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--activity)"></div> Activity</div>
     </div>
   </div>
 </div>
 
-<div id="detail-modal">
+<div class="modal" id="detail-modal">
   <div class="detail-content">
     <button class="detail-close" onclick="closeDetail()">×</button>
-    <img class="detail-img" id="detail-img" src="" alt="">
+    <img class="detail-img" id="detail-img" src="" alt="" onclick="openLightbox(this.src)">
     <div class="detail-body">
       <h2 id="detail-title"></h2>
       <div class="detail-meta" id="detail-meta"></div>
@@ -231,34 +804,36 @@ body{font-family:'Inter',sans-serif;background:var(--cream);color:#3a3a3a;line-h
   </div>
 </div>
 
-<div id="share-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center">
+<div class="modal" id="share-modal">
   <div class="detail-content" style="width:420px">
     <button class="detail-close" onclick="closeShare()">×</button>
     <div class="detail-body">
       <h2>Share this trip</h2>
-      <div class="detail-meta">Send the plan — file, link, or a quick message</div>
-      <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
-        <button class="btn-add d2" style="padding:12px 16px;font-size:.85rem;border-radius:10px" onclick="downloadShareHTML()">📥 Download shareable page</button>
-        <button class="btn-add d1" style="padding:12px 16px;font-size:.85rem;border-radius:10px" onclick="copyShareLink()">🔗 Copy share link</button>
-        <button class="btn-show" style="padding:12px 16px;font-size:.85rem;border-radius:10px;width:100%" onclick="copyShareText()">📋 Copy as message text</button>
+      <div class="detail-meta">Send the plan — link, file, or a quick message</div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-top:8px">
+        <button class="share-option" onclick="copyShareLink()">
+          <div class="icon" style="background:var(--accent-soft)">🔗</div>
+          <div class="text"><strong>Copy share link</strong><span>Opens with your current itinerary</span></div>
+        </button>
+        <button class="share-option" onclick="downloadShareHTML()">
+          <div class="icon" style="background:var(--green-soft)">📥</div>
+          <div class="text"><strong>Download page</strong><span>Offline HTML — AirDrop, iMessage, email</span></div>
+        </button>
+        <button class="share-option" onclick="copyShareText()">
+          <div class="icon" style="background:var(--blue-soft)">📋</div>
+          <div class="text"><strong>Copy as message</strong><span>Plain text for WhatsApp or notes</span></div>
+        </button>
       </div>
-      <p id="share-status" style="margin-top:12px;font-size:.78rem;color:var(--green);min-height:1.2em"></p>
-      <p style="font-size:.72rem;color:var(--grey);margin-top:8px;line-height:1.5">The page download works offline — AirDrop, iMessage, email, WhatsApp document. The link keeps your itinerary if this planner is hosted.</p>
+      <p id="share-status" style="margin-top:14px;font-size:.78rem;color:var(--green);min-height:1.3em;line-height:1.5"></p>
     </div>
   </div>
 </div>
 
+<div id="lightbox" onclick="closeLightbox()"><img id="lightbox-img" src="" alt=""></div>
+<div id="toast"></div>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-// Placeholder gradient for each category
-const PLACEHOLDER = {
-  waterfall:'linear-gradient(135deg,#1e3a5f,#3b82f6)',hike:'linear-gradient(135deg,#1a3c2a,#22c55e)',
-  viewpoint:'linear-gradient(135deg,#5c4a1e,#f59e0b)',village:'linear-gradient(135deg,#3c1f5c,#8b5cf6)',
-  pub:'linear-gradient(135deg,#5c1e1e,#ef4444)',hotel:'linear-gradient(135deg,#1e4a5c,#06b6d4)',
-  abbey:'linear-gradient(135deg,#3c1e5c,#a855f7)',drive:'linear-gradient(135deg,#5c3a1e,#f97316)',
-  activity:'linear-gradient(135deg,#1e5c4a,#14b8a6)'
-};
-
 // ===================== DATA =====================
 const A = [
   // COTSWOLDS
@@ -315,21 +890,20 @@ const A = [
 ];
 
 const CATEGORIES = [
-  {id:"all",label:"All",color:"#6b7280"},{id:"waterfall",label:"Waterfalls",color:"#3b82f6"},
-  {id:"hike",label:"Hikes",color:"#22c55e"},{id:"viewpoint",label:"Viewpoints",color:"#f59e0b"},
-  {id:"abbey",label:"Abbeys & Ruins",color:"#a855f7"},{id:"village",label:"Villages",color:"#8b5cf6"},
-  {id:"pub",label:"Pubs & Food",color:"#ef4444"},
-  {id:"drive",label:"Scenic Drives",color:"#f97316"},{id:"activity",label:"Activities",color:"#14b8a6"},
+  {id:"all",label:"All",color:"#6b5c4c"},{id:"waterfall",label:"Waterfalls",color:"#4a7ab5"},
+  {id:"hike",label:"Hikes",color:"#4f8f62"},{id:"viewpoint",label:"Viewpoints",color:"#c4892e"},
+  {id:"abbey",label:"Abbeys & Ruins",color:"#8b5cc4"},{id:"village",label:"Villages",color:"#7b63b0"},
+  {id:"pub",label:"Pubs & Food",color:"#c45448"},
+  {id:"drive",label:"Scenic Drives",color:"#d17a2e"},{id:"activity",label:"Activities",color:"#2f9e8f"},
 ];
 
 // Days are fully flexible — no pre-scoped region
 let DAYS = [
-  {id:1,label:"Fri 20 — Waterfall Country",color:"#c8923c"},
-  {id:2,label:"Sat 21 — Wye Valley",color:"#2d4a3e"},
-  {id:3,label:"Sun 22 — Cotswolds → Home",color:"#0284c7"},
+  {id:1,label:"Fri 20 — Waterfall Country",color:"#c47a3e"},
+  {id:2,label:"Sat 21 — Wye Valley",color:"#3f5c4c"},
+  {id:3,label:"Sun 22 — Cotswolds → Home",color:"#4a6f8a"},
 ];
 
-// Pre-built itineraries
 const PRESETS = [
   {name:"Farthest First",emoji:"🗺️",desc:"Waterfalls first, Cotswolds on the way home — the loop that saves ~1.5hrs driving",
    itin:{1:["waterfall-country","sgwd-yr-eira","four-falls","sgwd-ddwli","old-black-lion"],
@@ -381,23 +955,19 @@ const TRAVEL_TIMES = {
   "wild-rabbit|bibury":45,"wild-rabbit|bourton":20,"wild-rabbit|broadway-tower":25,
   "hay|crickhowell":15,"llanthony|crickhowell":25,"llanthony|hay-bluff":20,
   "sugar-loaf|penderyn":40,"crickhowell|penderyn":35,"crickhowell|henryhd":40,
-  "crickhowell|waterfall-country":40,"hay|waterfall-country":30,
-  // Forest of Dean
+  "crickhowell|waterfall-country":40,
   "symonds-yat|puzzlewood":15,"symonds-yat|cannop-ponds":15,"symonds-yat|clearwell-caves":12,
   "puzzlewood|cannop-ponds":8,"puzzlewood|clearwell-caves":10,"cannop-ponds|clearwell-caves":10,
   "puzzlewood|the-kymin":20,"cannop-ponds|the-kymin":20,"clearwell-caves|the-kymin":18,
   "the-kymin|ross-on-wye":15,"the-kymin|goodrich":12,"the-kymin|tintern":25,
   "ross-on-wye|goodrich":10,"ross-on-wye|symonds-yat":20,"ross-on-wye|hay":50,
-  // Black Mountains additions
   "skirrid|sugar-loaf":10,"skirrid|crickhowell":12,"skirrid|hay":40,
   "skirrid|llanthony":30,"skirrid|hay-bluff":35,"skirrid|cats-back":30,
   "skirrid|penderyn":45,
-  // Beacons additions
   "pontsticill|pen-y-fan":15,"pontsticill|waterfall-country":30,"pontsticill|henryhd":25,
   "pontsticill|penderyn":30,"pontsticill|crickhowell":25,"pontsticill|bear-hotel":25,
   "sgwd-ddwli|waterfall-country":5,"sgwd-ddwli|sgwd-yr-eira":10,"sgwd-ddwli|four-falls":5,
   "sgwd-ddwli|henryhd":30,"sgwd-ddwli|hay":35,
-  // Option B (Farthest First) links
   "biblins|sarahs-bridge":8,"sarahs-bridge|tintern":20,"tintern|wild-rabbit":55,
   "slSlaughters|windrush":10,"windrush|bibury":20,"four-falls|old-black-lion":35,
   "sgwd-ddwli|old-black-lion":35,"wild-rabbit|bibury":45,
@@ -412,19 +982,37 @@ const DEFAULT_ITIN = {
 let state = {
   activeTab:"explore", activeFilter:"all", weatherFilter:"all",
   itinerary:{1:[...DEFAULT_ITIN[1]],2:[...DEFAULT_ITIN[2]],3:[...DEFAULT_ITIN[3]]},
+  collapsed:{1:false,2:false,3:false},
   map:null, markers:{}, routeLines:[],
+  dragId:null,
 };
+
+// ===================== HELPERS =====================
+function catMeta(cat){
+  return CATEGORIES.find(c=>c.id===cat)||{label:cat,color:"#6b5c4c"};
+}
+function dayColor(id){
+  return {1:"#c47a3e",2:"#3f5c4c",3:"#4a6f8a"}[id]||"#6b5c4c";
+}
+function toast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg;
+  el.classList.add('show');
+  clearTimeout(toast._t);
+  toast._t=setTimeout(()=>el.classList.remove('show'),2200);
+}
 
 // ===================== MAP =====================
 function initMap(){
-  state.map = L.map('map').setView([51.9,-2.8],9);
+  state.map = L.map('map',{zoomControl:false}).setView([51.9,-2.8],9);
+  L.control.zoom({position:'bottomright'}).addTo(state.map);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
     attribution:'© OpenStreetMap',maxZoom:18
   }).addTo(state.map);
   A.forEach(a => {
-    const color = CATEGORIES.find(c=>c.id===a.cat)?.color||'#6b7280';
+    const color = catMeta(a.cat).color;
     const icon = L.divIcon({className:'',
-      html:'<div style="width:14px;height:14px;border-radius:50%;background:'+color+';border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.3)"></div>',
+      html:'<div style="width:14px;height:14px;border-radius:50%;background:'+color+';border:2.5px solid #fff;box-shadow:0 2px 6px rgba(70,45,20,.28)"></div>',
       iconSize:[14,14],iconAnchor:[7,7]});
     const marker = L.marker([a.lat,a.lng],{icon}).addTo(state.map);
     marker.bindPopup(
@@ -432,21 +1020,42 @@ function initMap(){
       '<div class="popup-title">'+a.name+'</div>'+
       '<div class="popup-meta">'+a.region+' · '+a.duration+' · ⭐ '+a.rating+'</div>'+
       '<div class="popup-desc">'+a.desc.substring(0,110)+'...</div>'+
-      '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px">'+
-        '<button class="popup-btn" style="background:#e8f5e9;color:#16a34a" onclick="openDetail(\''+a.id+'\')">Details</button>'+
-        '<button class="popup-btn" style="background:#fef3e2;color:#d97706" onclick="addToItinerary(\''+a.id+'\',1);closePopup()">+D1</button>'+
-        '<button class="popup-btn" style="background:#e8f5e9;color:#16a34a" onclick="addToItinerary(\''+a.id+'\',2);closePopup()">+D2</button>'+
-        '<button class="popup-btn" style="background:#e0f2fe;color:#0284c7" onclick="addToItinerary(\''+a.id+'\',3);closePopup()">+D3</button>'+
+      '<div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:8px">'+
+        '<button class="popup-btn" style="background:#e4eee7;color:#3f5c4c" onclick="openDetail(\''+a.id+'\')">Details</button>'+
+        '<button class="popup-btn" style="background:#f3e2cf;color:#9a5524" onclick="addToItinerary(\''+a.id+'\',1);closePopup()">+D1</button>'+
+        '<button class="popup-btn" style="background:#e4eee7;color:#3f5c4c" onclick="addToItinerary(\''+a.id+'\',2);closePopup()">+D2</button>'+
+        '<button class="popup-btn" style="background:#e3edf3;color:#4a6f8a" onclick="addToItinerary(\''+a.id+'\',3);closePopup()">+D3</button>'+
       '</div>');
+    marker.on('click',()=>highlightStop(a.id));
     state.markers[a.id] = marker;
   });
 }
 function closePopup(){state.map.closePopup();}
+function fitRoute(){
+  const allPts=Object.values(state.itinerary).flat().map(id=>{const a=A.find(x=>x.id===id);return a?[a.lat,a.lng]:null;}).filter(Boolean);
+  if(allPts.length>0) state.map.fitBounds(L.latLngBounds(allPts),{padding:[50,50]});
+  else toast('Add some stops first');
+}
+function showAllMarkers(){
+  state.activeFilter='all';state.weatherFilter='all';
+  document.querySelectorAll('.wt-btn').forEach(b=>b.classList.toggle('active',b.dataset.weather==='all'));
+  renderFilters();renderList();updateMarkerVisibility();
+  toast('Showing all places');
+}
+function highlightStop(id){
+  const el=document.querySelector('[data-stop="'+id+'"]');
+  if(el){
+    el.scrollIntoView({behavior:'smooth',block:'center'});
+    el.style.outline='2px solid var(--accent)';
+    el.style.outlineOffset='2px';
+    setTimeout(()=>{el.style.outline='none';},1600);
+  }
+}
 
 // ===================== RENDER =====================
 function renderFilters(){
   document.getElementById('filters').innerHTML = CATEGORIES.map(c =>
-    '<div class="filter-btn '+(state.activeFilter===c.id?'active':'')+'" style="color:'+c.color+';background:'+c.color+'15" onclick="setFilter(\''+c.id+'\')">'+c.label+'</div>'
+    '<div class="filter-btn '+(state.activeFilter===c.id?'active':'')+'" style="color:'+c.color+';background:'+(state.activeFilter===c.id?c.color+'22':c.color+'12')+'" onclick="setFilter(\''+c.id+'\')">'+c.label+'</div>'
   ).join('');
 }
 
@@ -465,14 +1074,17 @@ function renderExplore(el){
       (state.weatherFilter==='dry'&&(a.weather==='dry'||a.weather==='either'));
     return catOk && wOk;
   });
+  if(!filtered.length){
+    el.innerHTML='<div class="empty-day" style="margin:20px 0">Nothing matches those filters.<br>Try a different category or weather setting.</div>';
+    return;
+  }
   el.innerHTML = filtered.map(a => {
-    const color = CATEGORIES.find(c=>c.id===a.cat)?.color||'#6b7280';
-    const catLabel = CATEGORIES.find(c=>c.id===a.cat)?.label||a.cat;
-    const wl = a.weather==='rain-ok'?'🌧️ Rain OK':a.weather==='dry'?'☀️ Dry Only':'🌤️ Either';
+    const {color,label:catLabel}=catMeta(a.cat);
+    const wl = a.weather==='rain-ok'?'🌧️ Rain OK':a.weather==='dry'?'☀️ Dry':'🌤️ Either';
     const wc = a.weather==='rain-ok'?'rain-ok':a.weather==='dry'?'dry-only':'either';
     const inItin = Object.values(state.itinerary).flat().includes(a.id);
-    return '<div class="activity-card '+(inItin?'in-itinerary':'')+'" onclick="openDetail(\''+a.id+'\')">'+
-      '<div class="img-wrap"><img src="'+getImg(a)+'" alt="'+a.name+'">'+
+    return '<div class="activity-card '+(inItin?'in-itinerary':'')+'" data-stop="'+a.id+'" onclick="openDetail(\''+a.id+'\')">'+
+      '<div class="img-wrap"><img src="'+getImg(a)+'" alt="'+a.name+'" loading="lazy">'+
       '<div class="cat-badge" style="background:'+color+'">'+catLabel+'</div>'+
       '<div class="weather-badge '+wc+'">'+wl+'</div></div>'+
       '<div class="card-body"><h3>'+a.name+'</h3>'+
@@ -488,7 +1100,7 @@ function renderExplore(el){
 
 function renderItinerary(el){
   const searchHtml =
-    '<div class="search-add"><input type="text" id="itin-search" placeholder="Search to add a new stop..." oninput="onItinSearch(this.value)"></div>'+
+    '<div class="search-add"><input type="text" id="itin-search" placeholder="Search to add a new stop…" oninput="onItinSearch(this.value)"></div>'+
     '<div class="search-results" id="search-results" style="display:none"></div>';
 
   const daysHtml = DAYS.map(day => {
@@ -496,32 +1108,32 @@ function renderItinerary(el){
     let totalTime = 0;
     let html = '';
     if(stops.length===0){
-      html = '<div class="empty-day">No stops yet. Search above or browse the Ideas tab!</div>';
+      html = '<div class="empty-day">No stops yet.<br>Search above or browse the Ideas tab.</div>';
     } else {
       stops.forEach((stopId,i) => {
         const a = A.find(x=>x.id===stopId);
         if(!a) return;
-        const color = CATEGORIES.find(c=>c.id===a.cat)?.color||'#6b7280';
-        const catLabel = CATEGORIES.find(c=>c.id===a.cat)?.label||'';
+        const {color,label:catLabel}=catMeta(a.cat);
         const wl = a.weather==='rain-ok'?'🌧️ Rain OK':a.weather==='dry'?'☀️ Dry':'🌤️ Either';
-        const wb = a.weather==='rain-ok'?'#dcfce7':a.weather==='dry'?'#fef3c7':'#f3f4f6';
-        const wc = a.weather==='rain-ok'?'#16a34a':a.weather==='dry'?'#d97706':'#6b7280';
+        const wb = a.weather==='rain-ok'?'#e4eee7':a.weather==='dry'?'#faf0dc':'#f0ebe4';
+        const wc = a.weather==='rain-ok'?'#3f5c4c':a.weather==='dry'?'#9a6820':'#6b5c4c';
         if(i>0){
           const tt = getTravelTime(stops[i-1],stopId);
           totalTime += tt;
           html += '<div class="travel-time"><div class="line"></div><span>🚗 '+tt+' min</span><div class="line"></div></div>';
         }
-        html += '<div class="itin-stop">'+
+        html += '<div class="itin-stop" data-stop="'+a.id+'" draggable="true" data-day="'+day.id+'" data-idx="'+i+'">'+
           '<div class="itin-top" onclick="openDetail(\''+a.id+'\')">'+
-            '<div class="itin-num-overlay" style="background:'+color+'">'+(i+1)+'</div>'+
-            '<img class="itin-img" src="'+getImg(a)+'" alt="'+a.name+'">'+
+            '<div class="itin-num-overlay" style="background:'+dayColor(day.id)+'">'+(i+1)+'</div>'+
+            '<img class="itin-img" src="'+getImg(a)+'" alt="'+a.name+'" onclick="event.stopPropagation();openLightbox(this.src)">'+
             '<div class="itin-info"><h4>'+a.name+'</h4>'+
             '<div class="itin-meta">'+a.region+' · '+a.duration+' · ⭐ '+a.rating+'</div>'+
             '<div class="itin-desc">'+a.desc+'</div></div></div>'+
           '<div class="itin-actions">'+
+            '<div class="drag-handle" title="Drag to reorder">⠿</div>'+
             '<button class="action-btn map-btn" onclick="event.stopPropagation();focusMap(\''+a.id+'\')">📍 Map</button>'+
             '<div class="itin-badges">'+
-              '<span style="background:'+color+'20;color:'+color+'">'+catLabel+'</span>'+
+              '<span style="background:'+color+'18;color:'+color+'">'+catLabel+'</span>'+
               '<span style="background:'+wb+';color:'+wc+'">'+wl+'</span></div>'+
             (i>0?'<button class="move-btn" onclick="event.stopPropagation();moveStop('+day.id+','+i+',-1)">↑</button>':'')+
             (i<stops.length-1?'<button class="move-btn" onclick="event.stopPropagation();moveStop('+day.id+','+i+',1)">↓</button>':'')+
@@ -529,36 +1141,88 @@ function renderItinerary(el){
           '</div></div>';
       });
     }
-    return '<div class="itinerary-day">'+
-      '<div class="itinerary-day-header d'+day.id+'">'+
+    const collapsed=state.collapsed[day.id];
+    return '<div class="itinerary-day '+(collapsed?'collapsed-day':'')+'" data-day-wrap="'+day.id+'">'+
+      '<div class="itinerary-day-header d'+day.id+' '+(collapsed?'collapsed':'')+'" onclick="toggleDay('+day.id+')">'+
         '<div class="day-num">0'+day.id+'</div>'+
         '<div><h3>'+day.label+'</h3></div>'+
-        '<div class="day-label-edit"><input type="text" value="'+day.label+'" placeholder="Rename day..." onchange="renameDay('+day.id+',this.value)"></div>'+
-        (stops.length>1?'<div class="total-time">🚗 '+totalTime+' min</div>':'')+
-      '</div>'+html+
+        '<div class="day-label-edit" onclick="event.stopPropagation()"><input type="text" value="'+day.label+'" placeholder="Rename day…" onchange="renameDay('+day.id+',this.value)"></div>'+
+        (stops.length>1?'<div class="total-time">🚗 '+totalTime+' min · '+stops.length+' stops</div>':'')+
+        '<div class="chev">▾</div>'+
+      '</div>'+
+      '<div class="day-body">'+html+
       '<div class="itin-stop-add">'+
-        '<button class="itin-add-btn" style="color:#3b82f6;border-color:#3b82f6" onclick="switchTab(\'explore\');setFilter(\'waterfall\')">+ Waterfall</button>'+
-        '<button class="itin-add-btn" style="color:#22c55e;border-color:#22c55e" onclick="switchTab(\'explore\');setFilter(\'hike\')">+ Hike</button>'+
-        '<button class="itin-add-btn" style="color:#f59e0b;border-color:#f59e0b" onclick="switchTab(\'explore\');setFilter(\'viewpoint\')">+ View</button>'+
-        '<button class="itin-add-btn" style="color:#ef4444;border-color:#ef4444" onclick="switchTab(\'explore\');setFilter(\'pub\')">+ Pub</button>'+
-        '<button class="itin-add-btn" style="color:#a855f7;border-color:#a855f7" onclick="switchTab(\'explore\');setFilter(\'abbey\')">+ Ruin</button>'+
-      '</div></div>';
+        '<button class="itin-add-btn" style="color:#4a7ab5;border-color:#4a7ab5" onclick="switchTab(\'explore\');setFilter(\'waterfall\')">+ Waterfall</button>'+
+        '<button class="itin-add-btn" style="color:#4f8f62;border-color:#4f8f62" onclick="switchTab(\'explore\');setFilter(\'hike\')">+ Hike</button>'+
+        '<button class="itin-add-btn" style="color:#c4892e;border-color:#c4892e" onclick="switchTab(\'explore\');setFilter(\'viewpoint\')">+ View</button>'+
+        '<button class="itin-add-btn" style="color:#c45448;border-color:#c45448" onclick="switchTab(\'explore\');setFilter(\'pub\')">+ Pub</button>'+
+        '<button class="itin-add-btn" style="color:#8b5cc4;border-color:#8b5cc4" onclick="switchTab(\'explore\');setFilter(\'abbey\')">+ Ruin</button>'+
+      '</div></div></div>';
   }).join('');
   el.innerHTML = searchHtml + daysHtml;
+  bindDragDrop();
 }
 
 function renderPresets(el){
-  el.innerHTML = '<div style="padding:4px 0 12px;color:var(--grey);font-size:.82rem">Load a pre-built itinerary to get started. You can then customise it freely.</div>'+
-    PRESETS.map(p =>
-      '<div class="activity-card" style="cursor:pointer" onclick="loadPreset('+PRESETS.indexOf(p)+')">'+
-        '<div style="padding:14px;display:flex;gap:12px;align-items:flex-start">'+
-          '<div style="font-size:2rem">'+p.emoji+'</div>'+
-          '<div><h3 style="font-family:Playfair Display,serif;font-size:1rem;color:var(--brown);margin-bottom:4px">'+p.name+'</h3>'+
-          '<p style="font-size:.82rem;color:#666;margin-bottom:8px">'+p.desc+'</p>'+
-          '<div style="font-size:.72rem;color:var(--grey)">'+
-            Object.keys(p.itin).map(d => 'Day '+d+': '+p.itin[d].length+' stops').join(' · ')+
-          '</div></div></div></div>'
+  el.innerHTML = '<div style="padding:6px 2px 16px;color:var(--ink-mute);font-size:.86rem;line-height:1.5">Load a pre-built route, then customise it freely.</div>'+
+    PRESETS.map((p,i) =>
+      '<div class="preset-card" style="margin-bottom:12px;min-width:0" onclick="loadPreset('+i+')">'+
+        '<div class="preset-emoji">'+p.emoji+'</div>'+
+        '<h4>'+p.name+'</h4>'+
+        '<p>'+p.desc+'</p>'+
+        '<div style="font-size:.72rem;color:var(--ink-mute);font-weight:500">'+
+          Object.keys(p.itin).map(d => 'Day '+d+': '+p.itin[d].length+' stops').join(' · ')+
+        '</div></div>'
     ).join('');
+}
+
+// ===================== DRAG & DROP =====================
+function bindDragDrop(){
+  let dragEl=null;
+  document.querySelectorAll('.itin-stop[draggable]').forEach(el=>{
+    el.addEventListener('dragstart',e=>{
+      dragEl=el;
+      el.classList.add('dragging');
+      e.dataTransfer.effectAllowed='move';
+      e.dataTransfer.setData('text/plain',el.dataset.stop);
+    });
+    el.addEventListener('dragend',()=>{
+      el.classList.remove('dragging');
+      document.querySelectorAll('.drop-target').forEach(x=>x.classList.remove('drop-target'));
+      dragEl=null;
+    });
+    el.addEventListener('dragover',e=>{
+      e.preventDefault();
+      if(!dragEl||dragEl===el) return;
+      el.classList.add('drop-target');
+    });
+    el.addEventListener('dragleave',()=>el.classList.remove('drop-target'));
+    el.addEventListener('drop',e=>{
+      e.preventDefault();
+      e.stopPropagation();
+      el.classList.remove('drop-target');
+      if(!dragEl||dragEl===el) return;
+      const fromDay=+dragEl.dataset.day;
+      const toDay=+el.dataset.day;
+      const fromIdx=+dragEl.dataset.idx;
+      const toIdx=+el.dataset.idx;
+      const id=dragEl.dataset.stop;
+      // remove from source
+      state.itinerary[fromDay]=state.itinerary[fromDay].filter(x=>x!==id);
+      // insert into target (adjust index if same day and moved down)
+      let insertAt=toIdx;
+      if(fromDay===toDay && fromIdx<toIdx) insertAt=toIdx;
+      state.itinerary[toDay].splice(insertAt,0,id);
+      saveLocal();
+      renderList();updateRouteLines();updateMarkerVisibility();
+      toast('Moved to '+(DAYS.find(d=>d.id===toDay)?.label||('Day '+toDay)));
+    });
+  });
+}
+
+function toggleDay(dayId){
+  state.collapsed[dayId]=!state.collapsed[dayId];
+  renderList();
 }
 
 // ===================== ACTIONS =====================
@@ -572,10 +1236,13 @@ function addToItinerary(id,day){
   Object.keys(state.itinerary).forEach(d=>{state.itinerary[d]=state.itinerary[d].filter(x=>x!==id);});
   state.itinerary[day].push(id);
   saveLocal();renderList();updateRouteLines();updateMarkerVisibility();
+  const a=A.find(x=>x.id===id);
+  toast((a?a.name:'Stop')+' → '+(DAYS.find(d=>d.id===day)?.label||('Day '+day)));
 }
 function removeFromItinerary(id,day){
   state.itinerary[day]=state.itinerary[day].filter(x=>x!==id);
   saveLocal();renderList();updateRouteLines();updateMarkerVisibility();
+  toast('Removed');
 }
 function moveStop(dayId,index,dir){
   const arr=state.itinerary[dayId];
@@ -592,9 +1259,11 @@ function renameDay(dayId,label){
 function loadPreset(idx){
   const p=PRESETS[idx];
   state.itinerary={1:[...p.itin[1]],2:[...p.itin[2]],3:[...p.itin[3]]};
+  state.collapsed={1:false,2:false,3:false};
   saveLocal();
   switchTab('itinerary');
   updateRouteLines();updateMarkerVisibility();
+  toast(p.name+' loaded');
 }
 function switchTab(tab){
   state.activeTab=tab;
@@ -603,12 +1272,11 @@ function switchTab(tab){
 }
 function focusMap(id){
   const a=A.find(x=>x.id===id);
-  if(a){state.map.setView([a.lat,a.lng],13);state.markers[id].openPopup();}
+  if(a){state.map.setView([a.lat,a.lng],13,{animate:true});state.markers[id].openPopup();}
 }
 function openDetail(id){
   const a=A.find(x=>x.id===id);if(!a) return;
-  const color=CATEGORIES.find(c=>c.id===a.cat)?.color||'#6b7280';
-  const catLabel=CATEGORIES.find(c=>c.id===a.cat)?.label||'';
+  const {color,label:catLabel}=catMeta(a.cat);
   const wl=a.weather==='rain-ok'?'🌧️ Rain OK':a.weather==='dry'?'☀️ Dry Only':'🌤️ Either';
   const wc=a.weather==='rain-ok'?'rain-ok':a.weather==='dry'?'dry-only':'either';
   document.getElementById('detail-img').src=getImg(a);
@@ -616,10 +1284,10 @@ function openDetail(id){
   document.getElementById('detail-meta').textContent=a.region+' · '+a.duration+' · ⭐ '+a.rating;
   document.getElementById('detail-desc').textContent=a.desc+(a.tips?' '+a.tips:'');
   document.getElementById('detail-tags').innerHTML=
-    '<span style="background:'+color+'20;color:'+color+'">'+catLabel+'</span>'+
+    '<span style="background:'+color+'18;color:'+color+'">'+catLabel+'</span>'+
     '<span class="weather-badge '+wc+'" style="position:static">'+wl+'</span>'+
-    '<span style="background:#f5f0ea;color:var(--brown)">'+a.duration+'</span>'+
-    '<span style="background:#f5f0ea;color:var(--brown)">⭐ '+a.rating+'</span>';
+    '<span style="background:var(--accent-soft);color:var(--accent-deep)">'+a.duration+'</span>'+
+    '<span style="background:var(--accent-soft);color:var(--accent-deep)">⭐ '+a.rating+'</span>';
   document.getElementById('detail-actions').innerHTML=
     '<button class="btn-add d1" onclick="addToItinerary(\''+a.id+'\',1);closeDetail()">+ Day 1</button>'+
     '<button class="btn-add d2" onclick="addToItinerary(\''+a.id+'\',2);closeDetail()">+ Day 2</button>'+
@@ -629,29 +1297,38 @@ function openDetail(id){
 }
 function closeDetail(){document.getElementById('detail-modal').classList.remove('open');}
 
+function openLightbox(src){
+  if(!src||src.startsWith('data:')) return;
+  document.getElementById('lightbox-img').src=src;
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLightbox(){document.getElementById('lightbox').classList.remove('open');}
+
 function onItinSearch(q){
   const el=document.getElementById('search-results');
   if(!q||q.length<1){el.style.display='none';return;}
   const ql=q.toLowerCase();
   const matches=A.filter(a=>a.name.toLowerCase().includes(ql)||a.desc.toLowerCase().includes(ql)||a.region.toLowerCase().includes(ql)||a.cat.includes(ql));
-  if(!matches.length){el.innerHTML='<div style="padding:10px 12px;color:var(--grey);font-size:.78rem;font-style:italic">No results</div>';el.style.display='block';return;}
+  if(!matches.length){el.innerHTML='<div style="padding:12px;color:var(--ink-mute);font-size:.8rem;font-style:italic">No results</div>';el.style.display='block';return;}
   el.innerHTML=matches.slice(0,8).map(a=>{
-    const color=CATEGORIES.find(c=>c.id===a.cat)?.color||'#6b7280';
+    const {color,label:catLabel}=catMeta(a.cat);
     return '<div class="search-result" onclick="openDetail(\''+a.id+'\')">'+
       '<img src="'+getImg(a)+'" alt="">'+
       '<div class="sr-info"><div class="sr-name">'+a.name+'</div>'+
-      '<div class="sr-meta">'+a.region+' · '+a.duration+' · '+CATEGORIES.find(c=>c.id===a.cat)?.label+'</div></div>'+
+      '<div class="sr-meta">'+a.region+' · '+a.duration+' · '+catLabel+'</div></div>'+
       '<div class="sr-day-btns" onclick="event.stopPropagation()">'+
-        '<button style="background:#fef3e2;color:#d97706;border-color:#d97706" onclick="addToItinerary(\''+a.id+'\',1);clearSearch()">+D1</button>'+
-        '<button style="background:#e8f5e9;color:#16a34a;border-color:#16a34a" onclick="addToItinerary(\''+a.id+'\',2);clearSearch()">+D2</button>'+
-        '<button style="background:#e0f2fe;color:#0284c7;border-color:#0284c7" onclick="addToItinerary(\''+a.id+'\',3);clearSearch()">+D3</button>'+
+        '<button style="background:#f3e2cf;color:#9a5524;border-color:#c47a3e" onclick="addToItinerary(\''+a.id+'\',1);clearSearch()">+D1</button>'+
+        '<button style="background:#e4eee7;color:#3f5c4c;border-color:#3f5c4c" onclick="addToItinerary(\''+a.id+'\',2);clearSearch()">+D2</button>'+
+        '<button style="background:#e3edf3;color:#4a6f8a;border-color:#4a6f8a" onclick="addToItinerary(\''+a.id+'\',3);clearSearch()">+D3</button>'+
       '</div></div>';
   }).join('');
   el.style.display='block';
 }
 function clearSearch(){
-  document.getElementById('itin-search').value='';
-  document.getElementById('search-results').style.display='none';
+  const s=document.getElementById('itin-search');
+  if(s) s.value='';
+  const r=document.getElementById('search-results');
+  if(r) r.style.display='none';
 }
 
 function getTravelTime(id1,id2){
@@ -660,14 +1337,13 @@ function getTravelTime(id1,id2){
 function updateRouteLines(){
   state.routeLines.forEach(l=>state.map.removeLayer(l));
   state.routeLines=[];
-  const dc={1:'#c8923c',2:'#2d4a3e',3:'#0284c7'};
+  const dc={1:'#c47a3e',2:'#3f5c4c',3:'#4a6f8a'};
   DAYS.forEach(day=>{
     const stops=state.itinerary[day.id];
     if(stops.length<2) return;
     const pts=stops.map(id=>{const a=A.find(x=>x.id===id);return a?[a.lat,a.lng]:null;}).filter(Boolean);
-    state.routeLines.push(L.polyline(pts,{color:dc[day.id],weight:3,opacity:.7,dashArray:'8,6'}).addTo(state.map));
+    state.routeLines.push(L.polyline(pts,{color:dc[day.id],weight:3.5,opacity:.82,dashArray:'10,8',lineCap:'round'}).addTo(state.map));
   });
-  // Update marker icons: numbered for itinerary stops, dots for others
   A.forEach(a=>{
     const marker=state.markers[a.id];
     let icon;
@@ -675,18 +1351,16 @@ function updateRouteLines(){
     if(itinEntry){
       const dayColor = dc[itinEntry.dayId];
       icon = L.divIcon({className:'',
-        html:'<div style="width:28px;height:28px;border-radius:50%;background:'+dayColor+';border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;font-family:Inter,sans-serif">'+itinEntry.num+'</div>',
-        iconSize:[28,28],iconAnchor:[14,14],popupAnchor:[0,-16]});
+        html:'<div style="width:30px;height:30px;border-radius:50%;background:'+dayColor+';border:3px solid #fff;box-shadow:0 3px 10px rgba(70,45,20,.35);display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;color:#fff;font-family:DM Sans,sans-serif">'+itinEntry.num+'</div>',
+        iconSize:[30,30],iconAnchor:[15,15],popupAnchor:[0,-18]});
     } else {
-      const color=CATEGORIES.find(c=>c.id===a.cat)?.color||'#6b7280';
+      const color=catMeta(a.cat).color;
       icon = L.divIcon({className:'',
-        html:'<div style="width:14px;height:14px;border-radius:50%;background:'+color+';border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.3)"></div>',
+        html:'<div style="width:14px;height:14px;border-radius:50%;background:'+color+';border:2.5px solid #fff;box-shadow:0 2px 6px rgba(70,45,20,.28)"></div>',
         iconSize:[14,14],iconAnchor:[7,7]});
     }
     marker.setIcon(icon);
   });
-  const allPts=Object.values(state.itinerary).flat().map(id=>{const a=A.find(x=>x.id===id);return a?[a.lat,a.lng]:null;}).filter(Boolean);
-  if(allPts.length>0) state.map.fitBounds(L.latLngBounds(allPts),{padding:[40,40]});
 }
 function findItinEntry(id){
   for(const day of DAYS){
@@ -724,7 +1398,6 @@ function fetchWikiImages(){
       const imgMap = {};
       Object.values(pages).forEach(p=>{
         if(p.thumbnail&&p.thumbnail.source){
-          // Normalize title to match wiki field format (underscores, decode %27 etc.)
           const key = p.title.replace(/ /g,'_');
           imgMap[key] = p.thumbnail.source;
           imgMap[decodeURIComponent(key)] = p.thumbnail.source;
@@ -738,7 +1411,6 @@ function fetchWikiImages(){
         }
       });
       renderList();
-      // Update any open popups
       Object.keys(state.markers).forEach(id=>{
         const marker = state.markers[id];
         const act = A.find(x=>x.id===id);
@@ -752,21 +1424,19 @@ function fetchWikiImages(){
 }
 function getImg(a){
   if(a.img && typeof a.img === 'string' && a.img.length > 10) return a.img;
-  // Colored placeholder with location name
-  const bg = {waterfall:'#1e4d7a',hike:'#1a5c2a',viewpoint:'#8a6d1b',village:'#5c2d82',pub:'#8a2b2b',hotel:'#1a5c6d',abbey:'#5c2d82',drive:'#8a5c1b',activity:'#1a6d5c'}[a.cat]||'#555';
-  const c = bg.replace('#','');
-  return 'data:image/svg+xml;charset=UTF-64,'+btoa('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="260"><rect fill="'+bg+'" width="400" height="260"/><text x="200" y="125" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-family="Georgia,serif" font-size="16">'+a.name+'</text><text x="200" y="150" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-family="sans-serif" font-size="11">'+a.region+'</text></svg>');
+  const bg = {waterfall:'#2c4d6e',hike:'#2a4a32',viewpoint:'#6b5420',village:'#4a2f66',pub:'#6b2e28',hotel:'#1a4a5c',abbey:'#4a2f66',drive:'#6b4420',activity:'#1a5c52'}[a.cat]||'#555';
+  return 'data:image/svg+xml;charset=UTF-64,'+btoa('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="260"><rect fill="'+bg+'" width="400" height="260"/><text x="200" y="125" text-anchor="middle" fill="rgba(255,255,255,0.65)" font-family="Georgia,serif" font-size="16">'+a.name+'</text><text x="200" y="150" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-family="sans-serif" font-size="11">'+a.region+'</text></svg>');
 }
 
 // ===================== SHARE & PERSIST =====================
 function openShare(){
   const m=document.getElementById('share-modal');
-  m.style.display='flex';
+  m.classList.add('open');
   document.getElementById('share-status').innerHTML=
-    '<span style="color:var(--grey)">Live planner:</span><br>'+
-    '<a href="https://ming-256.github.io/uk-road-trip/" target="_blank" style="color:var(--green)">ming-256.github.io/uk-road-trip</a>';
+    '<span style="color:var(--ink-mute)">Live planner:</span> '+
+    '<a href="https://ming-256.github.io/uk-road-trip/" target="_blank" style="color:var(--green);font-weight:600">ming-256.github.io/uk-road-trip</a>';
 }
-function closeShare(){document.getElementById('share-modal').style.display='none';}
+function closeShare(){document.getElementById('share-modal').classList.remove('open');}
 
 function saveLocal(){
   try{
@@ -806,7 +1476,8 @@ function copyShareLink(){
     : location.href.split('#')[0];
   const url=base+'#plan='+encodePlan();
   navigator.clipboard.writeText(url).then(()=>{
-    document.getElementById('share-status').innerHTML='Link copied — paste it anywhere.<br><span style="color:var(--grey);font-size:.72rem">'+url+'</span>';
+    document.getElementById('share-status').innerHTML='Link copied.<br><span style="color:var(--ink-mute);font-size:.72rem;word-break:break-all">'+url+'</span>';
+    toast('Link copied');
   }).catch(()=>{
     document.getElementById('share-status').textContent='Could not copy. URL: '+url;
   });
@@ -820,17 +1491,16 @@ function copyShareText(){
     stops.forEach((a,i)=>{text+='  '+(i+1)+'. '+a.name+'\n';});
     text+='\n';
   });
-  text+='(from the trip planner)';
   navigator.clipboard.writeText(text).then(()=>{
     document.getElementById('share-status').textContent='Message text copied.';
+    toast('Message copied');
   }).catch(()=>{
     document.getElementById('share-status').textContent=text;
   });
 }
 
 function downloadShareHTML(){
-  const dayColors={1:'#c8923c',2:'#2d4a3e',3:'#0284c7'};
-  const dayNames=DAYS.map(d=>d.label);
+  const dayColors={1:'#c47a3e',2:'#3f5c4c',3:'#4a6f8a'};
   const stopsWikiMap={};
   let totalDrive=0;
   const daysHtml=DAYS.map(day=>{
@@ -844,8 +1514,8 @@ function downloadShareHTML(){
         drive+=tt;
         travel='<div class="travel"><span>🚗 '+tt+' min</span></div>';
       }
-      const color=CATEGORIES.find(c=>c.id===a.cat)?.color||'#6b7280';
-      const catLabel=CATEGORIES.find(c=>c.id===a.cat)?.label||'';
+      const color=catMeta(a.cat).color;
+      const catLabel=catMeta(a.cat).label;
       const img=getImg(a);
       if(a.wiki) stopsWikiMap[a.wiki]=1;
       return travel+
@@ -874,32 +1544,32 @@ function downloadShareHTML(){
     '<meta name="viewport" content="width=device-width, initial-scale=1.0">'+
     '<title>UK Road Trip — 20–22 Nov</title>'+
     '<style>'+
-    '@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap");'+
+    '@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=DM+Sans:wght@300;400;500;600&display=swap");'+
     '*{margin:0;padding:0;box-sizing:border-box}'+
-    'body{font-family:Inter,sans-serif;background:#faf7f2;color:#3a3a3a;line-height:1.65;font-size:15px;padding-bottom:60px}'+
-    '.hero{background:linear-gradient(135deg,#2d3a2e,#3d4a35,#5c4a3a);color:#fff;padding:56px 24px 40px;text-align:center}'+
-    '.hero h1{font-family:"Playfair Display",serif;font-size:2.2rem;margin-bottom:8px}'+
+    'body{font-family:"DM Sans",sans-serif;background:#f7f1e7;color:#2c2218;line-height:1.65;font-size:15px;padding-bottom:60px}'+
+    '.hero{background:linear-gradient(145deg,#3a2a1c,#5a3d24,#6b4426);color:#fff;padding:56px 24px 40px;text-align:center}'+
+    '.hero h1{font-family:"Fraunces",serif;font-size:2.2rem;margin-bottom:8px;font-weight:600}'+
     '.hero .sub{opacity:.85;font-size:.95rem;letter-spacing:2px;text-transform:uppercase;font-weight:300;margin-bottom:16px}'+
-    '.hero .dates{display:inline-block;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:30px;padding:8px 22px;font-size:.95rem;letter-spacing:1px}'+
+    '.hero .dates{display:inline-block;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:8px 22px;font-size:.95rem;letter-spacing:1px}'+
     '.wrap{max-width:760px;margin:0 auto;padding:0 20px}'+
-    '.note{margin:28px auto 8px;max-width:760px;padding:16px 20px;background:#fff;border-radius:12px;border:1px solid #e8e0d4;font-size:.9rem;color:#666}'+
+    '.note{margin:28px auto 8px;max-width:760px;padding:16px 20px;background:#fffdf9;border-radius:16px;border:1px solid rgba(44,34,24,.09);font-size:.9rem;color:#6b5c4c}'+
     '.day{margin:28px 0}'+
-    '.day header{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-bottom:10px;border-bottom:2px solid #c8923c;margin-bottom:14px}'+
-    '.day-label{font-family:"Playfair Display",serif;font-size:1.35rem;font-weight:700}'+
-    '.drive{font-size:.78rem;color:#8a8a8a;font-weight:500}'+
-    '.travel{text-align:center;font-size:.78rem;color:#8a8a8a;padding:8px 0;position:relative}'+
-    '.travel::before,.travel::after{content:"";position:absolute;top:50%;width:28%;height:1px;background:#e8e0d4}'+
+    '.day header{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-bottom:10px;border-bottom:2px solid #c47a3e;margin-bottom:14px}'+
+    '.day-label{font-family:"Fraunces",serif;font-size:1.35rem;font-weight:700}'+
+    '.drive{font-size:.78rem;color:#9c8b78;font-weight:500}'+
+    '.travel{text-align:center;font-size:.78rem;color:#9c8b78;padding:8px 0;position:relative}'+
+    '.travel::before,.travel::after{content:"";position:absolute;top:50%;width:28%;height:1px;background:rgba(44,34,24,.12)}'+
     '.travel::before{left:8%}.travel::after{right:8%}'+
-    '.stop{display:flex;gap:14px;background:#fff;border:1.5px solid #e8e0d4;border-radius:14px;padding:14px;position:relative}'+
+    '.stop{display:flex;gap:14px;background:#fffdf9;border:1px solid rgba(44,34,24,.09);border-radius:16px;padding:14px;box-shadow:0 2px 8px rgba(70,45,20,.06)}'+
     '.stop .num{width:28px;height:28px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex-shrink:0}'+
-    '.stop img{width:120px;height:90px;object-fit:cover;border-radius:10px;flex-shrink:0;background:#e8e0d4}'+
+    '.stop img{width:120px;height:90px;object-fit:cover;border-radius:12px;flex-shrink:0;background:#efe4d4}'+
     '.stop .info{flex:1;min-width:0}'+
-    '.stop h3{font-family:"Playfair Display",serif;font-size:1.1rem;color:#5c4033;margin-bottom:2px}'+
-    '.stop .meta{font-size:.75rem;color:#8a8a8a;margin-bottom:6px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}'+
-    '.stop .meta .cat{padding:2px 8px;border-radius:8px;font-size:.68rem;font-weight:600}'+
-    '.stop p{font-size:.88rem;color:#555;margin-bottom:4px}'+
-    '.stop .tips{font-size:.8rem;color:#8a8a8a;font-style:italic}'+
-    'footer{text-align:center;padding:30px 20px;color:#8a8a8a;font-size:.8rem}'+
+    '.stop h3{font-family:"Fraunces",serif;font-size:1.1rem;color:#2c2218;margin-bottom:2px}'+
+    '.stop .meta{font-size:.75rem;color:#9c8b78;margin-bottom:6px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}'+
+    '.stop .meta .cat{padding:2px 8px;border-radius:999px;font-size:.68rem;font-weight:600}'+
+    '.stop p{font-size:.88rem;color:#6b5c4c;margin-bottom:4px}'+
+    '.stop .tips{font-size:.8rem;color:#9c8b78;font-style:italic}'+
+    'footer{text-align:center;padding:30px 20px;color:#9c8b78;font-size:.8rem}'+
     '@media(max-width:560px){.stop{flex-wrap:wrap}.stop img{width:100%;height:160px}.hero h1{font-size:1.7rem}}'+
     '</style></head><body>'+
     '<div class="hero"><h1>UK Road Trip</h1>'+
@@ -907,9 +1577,9 @@ function downloadShareHTML(){
     '<div class="dates">20–22 November 2026 · ~'+totalDrive+' min driving between stops</div></div>'+
     '<div class="note">Farthest first: waterfalls on Friday, Wye Valley Saturday, Cotswolds villages on the way home Sunday. Daylight ~7:40am–3:50pm each day.</div>'+
     '<div class="wrap">'+daysHtml+'</div>'+
-    '<footer>See you out there x</footer>'+
+    '<footer>See you out there</footer>'+
     '<script>'+
-    '(function(){var w='+JSON.stringify(stopsWikiMap)+';var t=Object.keys(w).join("|");if(!t)return;'+
+    '(function(){var w='+JSON.stringify(Object.keys(wikiMapSafe(stopsWikiMap)).join("|"))+';var t=w;if(!t)return;'+
     'fetch("https://en.wikipedia.org/w/api.php?action=query&titles="+encodeURIComponent(t)+"&prop=pageimages&format=json&pithumbsize=600&origin=*")'+
     '.then(function(r){return r.json()}).then(function(d){if(!d.query||!d.query.pages)return;'+
     'Object.values(d.query.pages).forEach(function(p){if(!p.thumbnail||!p.thumbnail.source)return;'+
@@ -927,7 +1597,9 @@ function downloadShareHTML(){
   document.body.appendChild(a);a.click();a.remove();
   setTimeout(()=>URL.revokeObjectURL(url),2000);
   document.getElementById('share-status').textContent='Page downloaded — send the file.';
+  toast('Page downloaded');
 }
+function wikiMapSafe(o){return o;}
 
 // ===================== INIT =====================
 document.querySelectorAll('.tab').forEach(tab=>{
@@ -937,7 +1609,7 @@ document.querySelectorAll('.wt-btn').forEach(btn=>{
   btn.addEventListener('click',()=>setWeatherFilter(btn.dataset.weather));
 });
 document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'){closeDetail();closeShare();}
+  if(e.key==='Escape'){closeDetail();closeShare();closeLightbox();}
 });
 window.addEventListener('load',()=>{
   if(!decodePlan(location.hash)) loadLocal();

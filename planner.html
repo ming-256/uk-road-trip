@@ -762,7 +762,10 @@ function getImg(a){
 function openShare(){
   const m=document.getElementById('share-modal');
   m.style.display='flex';
-  document.getElementById('share-status').textContent='';
+  document.getElementById('share-status').innerHTML=
+    '<span style="color:var(--grey)">Live pages:</span><br>'+
+    '<a href="https://ming-256.github.io/uk-road-trip/" target="_blank" style="color:var(--green)">ming-256.github.io/uk-road-trip</a><br>'+
+    '<a href="https://ming-256.github.io/uk-road-trip/planner.html" target="_blank" style="color:var(--green)">…/planner.html</a>';
 }
 function closeShare(){document.getElementById('share-modal').style.display='none';}
 
@@ -799,9 +802,12 @@ function decodePlan(hash){
   }catch(e){return false;}
 }
 function copyShareLink(){
-  const url=location.href.split('#')[0]+'#plan='+encodePlan();
+  const base = location.protocol==='file:'
+    ? 'https://ming-256.github.io/uk-road-trip/planner.html'
+    : location.href.split('#')[0];
+  const url=base+'#plan='+encodePlan();
   navigator.clipboard.writeText(url).then(()=>{
-    document.getElementById('share-status').textContent='Link copied — paste it anywhere.';
+    document.getElementById('share-status').innerHTML='Link copied — paste it anywhere.<br><span style="color:var(--grey);font-size:.72rem">'+url+'</span>';
   }).catch(()=>{
     document.getElementById('share-status').textContent='Could not copy. URL: '+url;
   });

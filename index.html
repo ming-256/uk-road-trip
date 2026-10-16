@@ -44,6 +44,11 @@
   --d1:#c47a3e;
   --d2:#3f5c4c;
   --d3:#4a6f8a;
+  --ease-out:cubic-bezier(.22,1,.36,1);
+  --ease-press:cubic-bezier(.2,.8,.2,1);
+  --dur-press:120ms;
+  --dur-quick:180ms;
+  --dur-base:240ms;
 }
 body{
   font-family:'DM Sans',-apple-system,sans-serif;
@@ -125,12 +130,15 @@ body{
   cursor:pointer;
   border-bottom:2px solid transparent;
   margin-bottom:-1px;
-  transition:color .15s ease, background .15s ease;
+  transition:color var(--dur-base) var(--ease-out), border-color var(--dur-base) var(--ease-out);
   text-transform:uppercase;
   letter-spacing:.05em;
   text-align:center;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
 }
 .tab:hover{color:var(--ink-soft)}
+.tab:active{opacity:.72}
 .tab.active{color:var(--accent-deep);border-bottom-color:var(--accent)}
 
 /* ── Segmented weather / filters ─────────────────────── */
@@ -196,10 +204,20 @@ body{
   overscroll-behavior:contain;
   padding:12px;
   scroll-behavior:smooth;
+  contain:content;
 }
 .list-container::-webkit-scrollbar{width:8px}
 .list-container::-webkit-scrollbar-thumb{background:rgba(70,45,20,.15);border-radius:8px}
 .list-container::-webkit-scrollbar-track{background:transparent}
+
+/* content swap on tab / filter change — only the first few rows, so long lists don't cascade */
+.list-container > *:nth-child(-n+6){
+  animation:listIn var(--dur-base) var(--ease-out) both;
+}
+@keyframes listIn{
+  from{opacity:0;transform:translateY(6px)}
+  to{opacity:1;transform:none}
+}
 
 /* ── Activity card ───────────────────────────────────── */
 .activity-card{
@@ -209,13 +227,16 @@ body{
   margin-bottom:10px;
   overflow:hidden;
   cursor:pointer;
-  transition:border-color .18s ease, box-shadow .18s ease;
+  transition:border-color var(--dur-quick) ease, box-shadow var(--dur-quick) ease, transform var(--dur-press) var(--ease-press);
   box-shadow:0 1px 2px rgba(70,45,20,.04);
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
 }
 .activity-card:hover{
   border-color:rgba(196,122,62,.3);
   box-shadow:0 4px 14px rgba(70,45,20,.08);
 }
+.activity-card:active{transform:scale(.985)}
 .activity-card.in-itinerary{border-color:rgba(63,92,76,.35);background:#f6faf7}
 .activity-card .img-wrap{height:112px;overflow:hidden;position:relative;background:var(--paper-2)}
 .activity-card .img-wrap img{width:100%;height:100%;object-fit:cover;display:block}
@@ -254,11 +275,13 @@ body{
   font-weight:600;
   cursor:pointer;
   border:1px solid transparent;
-  transition:filter .15s ease, transform .15s ease;
+  transition:transform var(--dur-press) var(--ease-press), background-color var(--dur-quick) ease, color var(--dur-quick) ease;
   font-family:inherit;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
 }
 .btn-add:hover{transform:translateY(-1px)}
-.btn-add:active{transform:translateY(0) scale(.97)}
+.btn-add:active{transform:scale(.97)}
 .btn-add.d1{background:var(--accent-soft);color:var(--accent-deep)}
 .btn-add.d2{background:var(--green-soft);color:var(--green)}
 .btn-add.d3{background:var(--blue-soft);color:var(--blue)}
@@ -352,10 +375,11 @@ body{
   border-radius:12px;
   margin-bottom:8px;
   overflow:hidden;
-  transition:border-color .18s ease, box-shadow .18s ease;
+  transition:border-color var(--dur-quick) ease, box-shadow var(--dur-quick) ease, transform var(--dur-press) var(--ease-press);
   box-shadow:0 1px 2px rgba(70,45,20,.04);
 }
 .itin-stop:hover{box-shadow:0 4px 12px rgba(70,45,20,.08)}
+.itin-stop:active{transform:scale(.99)}
 .itin-stop.dragging{opacity:.45;transform:scale(.98)}
 .itin-stop.drop-target{border-color:var(--accent);box-shadow:0 0 0 2px rgba(196,122,62,.2)}
 .itin-stop .itin-top{display:flex;gap:10px;padding:10px 11px;cursor:pointer;position:relative}
@@ -780,7 +804,11 @@ body{
   border-radius:999px;
   cursor:pointer;
   min-height:40px;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+  transition:background-color var(--dur-base) var(--ease-out), color var(--dur-base) var(--ease-out), transform var(--dur-press) var(--ease-press);
 }
+#mobile-toggle button:active{transform:scale(.96)}
 #mobile-toggle button.active{
   background:#fff;
   color:var(--ink);
@@ -813,9 +841,19 @@ body{
     height:100dvh;
     flex:1 1 auto;
     min-height:0;
+    opacity:0;
+    transition:opacity var(--dur-base) var(--ease-out);
   }
-  #app.show-map #sidebar{display:none}
-  #app.show-map #map-wrap{display:block}
+  #app.show-map #sidebar{
+    display:none;
+  }
+  #app.show-map #map-wrap{
+    display:block;
+    opacity:1;
+  }
+  #sidebar{
+    transition:opacity var(--dur-base) var(--ease-out);
+  }
 
   #mobile-toggle{display:flex}
 
@@ -1484,9 +1522,30 @@ function switchTab(tab){
   document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===tab));
   renderList();
 }
+function isMobileLayout(){
+  return window.matchMedia('(max-width:900px)').matches;
+}
 function focusMap(id){
   const a=A.find(x=>x.id===id);
-  if(a){state.map.setView([a.lat,a.lng],13,{animate:true});state.markers[id].openPopup();}
+  if(!a||!state.map) return;
+
+  const openIt = ()=>{
+    state.map.invalidateSize();
+    state.map.setView([a.lat,a.lng],14,{animate:true,duration:0.6});
+    const marker=state.markers[id];
+    if(marker){
+      marker.openPopup();
+      // nudge so the pin sits above the mobile toggle
+      setTimeout(()=>state.map.panBy([0,-40]), 250);
+    }
+  };
+
+  if(isMobileLayout() && !document.getElementById('app').classList.contains('show-map')){
+    setMobileView('map');
+    setTimeout(openIt, 120);
+  }else{
+    openIt();
+  }
 }
 function openDetail(id){
   const a=A.find(x=>x.id===id);if(!a) return;
@@ -1928,15 +1987,15 @@ function setMobileView(mode){
     list.classList.remove('active');
     map.classList.add('active');
     // Leaflet needs a kick when the container becomes visible
-    setTimeout(()=>{
+    requestAnimationFrame(()=>{
       if(state.map) state.map.invalidateSize();
       if(state.map && Object.values(state.markers).length) fitRoute();
-    },80);
+    });
   }else{
     app.classList.remove('show-map');
     list.classList.add('active');
     map.classList.remove('active');
-    setTimeout(()=>{ if(state.map) state.map.invalidateSize(); },80);
+    requestAnimationFrame(()=>{ if(state.map) state.map.invalidateSize(); });
   }
 }
 

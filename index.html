@@ -769,7 +769,7 @@ body{
     </div>
     <div class="weather-toggle" id="weather-bar">
       <div class="wt-btn all active" data-weather="all">All</div>
-      <div class="wt-btn rain" data-weather="rain">Rain OK</div>
+      <div class="wt-btn rain" data-weather="rain">Wet weather</div>
       <div class="wt-btn dry" data-weather="dry">Dry</div>
       <div class="sep"></div>
       <div class="filters" id="filters"></div>
@@ -853,27 +853,27 @@ const A = [
 
   // WYE VALLEY
   {id:"symonds-yat",name:"Symonds Yat Rock",cat:"viewpoint",lat:51.8400,lng:-2.6383,region:"Wye Valley",wiki:"Symonds_Yat",weather:"dry",duration:"1-2 hrs",rating:4.8,desc:"The iconic viewpoint over the River Wye gorge. The river loops through a deep limestone valley — dramatic.",tips:"20-min uphill walk on paved path."},
-  {id:"symonds-yat-walk",name:"Symonds Yat Circular",cat:"hike",lat:51.8390,lng:-2.6370,region:"Wye Valley",wiki:"Symonds_Yat",weather:"either",duration:"2-3 hrs",rating:4.7,desc:"Cross on the hand ferry, walk through ancient woodland to the viewpoint, return through the forest. 3-4 miles.",tips:"The hand ferry is a fun experience."},
-  {id:"biblins",name:"Biblins Bridge & Woods",cat:"hike",lat:51.8330,lng:-2.6220,region:"Wye Valley",wiki:"Wye_Valley",weather:"either",duration:"1-2 hrs",rating:4.6,desc:"A suspension footbridge over the Wye through ancient oak woodland. Magical in autumn colour.",tips:"Beautiful in any weather. The canopy provides shelter from rain."},
+  {id:"symonds-yat-walk",name:"Symonds Yat Circular",cat:"hike",lat:51.8390,lng:-2.6370,region:"Wye Valley",wiki:"Wye_Valley_Walk",weather:"either",duration:"2-3 hrs",rating:4.7,desc:"Cross on the hand ferry, walk through ancient woodland to the viewpoint, return through the forest. 3-4 miles.",tips:"The hand ferry is a fun experience."},
+  {id:"biblins",name:"Biblins Bridge & Woods",cat:"hike",lat:51.8330,lng:-2.6220,region:"Wye Valley",wiki:"Biblins_Bridge",weather:"either",duration:"1-2 hrs",rating:4.6,desc:"A suspension footbridge over the Wye through ancient oak woodland. Magical in autumn colour.",tips:"Beautiful in any weather. The canopy provides shelter from rain."},
   {id:"tintern",name:"Tintern Abbey",cat:"abbey",lat:51.6967,lng:-2.6772,region:"Wye Valley",wiki:"Tintern_Abbey",weather:"rain-ok",duration:"1-2 hrs",rating:4.7,desc:"Cistercian abbey ruins in the Wye Valley. Gothic arches open to the sky. Hauntingly beautiful in grey light.",tips:"Free exterior. ~£10 for interior."},
   {id:"goodrich",name:"Goodrich Castle",cat:"abbey",lat:51.8592,lng:-2.6228,region:"Wye Valley",wiki:"Goodrich_Castle",weather:"rain-ok",duration:"1-2 hrs",rating:4.5,desc:"One of the best-preserved medieval castles in England. English Heritage. Views over the Wye.",tips:"Lots to explore indoors. Good tea room."},
-  {id:"sarahs-bridge",name:"The Saracens Head",cat:"pub",lat:51.8410,lng:-2.6400,region:"Wye Valley",wiki:"Symonds_Yat",weather:"rain-ok",duration:"1-2 hrs",rating:4.5,desc:"Fire-lit riverside pub at Symonds Yat. One of the best lunch stops in the valley. Window tables have river views.",tips:"Sunday roast is excellent. Book a window seat."},
+  {id:"sarahs-bridge",name:"The Saracens Head",cat:"pub",lat:51.8410,lng:-2.6400,region:"Wye Valley",wiki:"River_Wye",weather:"rain-ok",duration:"1-2 hrs",rating:4.5,desc:"Fire-lit riverside pub at Symonds Yat. One of the best lunch stops in the valley. Window tables have river views.",tips:"Sunday roast is excellent. Book a window seat."},
 
   // BLACK MOUNTAINS
   {id:"hay",name:"Hay-on-Wye",cat:"village",lat:52.0767,lng:-3.1269,region:"Black Mountains",wiki:"Hay-on-Wye",weather:"rain-ok",duration:"2-3 hrs",rating:4.6,desc:"The 'Town of Books' — over 20 independent bookshops. Castle ruins, riverside walks, lovely cafés.",tips:"Perfect rainy-day destination. Richard Booth's and Murder & Mayhem are highlights."},
-  {id:"hay-river",name:"Hay Riverside Walk",cat:"hike",lat:52.0770,lng:-3.1200,region:"Black Mountains",wiki:"River_Wye",weather:"either",duration:"1 hr",rating:4.3,desc:"A gentle walk along the River Wye from Hay. Peaceful, flat, lovely views of the Black Mountains foothills.",tips:"Nice easy walk before or after bookshops."},
+  {id:"hay-river",name:"Hay Riverside Walk",cat:"hike",lat:52.0770,lng:-3.1200,region:"Black Mountains",wiki:"Wye_Valley",weather:"either",duration:"1 hr",rating:4.3,desc:"A gentle walk along the River Wye from Hay. Peaceful, flat, lovely views of the Black Mountains foothills.",tips:"Nice easy walk before or after bookshops."},
   {id:"hay-bluff",name:"Hay Bluff & Twmpa",cat:"hike",lat:52.0350,lng:-3.1050,region:"Black Mountains",wiki:"Hay_Bluff",weather:"dry",duration:"3-4 hrs",rating:4.8,desc:"The classic Black Mountains ridge walk. 4-5 miles along Offa's Dyke with huge views into England and Wales.",tips:"Exposed ridge — skip in high wind or heavy rain. Stunning on a clear day."},
   {id:"cats-back",name:"The Cat's Back",cat:"hike",lat:51.9700,lng:-3.0500,region:"Black Mountains",wiki:"Offa%27s_Dyke_Path",weather:"dry",duration:"2-3 hrs",rating:4.9,desc:"A thrilling knife-edge ridge walk with steep drops both sides. One of the best ridge walks in Wales. 4 miles.",tips:"Not for vertigo sufferers! Best in clear weather."},
   {id:"gospel-pass",name:"Gospel Pass Drive",cat:"drive",lat:52.0100,lng:-3.0800,region:"Black Mountains",wiki:"Gospel_Pass",weather:"dry",duration:"1-2 hrs",rating:4.9,desc:"The highest road in Wales (549m). Winding mountain pass from Hay into the Vale of Ewyas. Spectacular views.",tips:"Fill up petrol before! Not suitable in ice or fog."},
   {id:"llanthony",name:"Llanthony Priory",cat:"abbey",lat:51.9430,lng:-3.0350,region:"Black Mountains",wiki:"Llanthony_Priory",weather:"either",duration:"1-2 hrs",rating:4.7,desc:"Half-ruined medieval priory in a remote mountain valley. Have a pint in the priory bar among the medieval walls.",tips:"Very atmospheric in mist. The priory bar is a unique experience."},
-  {id:"llanthony-walk",name:"Vale of Ewyas Walk",cat:"hike",lat:51.9400,lng:-3.0400,region:"Black Mountains",wiki:"Llanthony_Priory",weather:"either",duration:"2-3 hrs",rating:4.5,desc:"Walk up the remote Vale of Ewyas to the ruined priory. Surrounded by the Black Mountains. Very atmospheric.",tips:"A gentle valley walk with big mountain scenery."},
+  {id:"llanthony-walk",name:"Vale of Ewyas Walk",cat:"hike",lat:51.9400,lng:-3.0400,region:"Black Mountains",wiki:"Vale_of_Ewyas",weather:"either",duration:"2-3 hrs",rating:4.5,desc:"Walk up the remote Vale of Ewyas to the ruined priory. Surrounded by the Black Mountains. Very atmospheric.",tips:"A gentle valley walk with big mountain scenery."},
   {id:"sugar-loaf",name:"Sugar Loaf Mountain",cat:"hike",lat:51.8750,lng:-3.0300,region:"Black Mountains",wiki:"Abergavenny",weather:"dry",duration:"1-2 hrs",rating:4.5,desc:"A conical hill near Abergavenny with 360° panoramic views. About 1 hour up. Great sunset spot.",tips:"Short but rewarding. Start from the car park near Abergavenny."},
   {id:"crickhowell",name:"Crickhowell",cat:"village",lat:51.8580,lng:-3.1370,region:"Black Mountains",wiki:"Crickhowell",weather:"either",duration:"1-2 hrs",rating:4.5,desc:"A lovely market town with a bridge over the Usk. Great independent shops and pubs. The Bear Hotel is a highlight.",tips:"Nice relaxed lunch stop. The Bear Hotel has excellent food."},
 
   // BRECON BEACONS / WATERFALL COUNTRY
-  {id:"waterfall-country",name:"Waterfall Country",cat:"waterfall",lat:51.7750,lng:-3.5800,region:"Brecon Beacons",wiki:"Ystradfellte",weather:"rain-ok",duration:"2-4 hrs",rating:4.9,desc:"A series of stunning waterfalls in the Brecon Beacons. At their BEST in autumn rain — powerful, dramatic, unforgettable.",tips:"Wear waterproofs! Paths can be slippery. November is peak flow."},
-  {id:"sgwd-yr-eira",name:"Sgwd yr Eira (Walk Behind!)",cat:"waterfall",lat:51.7820,lng:-3.5850,region:"Brecon Beacons",wiki:"Ystradfellte",weather:"rain-ok",duration:"1-2 hrs",rating:5.0,desc:"Walk BEHIND a waterfall. The path goes directly behind the curtain of water. One of the most magical experiences in Wales.",tips:"You WILL get wet. Bring waterproofs and a sense of adventure."},
-  {id:"four-falls",name:"Four Falls Walk",cat:"waterfall",lat:51.7780,lng:-3.5750,region:"Brecon Beacons",wiki:"Ystradfellte",weather:"rain-ok",duration:"3-4 hrs",rating:4.8,desc:"A 4-5 mile walk past four major waterfalls. Each one is different and spectacular.",tips:"The best waterfall walk in Wales. Start from Ystradfellte car park."},
+  {id:"waterfall-country",name:"Waterfall Country",cat:"waterfall",lat:51.7750,lng:-3.5800,region:"Brecon Beacons",wiki:"Nedd_Fechan",weather:"rain-ok",duration:"2-4 hrs",rating:4.9,desc:"A series of stunning waterfalls in the Brecon Beacons. At their BEST in autumn rain — powerful, dramatic, unforgettable.",tips:"Wear waterproofs! Paths can be slippery. November is peak flow."},
+  {id:"sgwd-yr-eira",name:"Sgwd yr Eira (Walk Behind!)",cat:"waterfall",lat:51.7820,lng:-3.5850,region:"Brecon Beacons",wiki:"Afon_Hepste",weather:"rain-ok",duration:"1-2 hrs",rating:5.0,desc:"Walk BEHIND a waterfall. The path goes directly behind the curtain of water. One of the most magical experiences in Wales.",tips:"You WILL get wet. Bring waterproofs and a sense of adventure."},
+  {id:"four-falls",name:"Four Falls Walk",cat:"waterfall",lat:51.7780,lng:-3.5750,region:"Brecon Beacons",wiki:"Pontneddfechan",weather:"rain-ok",duration:"3-4 hrs",rating:4.8,desc:"A 4-5 mile walk past four major waterfalls. Each one is different and spectacular.",tips:"The best waterfall walk in Wales. Start from Ystradfellte car park."},
   {id:"henryhd",name:"Henryhd Waterfall",cat:"waterfall",lat:51.7680,lng:-3.4500,region:"Brecon Beacons",wiki:"Henrhyd_Falls",weather:"rain-ok",duration:"30-60 min",rating:4.5,desc:"The tallest single-drop waterfall in Wales (90ft). Short 1-mile walk from the car park.",tips:"Quick and easy — great for a waterfall fix without a long hike."},
   {id:"llyn-y-fan",name:"Llyn y Fan Fach",cat:"hike",lat:51.8750,lng:-3.6800,region:"Brecon Beacons",wiki:"Llyn_y_Fan_Fach",weather:"dry",duration:"2-3 hrs",rating:4.8,desc:"A glacial lake in the western Brecon Beacons. Setting of the Welsh 'Lady of the Lake' legend. Fairy-tale mountain lake.",tips:"About 1.5 hours up. Stunning in autumn with mist rolling over ridges."},
   {id:"pen-y-fan",name:"Pen y Fan",cat:"hike",lat:51.8840,lng:-3.4380,region:"Brecon Beacons",wiki:"Pen_y_Fan",weather:"dry",duration:"3-4 hrs",rating:4.7,desc:"The highest peak in southern Britain (886m). 5 miles return from Pont ar Daf. Huge summit views.",tips:"Cold and windy at summit. Check conditions. Start early."},
@@ -892,7 +892,7 @@ const A = [
 
   // PUBS & FOOD
   {id:"wild-rabbit",name:"The Wild Rabbit",cat:"pub",lat:51.8750,lng:-1.6000,region:"Cotswolds",wiki:"Kingham",weather:"rain-ok",duration:"2-3 hrs",rating:4.8,desc:"The best food in the Cotswolds. Gastropub in Kingham with seasonal menu and roaring fire.",tips:"Book well in advance. The tasting menu is exceptional."},
-  {id:"old-black-lion",name:"The Old Black Lion",cat:"pub",lat:52.0760,lng:-3.1280,region:"Black Mountains",wiki:"Hay-on-Wye",weather:"rain-ok",duration:"2-3 hrs",rating:4.6,desc:"17th-century coaching inn in Hay. Candlelit dining room, log fires. The most romantic dinner spot in Hay.",tips:"Book for dinner. Try the Welsh lamb."},
+  {id:"old-black-lion",name:"The Old Black Lion",cat:"pub",lat:52.0760,lng:-3.1280,region:"Black Mountains",wiki:"Hay_Castle",weather:"rain-ok",duration:"2-3 hrs",rating:4.6,desc:"17th-century coaching inn in Hay. Candlelit dining room, log fires. The most romantic dinner spot in Hay.",tips:"Book for dinner. Try the Welsh lamb."},
 ];
 
 const CATEGORIES = [
@@ -911,26 +911,26 @@ let DAYS = [
 ];
 
 const PRESETS = [
-  {name:"Farthest First",emoji:"🗺️",desc:"Waterfalls first, Cotswolds on the way home — the loop that saves ~1.5hrs driving",
-   itin:{1:["waterfall-country","sgwd-yr-eira","four-falls","sgwd-ddwli","old-black-lion"],
-         2:["hay","symonds-yat","biblins","sarahs-bridge","tintern","wild-rabbit"],
-         3:["slSlaughters","windrush","bourton","bibury"]}},
-  {name:"Waterfalls & Nature",emoji:"💧",desc:"Waterfall Country, river gorges, woodland walks",
-   itin:{1:["bibury","slSlaughters","broadway-tower","wild-rabbit"],
-         2:["symonds-yat","puzzlewood","sarahs-bridge","tintern","hay","old-black-lion"],
-         3:["waterfall-country","sgwd-yr-eira","sgwd-ddwli","four-falls","crickhowell"]}},
-  {name:"Castles & Ruins",emoji:"🏰",desc:"Medieval castles, abbey ruins, Gothic atmosphere",
-   itin:{1:["bibury","bourton","sudeley","wild-rabbit"],
-         2:["goodrich","tintern","symonds-yat","the-kymin","hay","old-black-lion"],
-         3:["llanthony","llanthony-walk","skirrid","crickhowell"]}},
-  {name:"Gentle & Scenic",emoji:"🌿",desc:"Gentle walks, cosy pubs, bookshops — works in any weather",
+  {name:"Scenic & Gentle",emoji:"🌿",desc:"Easy walks, proper pubs, bookshops. Fine even if the weather turns.",
    itin:{1:["bibury","slSlaughters","windrush","wild-rabbit"],
          2:["biblins","hay-river","hay","old-black-lion"],
          3:["henryhd","waterfall-country","sgwd-yr-eira","pontsticill","crickhowell"]}},
-  {name:"Full Adventure",emoji:"⛰️",desc:"The complete experience — ridges, waterfalls, everything",
+  {name:"Waterfalls & Nature",emoji:"💧",desc:"Waterfall Country, river gorges, and the woods of the Wye Valley.",
+   itin:{1:["waterfall-country","sgwd-yr-eira","four-falls","sgwd-ddwli","old-black-lion"],
+         2:["biblins","symonds-yat-walk","sarahs-bridge","tintern","wild-rabbit"],
+         3:["henryhd","pontsticill","crickhowell"]}},
+  {name:"Castles & Countryside",emoji:"🏰",desc:"Ruins, hill forts, market towns — and a few good walks in between.",
+   itin:{1:["bibury","bourton","sudeley","wild-rabbit"],
+         2:["goodrich","tintern","symonds-yat","the-kymin","hay","old-black-lion"],
+         3:["llanthony","llanthony-walk","skirrid","crickhowell"]}},
+  {name:"Scenic Adventure",emoji:"⛰️",desc:"Big views and ridge walks without going full expedition.",
    itin:{1:["broadway-tower","cleeve-hill","symonds-yat","symonds-yat-walk","sarahs-bridge"],
-         2:["hay-bluff","cats-back","gospel-pass","llanthony","hay","old-black-lion"],
-         3:["waterfall-country","four-falls","sgwd-yr-eira","pen-y-fan"]}},
+         2:["hay","gospel-pass","cats-back","llanthony","old-black-lion"],
+         3:["waterfall-country","four-falls","sgwd-yr-eira","crickhowell"]}},
+  {name:"Full Adventure",emoji:"🔥",desc:"Ridges, waterfalls, early starts. Long days — worth it.",
+   itin:{1:["waterfall-country","four-falls","sgwd-yr-eira","henryhd","old-black-lion"],
+         2:["hay-bluff","cats-back","gospel-pass","llanthony","hay","wild-rabbit"],
+         3:["pen-y-fan","llyn-y-fan","broadway-tower","bibury"]}},
 ];
 
 const TRAVEL_TIMES = {
@@ -1086,7 +1086,7 @@ function renderExplore(el){
   }
   el.innerHTML = filtered.map(a => {
     const {color,label:catLabel}=catMeta(a.cat);
-    const wl = a.weather==='rain-ok'?'Rain OK':a.weather==='dry'?'Dry':'Flexible';
+    const wl = a.weather==='rain-ok'?'Wet weather':a.weather==='dry'?'Dry days':'Any weather';
     const inItin = Object.values(state.itinerary).flat().includes(a.id);
     return '<div class="activity-card '+(inItin?'in-itinerary':'')+'" data-stop="'+a.id+'" onclick="openDetail(\''+a.id+'\')">'+
       '<div class="img-wrap"><img src="'+getImg(a)+'" alt="'+a.name+'" loading="lazy">'+
@@ -1119,7 +1119,7 @@ function renderItinerary(el){
         const a = A.find(x=>x.id===stopId);
         if(!a) return;
         const {color,label:catLabel}=catMeta(a.cat);
-        const wl = a.weather==='rain-ok'?'Rain OK':a.weather==='dry'?'Dry':'Flexible';
+        const wl = a.weather==='rain-ok'?'Wet weather':a.weather==='dry'?'Dry days':'Any weather';
         const wb = a.weather==='rain-ok'?'#e4eee7':a.weather==='dry'?'#faf0dc':'#f0ebe4';
         const wc = a.weather==='rain-ok'?'#3f5c4c':a.weather==='dry'?'#9a6820':'#6b5c4c';
         if(i>0){
@@ -1281,7 +1281,7 @@ function focusMap(id){
 function openDetail(id){
   const a=A.find(x=>x.id===id);if(!a) return;
   const {color,label:catLabel}=catMeta(a.cat);
-  const wl=a.weather==='rain-ok'?'🌧️ Rain OK':a.weather==='dry'?'☀️ Dry Only':'🌤️ Either';
+  const wl=a.weather==='rain-ok'?'Wet weather':a.weather==='dry'?'Dry days':'Any weather';
   const wc=a.weather==='rain-ok'?'rain-ok':a.weather==='dry'?'dry-only':'either';
   document.getElementById('detail-img').src=getImg(a);
   document.getElementById('detail-title').textContent=a.name;
@@ -1579,7 +1579,7 @@ function downloadShareHTML(){
     '<div class="hero"><h1>UK Road Trip</h1>'+
     '<div class="sub">Cotswolds · Wye Valley · Bannau Brycheiniog</div>'+
     '<div class="dates">20–22 November 2026 · ~'+totalDrive+' min driving between stops</div></div>'+
-    '<div class="note">Farthest first: waterfalls on Friday, Wye Valley Saturday, Cotswolds villages on the way home Sunday. Daylight ~7:40am–3:50pm each day.</div>'+
+    '<div class="note">Waterfalls on Friday, Wye Valley Saturday, Cotswolds villages on the way home Sunday. Daylight ~7:40am–3:50pm each day.</div>'+
     '<div class="wrap">'+daysHtml+'</div>'+
     '<footer>See you out there</footer>'+
     '<script>'+

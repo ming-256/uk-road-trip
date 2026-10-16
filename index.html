@@ -1459,13 +1459,45 @@ function loadLocal(){
     return true;
   }catch(e){return false;}
 }
+const ID_INDEX = (()=>{const m={};A.forEach((a,i)=>{m[a.id]=i;});return m;})();
+const DEFAULT_LABELS = DAYS.map(d=>d.label);
+
 function encodePlan(){
-  const payload={i:state.itinerary,l:DAYS.map(d=>d.label)};
-  return btoa(unescape(encodeURIComponent(JSON.stringify(payload)))).replace(/=+$/,'');
+  const days = [1,2,3].map(d=>
+    state.itinerary[d]
+      .map(id=>ID_INDEX[id])
+      .filter(n=>n!=null)
+      .map(n=>n.toString(36))
+      .join('.')
+  );
+  let s = days.join('|');
+  const labels = DAYS.map(d=>d.label);
+  if(labels.some((l,i)=>l!==DEFAULT_LABELS[i])){
+    s += '~'+encodeURIComponent(labels.join('\u001e'));
+  }
+  return s;
 }
 function decodePlan(hash){
   try{
-    const m=hash.match(/plan=([A-Za-z0-9+/]+)/);
+    // compact: #p=d1.d2|d2|d3  or  #p=...~labels
+    let m = hash.match(/[#&]p=([^&]+)/);
+    if(m){
+      const raw = decodeURIComponent(m[1]);
+      const cut = raw.indexOf('~');
+      const main = cut<0 ? raw : raw.slice(0,cut);
+      const labs = cut<0 ? null : raw.slice(cut+1).split('\u001e');
+      const dayParts = main.split('|');
+      [1,2,3].forEach((d,i)=>{
+        const chunk = dayParts[i]||'';
+        state.itinerary[d] = chunk
+          ? chunk.split('.').map(n=>{const a=A[parseInt(n,36)];return a?a.id:null;}).filter(Boolean)
+          : [];
+      });
+      if(labs) labs.forEach((l,i)=>{if(DAYS[i]) DAYS[i].label=l;});
+      return true;
+    }
+    // legacy base64 JSON: #plan=...
+    m = hash.match(/plan=([A-Za-z0-9+/]+)/);
     if(!m) return false;
     const json=decodeURIComponent(escape(atob(m[1])));
     const d=JSON.parse(json);
@@ -1478,9 +1510,9 @@ function copyShareLink(){
   const base = location.protocol==='file:'
     ? 'https://ming-256.github.io/uk-road-trip/'
     : location.href.split('#')[0];
-  const url=base+'#plan='+encodePlan();
+  const url=base+'#p='+encodePlan();
   navigator.clipboard.writeText(url).then(()=>{
-    document.getElementById('share-status').innerHTML='Link copied.<br><span style="color:var(--ink-mute);font-size:.72rem;word-break:break-all">'+url+'</span>';
+    document.getElementById('share-status').innerHTML='Link copied ('+url.length+' chars).<br><span style="color:var(--ink-mute);font-size:.72rem;word-break:break-all">'+url+'</span>';
     toast('Link copied');
   }).catch(()=>{
     document.getElementById('share-status').textContent='Could not copy. URL: '+url;

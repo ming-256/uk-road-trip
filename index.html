@@ -53,9 +53,10 @@ body{
   font-size:14px;
   overflow:hidden;
   height:100vh;
+  height:100dvh;
   -webkit-font-smoothing:antialiased;
 }
-#app{display:flex;height:100vh}
+#app{display:flex;height:100vh;height:100dvh}
 
 /* ── Sidebar ─────────────────────────────────────────── */
 #sidebar{
@@ -742,11 +743,185 @@ body{
   100%{transform:scale(2.1);opacity:0}
 }
 
+/* ── Mobile view toggle ──────────────────────────────── */
+#mobile-toggle{
+  display:none;
+  position:fixed;
+  bottom:calc(18px + env(safe-area-inset-bottom, 0px));
+  left:50%;
+  transform:translateX(-50%);
+  z-index:900;
+  background:rgba(44,34,24,.92);
+  color:#fff;
+  border-radius:999px;
+  padding:5px;
+  gap:4px;
+  box-shadow:0 8px 28px rgba(30,20,10,.28);
+}
+#mobile-toggle button{
+  border:none;
+  background:transparent;
+  color:rgba(255,255,255,.72);
+  font-family:inherit;
+  font-size:.78rem;
+  font-weight:600;
+  letter-spacing:.03em;
+  padding:10px 18px;
+  border-radius:999px;
+  cursor:pointer;
+  min-height:40px;
+}
+#mobile-toggle button.active{
+  background:#fff;
+  color:var(--ink);
+}
+
 /* Responsive */
 @media(max-width:900px){
-  #app{flex-direction:column}
-  #sidebar{width:100%;min-width:0;height:52vh;border-right:none;border-bottom:1px solid var(--line)}
-  #map-wrap{height:48vh}
+  body{overflow:hidden}
+  #app{flex-direction:column;height:100dvh}
+  #sidebar{
+    width:100%;
+    min-width:0;
+    flex:1;
+    height:auto;
+    border-right:none;
+    box-shadow:none;
+  }
+  #map-wrap{
+    display:none;
+    width:100%;
+    height:100dvh;
+    flex:1;
+  }
+  #app.show-map #sidebar{display:none}
+  #app.show-map #map-wrap{display:block}
+
+  #mobile-toggle{display:flex}
+
+  #sidebar-header{
+    padding:12px 14px 12px;
+    padding-top:calc(12px + env(safe-area-inset-top, 0px));
+  }
+  #sidebar-header h1{font-size:1.05rem}
+  #sidebar-header p{font-size:.68rem}
+
+  .tabs{padding:0 8px}
+  .tab{padding:11px 6px 12px;min-height:44px}
+
+  .weather-toggle{
+    padding:8px 10px;
+    gap:6px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .wt-btn,.filter-btn{
+    padding:8px 12px;
+    min-height:36px;
+    font-size:.72rem;
+  }
+
+  .list-container{
+    padding:12px 12px calc(84px + env(safe-area-inset-bottom, 0px));
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior:contain;
+  }
+
+  .activity-card{margin-bottom:12px}
+  .activity-card .img-wrap{height:150px}
+  .activity-card .card-body{padding:12px 14px 14px}
+  .btn-add{padding:10px 14px;min-height:40px;font-size:.76rem}
+
+  .itin-stop .action-btn{padding:8px 12px;min-height:36px}
+  .move-btn,.stop-remove{width:36px;height:36px}
+  .drag-handle{width:36px;height:36px}
+
+  .itinerary-day-header{
+    flex-wrap:wrap;
+    gap:6px 10px;
+    padding:12px;
+  }
+  .itinerary-day-header h3{
+    font-size:.88rem;
+    flex:1 1 auto;
+    min-width:0;
+  }
+  .itinerary-day-header .day-num{font-size:1.1rem}
+  .itinerary-day-header .total-time{
+    margin-left:0;
+    order:3;
+    width:100%;
+    text-align:left;
+    background:transparent;
+    padding:0;
+  }
+  .itinerary-day-header .chev{
+    margin-left:auto;
+    order:2;
+  }
+
+  /* Modals → full-screen sheets */
+  .modal{align-items:stretch}
+  .detail-content{
+    width:100%;
+    max-width:100%;
+    height:100%;
+    max-height:100%;
+    border-radius:0;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+    padding-bottom:env(safe-area-inset-bottom, 0px);
+  }
+  .detail-content .detail-img{
+    height:210px;
+    border-radius:0;
+  }
+  .detail-content .detail-body{
+    padding:18px 16px 28px;
+  }
+  .detail-close{
+    top:calc(12px + env(safe-area-inset-top, 0px))!important;
+    right:12px!important;
+  }
+
+  #map-legend{
+    bottom:calc(78px + env(safe-area-inset-bottom, 0px));
+    left:10px;
+    padding:9px 11px;
+    max-width:132px;
+    font-size:.65rem;
+  }
+  .map-controls{
+    top:calc(12px + env(safe-area-inset-top, 0px));
+    right:12px;
+  }
+  .map-ctrl-btn{width:44px;height:44px}
+
+  #toast{
+    bottom:calc(88px + env(safe-area-inset-bottom, 0px));
+    width:max-content;
+    max-width:min(88vw, 420px);
+    font-size:.78rem;
+    padding:11px 16px;
+  }
+
+  /* Share modal sits above the toggle */
+  #share-modal .detail-content{
+    height:auto;
+    max-height:92dvh;
+    width:100%;
+    border-radius:20px 20px 0 0;
+    margin-top:auto;
+    padding-bottom:calc(16px + env(safe-area-inset-bottom, 0px));
+  }
+  #share-modal{align-items:flex-end}
+}
+
+@media(max-width:420px){
+  #sidebar-header p{display:none}
+  .activity-card .card-body p{
+    -webkit-line-clamp:2;
+  }
+  .itin-stop .itin-desc{display:none}
 }
 </style>
 </head>
@@ -837,6 +1012,10 @@ body{
 
 <div id="lightbox" onclick="closeLightbox()"><img id="lightbox-img" src="" alt=""></div>
 <div id="toast"></div>
+<div id="mobile-toggle" role="tablist" aria-label="View">
+  <button id="mt-list" class="active" onclick="setMobileView('list')" type="button">List</button>
+  <button id="mt-map" onclick="setMobileView('map')" type="button">Map</button>
+</div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
@@ -1636,6 +1815,28 @@ function downloadShareHTML(){
   toast('Page downloaded');
 }
 function wikiMapSafe(o){return o;}
+
+// ===================== MOBILE VIEW =====================
+function setMobileView(mode){
+  const app=document.getElementById('app');
+  const list=document.getElementById('mt-list');
+  const map=document.getElementById('mt-map');
+  if(mode==='map'){
+    app.classList.add('show-map');
+    list.classList.remove('active');
+    map.classList.add('active');
+    // Leaflet needs a kick when the container becomes visible
+    setTimeout(()=>{
+      if(state.map) state.map.invalidateSize();
+      if(state.map && Object.values(state.markers).length) fitRoute();
+    },80);
+  }else{
+    app.classList.remove('show-map');
+    list.classList.add('active');
+    map.classList.remove('active');
+    setTimeout(()=>{ if(state.map) state.map.invalidateSize(); },80);
+  }
+}
 
 // ===================== INIT =====================
 document.querySelectorAll('.tab').forEach(tab=>{

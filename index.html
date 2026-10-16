@@ -992,16 +992,20 @@ body{
       <h2>Share this trip</h2>
       <div class="detail-meta">Send the plan — link, file, or a quick message</div>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
-        <button class="share-option" onclick="copyShareLink()">
+        <button class="share-option" onclick="copyShortLink()">
           <div class="icon" style="background:var(--accent-soft)">🔗</div>
-          <div class="text"><strong>Copy share link</strong><span>Opens with your current itinerary</span></div>
+          <div class="text"><strong>Copy short link</strong><span>~25 characters — best for texts &amp; DMs</span></div>
+        </button>
+        <button class="share-option" onclick="copyShareLink()">
+          <div class="icon" style="background:var(--green-soft)">📎</div>
+          <div class="text"><strong>Copy full link</strong><span>Self-contained — works even if a shortener is down</span></div>
         </button>
         <button class="share-option" onclick="downloadShareHTML()">
-          <div class="icon" style="background:var(--green-soft)">📥</div>
+          <div class="icon" style="background:var(--blue-soft)">📥</div>
           <div class="text"><strong>Download page</strong><span>Offline HTML — AirDrop, iMessage, email</span></div>
         </button>
         <button class="share-option" onclick="copyShareText()">
-          <div class="icon" style="background:var(--blue-soft)">📋</div>
+          <div class="icon" style="background:var(--paper-2)">📋</div>
           <div class="text"><strong>Copy as message</strong><span>Plain text for WhatsApp or notes</span></div>
         </button>
       </div>
@@ -1642,41 +1646,68 @@ const ID_INDEX = (()=>{const m={};A.forEach((a,i)=>{m[a.id]=i;});return m;})();
 const DEFAULT_LABELS = DAYS.map(d=>d.label);
 
 function encodePlan(){
-  const days = [1,2,3].map(d=>
-    state.itinerary[d]
+  // 6 bits per stop index (max 63 stops), day lengths first, then base64url
+  const idxs = [];
+  [1,2,3].forEach(d=>{
+    const ids = state.itinerary[d]
       .map(id=>ID_INDEX[id])
       .filter(n=>n!=null)
-      .map(n=>n.toString(36))
-      .join('.')
-  );
-  let s = days.join('|');
+      .map(n=>Math.min(63,n));
+    idxs.push(ids.length, ...ids);
+  });
+  const bits = [];
+  idxs.forEach(n=>{ for(let i=5;i>=0;i--) bits.push((n>>i)&1); });
+  let bin = '';
+  for(let i=0;i<bits.length;i+=8){
+    let byte = 0;
+    for(let j=0;j<8;j++) byte = (byte<<1) | (bits[i+j]||0);
+    bin += String.fromCharCode(byte);
+  }
+  let s = btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
   const labels = DAYS.map(d=>d.label);
   if(labels.some((l,i)=>l!==DEFAULT_LABELS[i])){
     s += '~'+encodeURIComponent(labels.join('\u001e'));
   }
   return s;
 }
-function decodePlan(hash){
+function decodePlan(){
   try{
-    // compact: #p=d1.d2|d2|d3  or  #p=...~labels
-    let m = hash.match(/[#&]p=([^&]+)/);
+    // accept #p=, ?p=, or legacy #plan=
+    const src = (location.hash||'') + '&' + (location.search||'');
+    let m = src.match(/[#&?]p=([^&]+)/);
     if(m){
       const raw = decodeURIComponent(m[1]);
       const cut = raw.indexOf('~');
       const main = cut<0 ? raw : raw.slice(0,cut);
       const labs = cut<0 ? null : raw.slice(cut+1).split('\u001e');
-      const dayParts = main.split('|');
-      [1,2,3].forEach((d,i)=>{
-        const chunk = dayParts[i]||'';
-        state.itinerary[d] = chunk
-          ? chunk.split('.').map(n=>{const a=A[parseInt(n,36)];return a?a.id:null;}).filter(Boolean)
-          : [];
+      const b64 = main.replace(/-/g,'+').replace(/_/g,'/');
+      const pad = b64 + '='.repeat((4 - (b64.length % 4)) % 4);
+      const bin = atob(pad);
+      const bits = [];
+      for(let i=0;i<bin.length;i++){
+        const byte = bin.charCodeAt(i);
+        for(let j=7;j>=0;j--) bits.push((byte>>j)&1);
+      }
+      const read6 = (off)=>{
+        let v = 0;
+        for(let j=0;j<6;j++) v = (v<<1) | (bits[off+j]||0);
+        return v;
+      };
+      state.itinerary = {1:[],2:[],3:[]};
+      let off = 0;
+      [1,2,3].forEach(d=>{
+        const len = read6(off); off += 6;
+        for(let k=0;k<len;k++){
+          const n = read6(off); off += 6;
+          const a = A[n];
+          if(a) state.itinerary[d].push(a.id);
+        }
       });
       if(labs) labs.forEach((l,i)=>{if(DAYS[i]) DAYS[i].label=l;});
       return true;
     }
     // legacy base64 JSON: #plan=...
-    m = hash.match(/plan=([A-Za-z0-9+/]+)/);
+    m = src.match(/plan=([A-Za-z0-9+/]+)/);
     if(!m) return false;
     const json=decodeURIComponent(escape(atob(m[1])));
     const d=JSON.parse(json);
@@ -1685,17 +1716,61 @@ function decodePlan(hash){
     return true;
   }catch(e){return false;}
 }
-function copyShareLink(){
+function buildShareUrl(){
+  // ?p= plays nicer with URL shorteners than #p=
   const base = location.protocol==='file:'
     ? 'https://ming-256.github.io/uk-road-trip/'
-    : location.href.split('#')[0];
-  const url=base+'#p='+encodePlan();
+    : location.href.split('#')[0].split('?')[0];
+  return base+'?p='+encodePlan();
+}
+function copyShareLink(){
+  const url=buildShareUrl();
   navigator.clipboard.writeText(url).then(()=>{
     document.getElementById('share-status').innerHTML='Link copied ('+url.length+' chars).<br><span style="color:var(--ink-mute);font-size:.72rem;word-break:break-all">'+url+'</span>';
     toast('Link copied');
   }).catch(()=>{
     document.getElementById('share-status').textContent='Could not copy. URL: '+url;
   });
+}
+function copyShortLink(){
+  const url = buildShareUrl();
+  const status = document.getElementById('share-status');
+  status.innerHTML = '<span style="color:var(--ink-mute)">Shortening…</span>';
+
+  const tryIsGd = ()=>
+    fetch('https://is.gd/create.php?format=json&url='+encodeURIComponent(url))
+      .then(r=>r.json())
+      .then(d=>{
+        if(!d || !d.shorturl) throw new Error(d && d.errormessage || 'no shorturl');
+        return d.shorturl;
+      });
+
+  const tryClck = ()=>
+    fetch('https://clck.ru/--?url='+encodeURIComponent(url))
+      .then(r=>r.text())
+      .then(t=>{
+        const s = t.trim();
+        if(!/^https:\/\/clck\.ru\//.test(s)) throw new Error('bad clck');
+        return s;
+      });
+
+  const finish = (short)=>{
+    navigator.clipboard.writeText(short).then(()=>{
+      status.innerHTML='Short link copied ('+short.length+' chars).<br><span style="color:var(--ink-mute);font-size:.72rem;word-break:break-all">'+short+'</span>';
+      toast('Short link copied');
+    }).catch(()=>{
+      status.innerHTML='Short link: <span style="color:var(--ink-mute);font-size:.72rem;word-break:break-all">'+short+'</span>';
+    });
+  };
+
+  const fallback = ()=>{
+    navigator.clipboard.writeText(url).then(()=>{
+      status.innerHTML='Shortener unavailable — copied the compact link ('+url.length+' chars).<br><span style="color:var(--ink-mute);font-size:.72rem;word-break:break-all">'+url+'</span>';
+      toast('Compact link copied');
+    });
+  };
+
+  tryIsGd().catch(()=>tryClck()).then(finish).catch(fallback);
 }
 function copyShareText(){
   let text='UK road trip · 20–22 Nov\n\n';
@@ -1849,7 +1924,7 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){closeDetail();closeShare();closeLightbox();}
 });
 window.addEventListener('load',()=>{
-  if(!decodePlan(location.hash)) loadLocal();
+  if(!decodePlan()) loadLocal();
   initMap();renderFilters();renderList();fetchWikiImages();
   if(Object.values(state.itinerary).flat().length) updateRouteLines();
 });

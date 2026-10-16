@@ -1531,18 +1531,18 @@ function focusMap(id){
 
   const openIt = ()=>{
     state.map.invalidateSize();
-    state.map.setView([a.lat,a.lng],14,{animate:true,duration:0.6});
+    state.map.setView([a.lat,a.lng],14,{animate:true});
     const marker=state.markers[id];
     if(marker){
       marker.openPopup();
-      // nudge so the pin sits above the mobile toggle
-      setTimeout(()=>state.map.panBy([0,-40]), 250);
+      setTimeout(()=>{ try{ state.map.panBy([0,-50]); }catch(e){} }, 280);
     }
   };
 
   if(isMobileLayout() && !document.getElementById('app').classList.contains('show-map')){
-    setMobileView('map');
-    setTimeout(openIt, 120);
+    // switch views without fitting the whole route — we're focusing one stop
+    setMobileView('map', {fit:false});
+    setTimeout(openIt, 140);
   }else{
     openIt();
   }
@@ -1978,7 +1978,8 @@ function downloadShareHTML(){
 function wikiMapSafe(o){return o;}
 
 // ===================== MOBILE VIEW =====================
-function setMobileView(mode){
+function setMobileView(mode, opts){
+  const fit = !opts || opts.fit !== false;
   const app=document.getElementById('app');
   const list=document.getElementById('mt-list');
   const map=document.getElementById('mt-map');
@@ -1986,10 +1987,9 @@ function setMobileView(mode){
     app.classList.add('show-map');
     list.classList.remove('active');
     map.classList.add('active');
-    // Leaflet needs a kick when the container becomes visible
     requestAnimationFrame(()=>{
       if(state.map) state.map.invalidateSize();
-      if(state.map && Object.values(state.markers).length) fitRoute();
+      if(fit && state.map && Object.values(state.markers).length) fitRoute();
     });
   }else{
     app.classList.remove('show-map');

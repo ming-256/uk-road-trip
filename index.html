@@ -1462,7 +1462,7 @@ function renderItinerary(el){
       '<summary>If it rains</summary>'+
       swaps.map((s,si)=>{
         const outA=A.find(x=>x.id===s.swapOut), inA=A.find(x=>x.id===s.swapIn);
-        const can = day.includes(s.swapOut) && !inDay(s.swapIn);
+        const can = stops.includes(s.swapOut) && !inDay(s.swapIn);
         return '<div class="rain-swap">'+
           '<button '+(can?'':'disabled')+' onclick="applyRainSwap('+day.id+','+si+')">Swap</button>'+
           '<div><div><strong>'+(outA?outA.name:s.swapOut)+'</strong> to <strong>'+(inA?inA.name:s.swapIn)+'</strong></div>'+

@@ -1163,32 +1163,28 @@ const CATEGORIES = [
 
 // Days are fully flexible — no pre-scoped region
 let DAYS = [
-  {id:1,label:"Fri 20 — Waterfall Country",color:"#c47a3e"},
-  {id:2,label:"Sat 21 — Wye Valley",color:"#3f5c4c"},
-  {id:3,label:"Sun 22 — Cotswolds → Home",color:"#4a6f8a"},
+  {id:1,label:"Fri 20 — Cotswolds",color:"#c47a3e"},
+  {id:2,label:"Sat 21 — Wye Valley & Forest of Dean",color:"#3f5c4c"},
+  {id:3,label:"Sun 22 — Four Falls & Home",color:"#4a6f8a"},
 ];
 
 const PRESETS = [
-  {name:"Scenic & Gentle",emoji:"🌿",desc:"Easy walks, proper pubs, bookshops. Fine even if the weather turns.",
-   itin:{1:["bibury","slSlaughters","windrush","wild-rabbit"],
-         2:["biblins","hay-river","hay","old-black-lion"],
-         3:["henryhd","waterfall-country","sgwd-yr-eira","pontsticill","crickhowell"]}},
-  {name:"Waterfalls & Nature",emoji:"💧",desc:"Waterfall Country, river gorges, and the woods of the Wye Valley.",
-   itin:{1:["waterfall-country","sgwd-yr-eira","four-falls","sgwd-ddwli","old-black-lion"],
-         2:["biblins","symonds-yat-walk","sarahs-bridge","tintern","wild-rabbit"],
-         3:["henryhd","pontsticill","crickhowell"]}},
-  {name:"Castles & Countryside",emoji:"🏰",desc:"Ruins, hill forts, market towns — and a few good walks in between.",
-   itin:{1:["bibury","bourton","sudeley","wild-rabbit"],
-         2:["goodrich","tintern","symonds-yat","the-kymin","hay","old-black-lion"],
-         3:["llanthony","llanthony-walk","skirrid","crickhowell"]}},
-  {name:"Scenic Adventure",emoji:"⛰️",desc:"Big views and ridge walks without going full expedition.",
-   itin:{1:["broadway-tower","cleeve-hill","symonds-yat","symonds-yat-walk","sarahs-bridge"],
-         2:["hay","gospel-pass","cats-back","llanthony","old-black-lion"],
-         3:["waterfall-country","four-falls","sgwd-yr-eira","crickhowell"]}},
-  {name:"Full Adventure",emoji:"🔥",desc:"Ridges, waterfalls, early starts. Long days — worth it.",
-   itin:{1:["waterfall-country","four-falls","sgwd-yr-eira","henryhd","old-black-lion"],
-         2:["hay-bluff","cats-back","gospel-pass","llanthony","hay","wild-rabbit"],
-         3:["pen-y-fan","llyn-y-fan","broadway-tower","bibury"]}},
+  {name:"The Plan",emoji:"🗺️",desc:"The agreed route: Cotswolds classics, Wye Valley & Puzzlewood, then the Four Falls walk.",
+   itin:{1:["cirencester","arlington-row","bibury","slSlaughters","bourton","broadway-tower"],
+         2:["symonds-yat","biblins","puzzlewood","cannop-ponds","tintern","sarahs-bridge"],
+         3:["four-falls","sgwd-yr-eira","henryhd"]}},
+  {name:"Gentle Cotswolds",emoji:"🌿",desc:"A slower Friday — fewer villages, longer lunch, no tower climb.",
+   itin:{1:["cirencester","arlington-row","slSlaughters","wild-rabbit"],
+         2:["symonds-yat","biblins","tintern","sarahs-bridge"],
+         3:["four-falls","sgwd-yr-eira","crickhowell"]}},
+  {name:"Waterfalls & Woods",emoji:"💧",desc:"Lean into the wet: Puzzlewood, Tintern, and the full falls circuit.",
+   itin:{1:["cirencester","arlington-row","bibury","stay-angel"],
+         2:["puzzlewood","clearwell-caves","biblins","symonds-yat-walk","sarahs-bridge"],
+         3:["four-falls","sgwd-yr-eira","sgwd-ddwli","waterfall-country"]}},
+  {name:"Castles & Ruins",emoji:"🏰",desc:"Sudeley, Goodrich, Tintern, Llanthony — the stone and the stories.",
+   itin:{1:["cirencester","sudeley","arlington-row","bourton"],
+         2:["goodrich","tintern","the-kymin","ross-on-wye","sarahs-bridge"],
+         3:["four-falls","llanthony","llanthony-walk"]}},
 ];
 
 const TRAVEL_TIMES = {
@@ -1246,9 +1242,9 @@ const TRAVEL_TIMES = {
 
 // ===================== STATE =====================
 const DEFAULT_ITIN = {
-  1:["waterfall-country","sgwd-yr-eira","four-falls","sgwd-ddwli","old-black-lion"],
-  2:["hay","symonds-yat","biblins","sarahs-bridge","tintern","wild-rabbit"],
-  3:["slSlaughters","windrush","bourton","bibury"]
+  1:["cirencester","arlington-row","bibury","slSlaughters","bourton","broadway-tower"],
+  2:["symonds-yat","biblins","puzzlewood","cannop-ponds","tintern","sarahs-bridge"],
+  3:["four-falls","sgwd-yr-eira","henryhd"]
 };
 let state = {
   activeTab:"explore", activeFilter:"all", weatherFilter:"all",
@@ -1968,7 +1964,7 @@ function downloadShareHTML(){
     '<div class="hero"><h1>UK Road Trip</h1>'+
     '<div class="sub">Cotswolds · Wye Valley · Bannau Brycheiniog</div>'+
     '<div class="dates">20–22 November 2026 · ~'+totalDrive+' min driving between stops</div></div>'+
-    '<div class="note">Waterfalls on Friday, Wye Valley Saturday, Cotswolds villages on the way home Sunday. Daylight ~7:40am–3:50pm each day.</div>'+
+    '<div class="note">Cotswolds on Friday, Wye Valley & Forest of Dean on Saturday, Four Falls walk Sunday then home. Daylight ~7:40am–3:50pm each day.</div>'+
     '<div class="wrap">'+daysHtml+'</div>'+
     '<footer>See you out there</footer>'+
     '<script>'+

@@ -1141,6 +1141,15 @@ const A = [
   // PUBS & FOOD
   {id:"wild-rabbit",name:"The Wild Rabbit",cat:"pub",lat:51.8750,lng:-1.6000,region:"Cotswolds",wiki:"Kingham",weather:"rain-ok",duration:"2-3 hrs",rating:4.8,desc:"The best food in the Cotswolds. Gastropub in Kingham with seasonal menu and roaring fire.",tips:"Book well in advance. The tasting menu is exceptional."},
   {id:"old-black-lion",name:"The Old Black Lion",cat:"pub",lat:52.0760,lng:-3.1280,region:"Black Mountains",wiki:"Hay_Castle",weather:"rain-ok",duration:"2-3 hrs",rating:4.6,desc:"17th-century coaching inn in Hay. Candlelit dining room, log fires. The most romantic dinner spot in Hay.",tips:"Book for dinner. Try the Welsh lamb."},
+  // COTSWOLDS — added for Fri 20
+  {id:"cirencester",name:"Cirencester",cat:"village",lat:51.7189,lng:-1.9680,region:"Cotswolds",wiki:"Cirencester",weather:"rain-ok",duration:"2-3 hrs",rating:4.4,desc:"The 'Capital of the Cotswolds' — honey-stone market town with the Corinium Museum (Roman mosaics, great in rain), a market square, and independent shops.",tips:"Park in the Abbey Grounds car park. Corinium Museum if the weather turns."},
+  {id:"arlington-row",name:"Arlington Row",cat:"village",lat:51.7599,lng:-1.8342,region:"Cotswolds",wiki:"Arlington_Row",weather:"either",duration:"30-60 min",rating:4.9,desc:"The most photographed street in England — a row of 14th-century weavers' cottages above the River Coln. Honey stone, tiny gardens, utterly Cotswolds.",tips:"Arrive before 10am or after 4pm to avoid coach groups. Short walk from the Bibury car park."},
+  // STAY — browse-only shortlist (no featured/booked state)
+  {id:"stay-angel",name:"The Angel Hotel, Abergavenny",cat:"stay",lat:51.8210,lng:-3.0170,region:"Abergavenny",wiki:"Abergavenny",weather:"rain-ok",duration:"1 night",rating:4.6,desc:"Classic coaching inn on Abergavenny's square — log fires, a famous afternoon tea, and a good wine list. Romantic without being stuffy.",tips:"Fri 20 Nov is the Abergavenny night. Ask for a room at the back — quieter. ~£150–220/night.",priceBand:"£150–220",bookUrl:"https://www.angelabergavenny.com/",nights:"Fri 20"},
+  {id:"stay-bear",name:"The Bear Hotel, Crickhowell",cat:"stay",lat:51.8590,lng:-3.1370,region:"Crickhowell",wiki:"Crickhowell",weather:"rain-ok",duration:"1 night",rating:4.7,desc:"15th-century coaching inn with 35 unique rooms, oak beams and a candlelit restaurant. One of the great Welsh coaching inns.",tips:"Strong alternative for either night. Dinner here is excellent. ~£120–180/night.",priceBand:"£120–180",bookUrl:"https://www.bearhotel.co.uk/",nights:"flexible"},
+  {id:"stay-saracens",name:"The Saracens Head, Symonds Yat",cat:"stay",lat:51.8412,lng:-2.6398,region:"Wye Valley",wiki:"Symonds_Yat",weather:"rain-ok",duration:"1 night",rating:4.5,desc:"Riverside inn at the Wye — window tables over the water, hand ferry next door, and a fire-lit bar. Cosy after a wet walk.",tips:"Good Sat night if you want to wake up in the valley. Book a river room. ~£110–160/night.",priceBand:"£110–160",bookUrl:"https://www.thesaracensheadinn.co.uk/",nights:"Sat 21"},
+  {id:"stay-wild-rabbit",name:"The Wild Rabbit, Kingham",cat:"stay",lat:51.8752,lng:-1.6002,region:"Cotswolds",wiki:"Kingham",weather:"rain-ok",duration:"1 night",rating:4.8,desc:"The best food in the Cotswolds with six beautiful rooms above the pub. The splurge option if you want one truly special night.",tips:"Book the tasting menu downstairs. Rooms go fast — well ahead. ~£220–280/night.",priceBand:"£220–280",bookUrl:"https://thewildrabbit.co.uk/",nights:"flexible"},
+  {id:"stay-llanthony",name:"Llanthony Priory Hotel",cat:"stay",lat:51.9432,lng:-3.0352,region:"Black Mountains",wiki:"Llanthony_Priory",weather:"rain-ok",duration:"1 night",rating:4.6,desc:"Sleep inside a 12th-century priory in a remote mountain valley. Seven rooms among the ruins, a cellar bar, and total quiet.",tips:"Wildcard romantic night — book directly. ~£100–150/night. No phone signal, which is the point.",priceBand:"£100–150",bookUrl:"https://www.llanthonypriory.co.uk/",nights:"flexible"},
 ];
 
 const CATEGORIES = [
@@ -1149,6 +1158,7 @@ const CATEGORIES = [
   {id:"abbey",label:"Abbeys & Ruins",color:"#8b5cc4"},{id:"village",label:"Villages",color:"#7b63b0"},
   {id:"pub",label:"Pubs & Food",color:"#c45448"},
   {id:"drive",label:"Scenic Drives",color:"#d17a2e"},{id:"activity",label:"Activities",color:"#2f9e8f"},
+  {id:"stay",label:"Stay",color:"#3d8fa3"},
 ];
 
 // Days are fully flexible — no pre-scoped region
@@ -1184,28 +1194,28 @@ const PRESETS = [
 const TRAVEL_TIMES = {
   "bibury|bourton":15,"bibury|slSlaughters":20,"bourton|slSlaughters":10,"bourton|broadway-tower":15,
   "bourton|cleeve-hill":15,"bourton|windrush":5,"broadway-tower|slSlaughters":15,
-  "slSlaughters|lords-manor":5,"slSlaughters|sudeley":15,"slSlaughters|wild-rabbit":15,
-  "sudeley|wild-rabbit":10,"wild-rabbit|lords-manor":10,
+  "slSlaughters|sudeley":15,"slSlaughters|wild-rabbit":15,
+  "sudeley|wild-rabbit":10,
   "broadway-tower|symonds-yat":55,"bourton|symonds-yat":70,"slSlaughters|symonds-yat":55,
-  "lords-manor|symonds-yat":55,"sudeley|symonds-yat":50,
+  "sudeley|symonds-yat":50,
   "symonds-yat|symonds-yat-walk":2,"symonds-yat|biblins":10,"symonds-yat|sarahs-bridge":5,
   "symonds-yat|tintern":20,"biblins|tintern":15,"tintern|goodrich":15,
   "symonds-yat|goodrich":15,"symonds-yat|hay":45,"tintern|hay":40,
   "goodrich|hay":35,"symonds-yat|llanthony":50,"tintern|llanthony":45,
   "hay|hay-river":5,"hay|hay-bluff":15,"hay|gospel-pass":20,"hay|cats-back":25,
-  "hay|llanthony":30,"hay|sugar-loaf":35,"hay|old-black-lion":2,"hay|old-black-lion-stay":2,
+  "hay|llanthony":30,"hay|sugar-loaf":35,"hay|old-black-lion":2,
   "hay-bluff|gospel-pass":10,"cats-back|gospel-pass":15,"llanthony|gospel-pass":15,
   "llanthony|llanthony-walk":5,"llanthony|sugar-loaf":25,"cats-back|llanthony":20,
-  "gospel-pass|sugar-loaf":30,"sugar-loaf|bear-hotel":15,"sugar-loaf|crickhowell":15,
+  "gospel-pass|sugar-loaf":30,"sugar-loaf|crickhowell":15,
   "hay|waterfall-country":30,"hay|sgwd-yr-eira":35,"hay|four-falls":35,
   "hay|henryhd":45,"hay|penderyn":35,"hay|dan-yr-ogof":40,"hay|llyn-y-fan":45,
   "waterfall-country|sgwd-yr-eira":5,"waterfall-country|four-falls":5,
   "waterfall-country|henryhd":30,"waterfall-country|penderyn":15,
   "waterfall-country|dan-yr-ogof":20,"waterfall-country|llyn-y-fan":35,
-  "waterfall-country|pen-y-fan":30,"penderyn|bear-hotel":25,"bear-hotel|henryhd":30,
-  "bear-hotel|crickhowell":5,"crickhowell|waterfall-country":35,
+  "waterfall-country|pen-y-fan":30,
+  "crickhowell|waterfall-country":35,
   "henryhd|pen-y-fan":20,"llyn-y-fan|pen-y-fan":35,"four-falls|sgwd-yr-eira":5,
-  "old-black-lion|waterfall-country":30,"old-black-lion-stay|waterfall-country":30,
+  "old-black-lion|waterfall-country":30,
   "wild-rabbit|bibury":45,"wild-rabbit|bourton":20,"wild-rabbit|broadway-tower":25,
   "hay|crickhowell":15,"llanthony|crickhowell":25,"llanthony|hay-bluff":20,
   "sugar-loaf|penderyn":40,"crickhowell|penderyn":35,"crickhowell|henryhd":40,
@@ -1219,12 +1229,20 @@ const TRAVEL_TIMES = {
   "skirrid|llanthony":30,"skirrid|hay-bluff":35,"skirrid|cats-back":30,
   "skirrid|penderyn":45,
   "pontsticill|pen-y-fan":15,"pontsticill|waterfall-country":30,"pontsticill|henryhd":25,
-  "pontsticill|penderyn":30,"pontsticill|crickhowell":25,"pontsticill|bear-hotel":25,
+  "pontsticill|penderyn":30,"pontsticill|crickhowell":25,
   "sgwd-ddwli|waterfall-country":5,"sgwd-ddwli|sgwd-yr-eira":10,"sgwd-ddwli|four-falls":5,
   "sgwd-ddwli|henryhd":30,"sgwd-ddwli|hay":35,
   "biblins|sarahs-bridge":8,"sarahs-bridge|tintern":20,"tintern|wild-rabbit":55,
   "slSlaughters|windrush":10,"windrush|bibury":20,"four-falls|old-black-lion":35,
   "sgwd-ddwli|old-black-lion":35,"wild-rabbit|bibury":45,
+  "cirencester|bibury":30,"cirencester|arlington-row":30,"cirencester|bourton":35,
+  "cirencester|slSlaughters":35,"arlington-row|bibury":2,"arlington-row|slSlaughters":20,
+  "arlington-row|bourton":15,"stay-angel|crickhowell":10,"stay-angel|sugar-loaf":15,
+  "stay-angel|waterfall-country":35,"stay-angel|four-falls":35,"stay-angel|symonds-yat":35,
+  "stay-bear|waterfall-country":35,"stay-bear|four-falls":35,"stay-bear|sugar-loaf":15,
+  "stay-saracens|symonds-yat":5,"stay-saracens|tintern":20,"stay-saracens|puzzlewood":15,
+  "stay-angel|stay-bear":10,"stay-wild-rabbit|bibury":45,"stay-llanthony|crickhowell":25,
+  "cirencester|wild-rabbit":30,"cirencester|stay-angel":75,
 };
 
 // ===================== STATE =====================

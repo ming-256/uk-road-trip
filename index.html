@@ -1091,7 +1091,7 @@ body{
 // ===================== DATA =====================
 const A = [
   // COTSWOLDS
-  {id:"bibury",name:"Bibury",cat:"village",lat:51.7597,lng:-1.8336,region:"Cotswolds",wiki:"Arlington_Row",weather:"either",duration:"1-2 hrs",rating:4.7,desc:"Arlington Row — the most photographed street in England. A tiny honey-stone village on the River Coln.",tips:"Arrive before 10am to avoid coach groups."},
+  {id:"bibury",name:"Bibury",cat:"village",lat:51.7597,lng:-1.8336,region:"Cotswolds",wiki:"Arlington_Row",weather:"either",duration:"1-2 hrs",rating:4.7,desc:"The village of Bibury on the River Coln — water meadows, the trout farm, and honey-stone cottages around the village green. William Morris called it the most beautiful village in England.",tips:"Stroll the water meadows along the Coln and visit the trout farm. The village green is lovely for a quiet wander."},
   {id:"bourton",name:"Bourton-on-the-Water",cat:"village",lat:51.8853,lng:-1.7602,region:"Cotswolds",wiki:"Bourton-on-the-Water",weather:"either",duration:"1-2 hrs",rating:4.5,desc:"The 'Venice of the Cotswolds' — shallow river with five stone bridges. Model village and lovely cafés.",tips:"Try Bakery on the Water for lunch."},
   {id:"slSlaughters",name:"Lower & Upper Slaughter",cat:"village",lat:51.8783,lng:-1.7917,region:"Cotswolds",wiki:"Lower_Slaughter",weather:"either",duration:"1-2 hrs",rating:4.8,desc:"Two of the most unspoiled villages in England, connected by a riverside walk along the River Eye.",tips:"Walk from Lower to Upper Slaughter along the river."},
   {id:"broadway-tower",name:"Broadway Tower",cat:"viewpoint",lat:52.0197,lng:-1.8414,region:"Cotswolds",wiki:"Broadway,_Worcestershire",weather:"dry",duration:"1-2 hrs",rating:4.6,desc:"A folly tower on a ridge — views across 16 counties on a clear day. Short walk up from the car park.",tips:"Best on a clear morning. The ridge walk towards Snowshill is wonderful."},
@@ -1141,15 +1141,15 @@ const A = [
   // PUBS & FOOD
   {id:"wild-rabbit",name:"The Wild Rabbit",cat:"pub",lat:51.8750,lng:-1.6000,region:"Cotswolds",wiki:"Kingham",weather:"rain-ok",duration:"2-3 hrs",rating:4.8,desc:"The best food in the Cotswolds. Gastropub in Kingham with seasonal menu and roaring fire.",tips:"Book well in advance. The tasting menu is exceptional."},
   {id:"old-black-lion",name:"The Old Black Lion",cat:"pub",lat:52.0760,lng:-3.1280,region:"Black Mountains",wiki:"Hay_Castle",weather:"rain-ok",duration:"2-3 hrs",rating:4.6,desc:"17th-century coaching inn in Hay. Candlelit dining room, log fires. The most romantic dinner spot in Hay.",tips:"Book for dinner. Try the Welsh lamb."},
-  // COTSWOLDS — added for Fri 20
+  // COTSWOLDS (appended — share links index into A)
   {id:"cirencester",name:"Cirencester",cat:"village",lat:51.7189,lng:-1.9680,region:"Cotswolds",wiki:"Cirencester",weather:"rain-ok",duration:"2-3 hrs",rating:4.4,desc:"The 'Capital of the Cotswolds' — honey-stone market town with the Corinium Museum (Roman mosaics, great in rain), a market square, and independent shops.",tips:"Park in the Abbey Grounds car park. Corinium Museum if the weather turns."},
-  {id:"arlington-row",name:"Arlington Row",cat:"village",lat:51.7599,lng:-1.8342,region:"Cotswolds",wiki:"Arlington_Row",weather:"either",duration:"30-60 min",rating:4.9,desc:"The most photographed street in England — a row of 14th-century weavers' cottages above the River Coln. Honey stone, tiny gardens, utterly Cotswolds.",tips:"Arrive before 10am or after 4pm to avoid coach groups. Short walk from the Bibury car park."},
-  // STAY — browse-only shortlist (no featured/booked state)
-  {id:"stay-angel",name:"The Angel Hotel, Abergavenny",cat:"stay",lat:51.8210,lng:-3.0170,region:"Abergavenny",wiki:"Abergavenny",weather:"rain-ok",duration:"1 night",rating:4.6,desc:"Classic coaching inn on Abergavenny's square — log fires, a famous afternoon tea, and a good wine list. Romantic without being stuffy.",tips:"Fri 20 Nov is the Abergavenny night. Ask for a room at the back — quieter. ~£150–220/night.",priceBand:"£150–220",bookUrl:"https://www.angelabergavenny.com/",nights:"Fri 20"},
-  {id:"stay-bear",name:"The Bear Hotel, Crickhowell",cat:"stay",lat:51.8590,lng:-3.1370,region:"Crickhowell",wiki:"Crickhowell",weather:"rain-ok",duration:"1 night",rating:4.7,desc:"15th-century coaching inn with 35 unique rooms, oak beams and a candlelit restaurant. One of the great Welsh coaching inns.",tips:"Strong alternative for either night. Dinner here is excellent. ~£120–180/night.",priceBand:"£120–180",bookUrl:"https://www.bearhotel.co.uk/",nights:"flexible"},
-  {id:"stay-saracens",name:"The Saracens Head, Symonds Yat",cat:"stay",lat:51.8412,lng:-2.6398,region:"Wye Valley",wiki:"Symonds_Yat",weather:"rain-ok",duration:"1 night",rating:4.5,desc:"Riverside inn at the Wye — window tables over the water, hand ferry next door, and a fire-lit bar. Cosy after a wet walk.",tips:"Good Sat night if you want to wake up in the valley. Book a river room. ~£110–160/night.",priceBand:"£110–160",bookUrl:"https://www.thesaracensheadinn.co.uk/",nights:"Sat 21"},
-  {id:"stay-wild-rabbit",name:"The Wild Rabbit, Kingham",cat:"stay",lat:51.8752,lng:-1.6002,region:"Cotswolds",wiki:"Kingham",weather:"rain-ok",duration:"1 night",rating:4.8,desc:"The best food in the Cotswolds with six beautiful rooms above the pub. The splurge option if you want one truly special night.",tips:"Book the tasting menu downstairs. Rooms go fast — well ahead. ~£220–280/night.",priceBand:"£220–280",bookUrl:"https://thewildrabbit.co.uk/",nights:"flexible"},
-  {id:"stay-llanthony",name:"Llanthony Priory Hotel",cat:"stay",lat:51.9432,lng:-3.0352,region:"Black Mountains",wiki:"Llanthony_Priory",weather:"rain-ok",duration:"1 night",rating:4.6,desc:"Sleep inside a 12th-century priory in a remote mountain valley. Seven rooms among the ruins, a cellar bar, and total quiet.",tips:"Wildcard romantic night — book directly. ~£100–150/night. No phone signal, which is the point.",priceBand:"£100–150",bookUrl:"https://www.llanthonypriory.co.uk/",nights:"flexible"},
+  {id:"arlington-row",name:"Arlington Row",cat:"village",lat:51.7599,lng:-1.8342,region:"Cotswolds",wiki:"Arlington_Row",weather:"either",duration:"30-60 min",rating:4.9,desc:"The most photographed street in England — a steep row of 14th-century weavers' cottages climbing the hillside. Crooked gables, low doorways, tiny gardens.",tips:"Arrive before 10am or after 4pm to avoid coach groups. Short walk from the Bibury car park."},
+  // STAY — browse-only shortlist
+  {id:"stay-angel",name:"The Angel Hotel, Abergavenny",cat:"stay",lat:51.8210,lng:-3.0170,region:"Black Mountains",wiki:"Abergavenny",weather:"rain-ok",duration:"1 night",rating:4.6,desc:"Classic coaching inn on Abergavenny's square — log fires, a famous afternoon tea, and a good wine list. Romantic without being stuffy.",tips:"Fri 20 Nov is the Abergavenny night. Ask for a room at the back — quieter.",priceBand:"£150–220",bookUrl:"https://www.angelabergavenny.com/"},
+  {id:"stay-bear",name:"The Bear Hotel, Crickhowell",cat:"stay",lat:51.8590,lng:-3.1370,region:"Black Mountains",wiki:"Crickhowell",weather:"rain-ok",duration:"1 night",rating:4.7,desc:"15th-century coaching inn with 35 unique rooms, oak beams and a candlelit restaurant. One of the great Welsh coaching inns.",tips:"Strong alternative for either night. Dinner here is excellent.",priceBand:"£120–180",bookUrl:"https://www.bearhotel.co.uk/"},
+  {id:"stay-saracens",name:"The Saracens Head, Symonds Yat",cat:"stay",lat:51.8412,lng:-2.6398,region:"Wye Valley",wiki:"Symonds_Yat",weather:"rain-ok",duration:"1 night",rating:4.5,desc:"Sleep at the Yat itself — river-view rooms above the Wye, the water under your window, and the gorge first thing in the morning. The hand ferry runs just below.",tips:"Good Sat night if you want to wake up at the Yat. Book a river room.",priceBand:"£110–160",bookUrl:"https://www.thesaracensheadinn.co.uk/"},
+  {id:"stay-wild-rabbit",name:"The Wild Rabbit, Kingham",cat:"stay",lat:51.8752,lng:-1.6002,region:"Cotswolds",wiki:"Kingham",weather:"rain-ok",duration:"1 night",rating:4.8,desc:"Six quiet rooms above the pub — good linen, deep baths, and the treat of one truly special night. The splurge of the trip.",tips:"Rooms go fast — book well ahead. Dinner downstairs, then just the stairs to bed.",priceBand:"£220–280",bookUrl:"https://thewildrabbit.co.uk/"},
+  {id:"stay-llanthony",name:"Llanthony Priory Hotel",cat:"stay",lat:51.9432,lng:-3.0352,region:"Black Mountains",wiki:"Llanthony_Priory",weather:"rain-ok",duration:"1 night",rating:4.6,desc:"Seven rooms set into the priory walls — sleep among the ruins with the valley dark around you. The cellar bar is your night spot; total quiet is the point.",tips:"Wildcard romantic night — book directly. No phone signal, which is the point.",priceBand:"£100–150",bookUrl:"https://www.llanthonypriory.co.uk/"},
 ];
 
 const CATEGORIES = [
@@ -1219,7 +1219,6 @@ const TRAVEL_TIMES = {
   "wild-rabbit|bibury":45,"wild-rabbit|bourton":20,"wild-rabbit|broadway-tower":25,
   "hay|crickhowell":15,"llanthony|crickhowell":25,"llanthony|hay-bluff":20,
   "sugar-loaf|penderyn":40,"crickhowell|penderyn":35,"crickhowell|henryhd":40,
-  "crickhowell|waterfall-country":40,
   "symonds-yat|puzzlewood":15,"symonds-yat|cannop-ponds":15,"symonds-yat|clearwell-caves":12,
   "puzzlewood|cannop-ponds":8,"puzzlewood|clearwell-caves":10,"cannop-ponds|clearwell-caves":10,
   "puzzlewood|the-kymin":20,"cannop-ponds|the-kymin":20,"clearwell-caves|the-kymin":18,
@@ -1234,7 +1233,7 @@ const TRAVEL_TIMES = {
   "sgwd-ddwli|henryhd":30,"sgwd-ddwli|hay":35,
   "biblins|sarahs-bridge":8,"sarahs-bridge|tintern":20,"tintern|wild-rabbit":55,
   "slSlaughters|windrush":10,"windrush|bibury":20,"four-falls|old-black-lion":35,
-  "sgwd-ddwli|old-black-lion":35,"wild-rabbit|bibury":45,
+  "sgwd-ddwli|old-black-lion":35,
   "cirencester|bibury":30,"cirencester|arlington-row":30,"cirencester|bourton":35,
   "cirencester|slSlaughters":35,"arlington-row|bibury":2,"arlington-row|slSlaughters":20,
   "arlington-row|bourton":15,"stay-angel|crickhowell":10,"stay-angel|sugar-loaf":15,
@@ -1715,7 +1714,7 @@ function fetchWikiImages(){
 }
 function getImg(a){
   if(a.img && typeof a.img === 'string' && a.img.length > 10) return a.img;
-  const bg = {waterfall:'#2c4d6e',hike:'#2a4a32',viewpoint:'#6b5420',village:'#4a2f66',pub:'#6b2e28',hotel:'#1a4a5c',abbey:'#4a2f66',drive:'#6b4420',activity:'#1a5c52'}[a.cat]||'#555';
+  const bg = {waterfall:'#2c4d6e',hike:'#2a4a32',viewpoint:'#6b5420',village:'#4a2f66',pub:'#6b2e28',hotel:'#1a4a5c',stay:'#1a4a5c',abbey:'#4a2f66',drive:'#6b4420',activity:'#1a5c52'}[a.cat]||'#555';
   return 'data:image/svg+xml;charset=UTF-64,'+btoa('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="260"><rect fill="'+bg+'" width="400" height="260"/><text x="200" y="125" text-anchor="middle" fill="rgba(255,255,255,0.65)" font-family="Georgia,serif" font-size="16">'+a.name+'</text><text x="200" y="150" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-family="sans-serif" font-size="11">'+a.region+'</text></svg>');
 }
 

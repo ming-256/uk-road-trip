@@ -28,6 +28,24 @@ for (const m of ttM[1].matchAll(/"([a-zA-Z0-9-]+)\|([a-zA-Z0-9-]+)"/g)) {
   if (!idSet.has(m[2])) { console.error('TRAVEL_TIMES unknown right id:', m[2]); process.exit(1); }
 }
 
+// Duplicate or reversed TRAVEL_TIMES pairs with conflicting values are silent bugs
+// (JS object literals last-wins).
+const ttKeys = [...ttM[1].matchAll(/"([a-zA-Z0-9-]+)\|([a-zA-Z0-9-]+)":(\d+)/g)].map(m => ({a:m[1],b:m[2],v:+m[3],raw:m[0]}));
+const seen = new Map();
+for (const k of ttKeys) {
+  const exact = k.a+'|'+k.b;
+  if (seen.has(exact)) { console.error('TRAVEL_TIMES duplicate key:', exact); process.exit(1); }
+  seen.set(exact, k.v);
+}
+for (const [exact, v] of seen) {
+  const [a,b] = exact.split('|');
+  const rev = b+'|'+a;
+  if (seen.has(rev) && seen.get(rev) !== v) {
+    console.error('TRAVEL_TIMES conflicting reverse pair:', exact, '=', v, 'vs', rev, '=', seen.get(rev));
+    process.exit(1);
+  }
+}
+
 const rsM = html.match(/const RAIN_SWAPS = \{([\s\S]*?)\n\};/);
 if (rsM) {
   for (const m of rsM[1].matchAll(/"([a-zA-Z0-9-]+)"/g)) {

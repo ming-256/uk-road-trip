@@ -1402,7 +1402,7 @@ function renderExplore(el){
       '<div class="cat-badge" style="background:'+color+'">'+catLabel+'</div>'+
       '<div class="weather-badge">'+wl+'</div></div>'+
       '<div class="card-body"><h3>'+a.name+'</h3>'+
-      '<div class="meta">'+a.region+' · '+a.duration+' · ★ '+a.rating+'</div>'+
+      '<div class="meta">'+a.region+' · '+a.duration+' · ★ '+a.rating+(a.priceBand?' · '+a.priceBand:'')+'</div>'+
       '<p>'+a.desc+'</p>'+
       '<div class="card-actions" onclick="event.stopPropagation()">'+
         '<button class="btn-add d1" onclick="addToItinerary(\''+a.id+'\',1)">+ D1</button>'+
@@ -1648,13 +1648,14 @@ function openDetail(id){
   const wc=a.weather==='rain-ok'?'rain-ok':a.weather==='dry'?'dry-only':'either';
   document.getElementById('detail-img').src=getImg(a);
   document.getElementById('detail-title').textContent=a.name;
-  document.getElementById('detail-meta').textContent=a.region+' · '+a.duration+' · ⭐ '+a.rating;
+  document.getElementById('detail-meta').textContent=a.region+' · '+a.duration+' · ⭐ '+a.rating+(a.priceBand?' · '+a.priceBand:'');
   document.getElementById('detail-desc').textContent=a.desc+(a.tips?' '+a.tips:'');
   document.getElementById('detail-tags').innerHTML=
     '<span style="background:'+color+'18;color:'+color+'">'+catLabel+'</span>'+
     '<span class="weather-badge '+wc+'" style="position:static">'+wl+'</span>'+
     '<span style="background:var(--accent-soft);color:var(--accent-deep)">'+a.duration+'</span>'+
-    '<span style="background:var(--accent-soft);color:var(--accent-deep)">⭐ '+a.rating+'</span>';
+    '<span style="background:var(--accent-soft);color:var(--accent-deep)">⭐ '+a.rating+'</span>'+
+    (a.bookUrl?'<a href="'+a.bookUrl+'" target="_blank" rel="noopener" style="background:#e3f0f4;color:#1a4a5c;padding:4px 10px;border-radius:999px;font-size:.75rem;font-weight:600;text-decoration:none">Check dates &amp; prices</a>':'');
   document.getElementById('detail-actions').innerHTML=
     '<button class="btn-add d1" onclick="addToItinerary(\''+a.id+'\',1);closeDetail()">+ Day 1</button>'+
     '<button class="btn-add d2" onclick="addToItinerary(\''+a.id+'\',2);closeDetail()">+ Day 2</button>'+

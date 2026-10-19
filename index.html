@@ -814,6 +814,29 @@ body{
   color:var(--ink);
 }
 
+.rain-strip{
+  margin:8px 12px 12px;border-radius:14px;border:1px dashed rgba(79,143,98,.35);
+  background:rgba(79,143,98,.07);overflow:hidden;
+}
+.rain-strip summary{
+  cursor:pointer;list-style:none;padding:11px 14px;font-size:.82rem;font-weight:600;
+  color:#3f5c4c;display:flex;align-items:center;gap:8px;min-height:44px;
+}
+.rain-strip summary::-webkit-details-marker{display:none}
+.rain-strip summary::before{content:"*";font-size:.95rem}
+.rain-swap{
+  display:flex;gap:10px;align-items:flex-start;padding:10px 14px;
+  border-top:1px solid rgba(79,143,98,.15);font-size:.8rem;color:var(--ink);
+}
+.rain-swap .why{color:var(--ink-mute);line-height:1.4;margin-top:2px}
+.rain-swap button{
+  flex-shrink:0;border:1px solid #3f5c4c;color:#3f5c4c;background:#e4eee7;
+  border-radius:999px;padding:8px 12px;font-size:.75rem;font-weight:600;
+  cursor:pointer;min-height:36px;
+}
+.rain-swap button:disabled{opacity:.4;cursor:default}
+.rain-swap button:hover:not(:disabled){background:#3f5c4c;color:#fff}
+
 /* Responsive */
 @media(max-width:900px){
   html,body{
@@ -1257,6 +1280,20 @@ const DEFAULT_ITIN = {
   2:["symonds-yat","biblins","puzzlewood","cannop-ponds","tintern","sarahs-bridge"],
   3:["four-falls","sgwd-yr-eira","henryhd"]
 };
+const RAIN_SWAPS = {
+  1:[
+    {swapOut:"broadway-tower",swapIn:"sudeley",why:"Tower is exposed - Sudeley has interiors and gardens."},
+    {swapOut:"bourton",swapIn:"cirencester",why:"Keep the museum and shops; skip the riverside strolls."}
+  ],
+  2:[
+    {swapOut:"symonds-yat",swapIn:"clearwell-caves",why:"The viewpoint path is no fun in wind - go underground."},
+    {swapOut:"puzzlewood",swapIn:"goodrich",why:"Puzzlewood paths turn to soup; Goodrich has a roof and a tea room."}
+  ],
+  3:[
+    {swapOut:"four-falls",swapIn:"penderyn",why:"The Four Falls paths are slippery when wet - whisky tastes better."},
+    {swapOut:"sgwd-yr-eira",swapIn:"dan-yr-ogof",why:"Walking behind the falls is a dry-day treat. Caves are entirely undercover."}
+  ]
+};
 let state = {
   activeTab:"explore", activeFilter:"all", weatherFilter:"all",
   itinerary:{1:[...DEFAULT_ITIN[1]],2:[...DEFAULT_ITIN[2]],3:[...DEFAULT_ITIN[3]]},
@@ -1419,6 +1456,18 @@ function renderItinerary(el){
       });
     }
     const collapsed=state.collapsed[day.id];
+    const swaps = RAIN_SWAPS[day.id]||[];
+    const inDay = (id)=>state.itinerary[1].includes(id)||state.itinerary[2].includes(id)||state.itinerary[3].includes(id);
+    const rainHtml = swaps.length ? '<details class="rain-strip" '+(rainOpen[day.id]?'open':'')+' ontoggle="event.target.open!==rainOpen['+day.id+']&&toggleRain('+day.id+')">'+
+      '<summary>If it rains</summary>'+
+      swaps.map((s,si)=>{
+        const outA=A.find(x=>x.id===s.swapOut), inA=A.find(x=>x.id===s.swapIn);
+        const can = day.includes(s.swapOut) && !inDay(s.swapIn);
+        return '<div class="rain-swap">'+
+          '<button '+(can?'':'disabled')+' onclick="applyRainSwap('+day.id+','+si+')">Swap</button>'+
+          '<div><div><strong>'+(outA?outA.name:s.swapOut)+'</strong> to <strong>'+(inA?inA.name:s.swapIn)+'</strong></div>'+
+          '<div class="why">'+s.why+'</div></div></div>';
+      }).join('')+'</details>' : '';
     return '<div class="itinerary-day '+(collapsed?'collapsed-day':'')+'" data-day-wrap="'+day.id+'">'+
       '<div class="itinerary-day-header d'+day.id+' '+(collapsed?'collapsed':'')+'" onclick="toggleDay('+day.id+')">'+
         '<div class="day-num">'+day.id+'</div>'+
@@ -1426,7 +1475,7 @@ function renderItinerary(el){
         (stops.length>1?'<div class="total-time">'+totalTime+' min · '+stops.length+' stops</div>':'')+
         '<div class="chev">▾</div>'+
       '</div>'+
-      '<div class="day-body">'+html+
+      '<div class="day-body">'+html+rainHtml+
       '<div class="itin-stop-add">'+
         '<button class="itin-add-btn" style="color:#4a7ab5;border-color:#4a7ab5" onclick="switchTab(\'explore\');setFilter(\'waterfall\')">+ Waterfall</button>'+
         '<button class="itin-add-btn" style="color:#4f8f62;border-color:#4f8f62" onclick="switchTab(\'explore\');setFilter(\'hike\')">+ Hike</button>'+
@@ -1499,6 +1548,27 @@ function bindDragDrop(){
 function toggleDay(dayId){
   state.collapsed[dayId]=!state.collapsed[dayId];
   renderList();
+}
+
+let rainOpen = {1:false,2:false,3:false};
+function toggleRain(dayId){
+  rainOpen[dayId]=!rainOpen[dayId];
+  renderList();
+}
+function applyRainSwap(dayId, idx){
+  const s = (RAIN_SWAPS[dayId]||[])[idx];
+  if(!s) return;
+  const day = state.itinerary[dayId];
+  if(!day.includes(s.swapOut)) return;
+  if(state.itinerary[1].includes(s.swapIn)||state.itinerary[2].includes(s.swapIn)||state.itinerary[3].includes(s.swapIn)){
+    toast('Already on the plan');
+    return;
+  }
+  const at = day.indexOf(s.swapOut);
+  day[at] = s.swapIn;
+  saveLocal();renderList();updateRouteLines();updateMarkerVisibility();
+  const a=A.find(x=>x.id===s.swapIn);
+  toast('Rain swap to '+(a?a.name:s.swapIn));
 }
 
 // ===================== ACTIONS =====================

@@ -814,6 +814,12 @@ body{
   color:var(--ink);
 }
 
+.itin-time{display:inline-block;background:var(--accent-soft);color:var(--accent-deep);font-family:'DM Sans',sans-serif;font-size:.72rem;font-weight:700;padding:2px 7px;border-radius:999px;margin-right:6px;vertical-align:1px}
+.itin-note{font-size:.78rem;color:var(--ink-soft);line-height:1.4;margin:3px 0 4px}
+.itin-links{display:flex;flex-wrap:wrap;gap:6px;margin:5px 0 4px}
+.itin-links a{font-size:.74rem;font-weight:600;color:var(--blue);background:var(--blue-soft);border-radius:999px;padding:7px 11px;text-decoration:none;min-height:32px;display:inline-flex;align-items:center}
+a.action-btn{text-decoration:none;display:inline-flex;align-items:center}
+.itin-pick{width:100%;margin:5px 0 4px;font:600 .85rem 'DM Sans',sans-serif;color:var(--ink);background:var(--surface);border:1px solid var(--line-strong);border-radius:10px;padding:10px 12px;min-height:44px}
 .rain-strip{
   margin:8px 12px 12px;border-radius:14px;border:1px dashed rgba(79,143,98,.35);
   background:rgba(79,143,98,.07);overflow:hidden;
@@ -1020,14 +1026,14 @@ body{
       <div class="brand-row">
         <div class="brand">
           <h1>UK Road Trip</h1>
-          <p>Cotswolds · Wye Valley · Bannau Brycheiniog — 20–22 Nov 2026</p>
+          <p>Cotswolds · Bath — 20–22 Nov 2026</p>
         </div>
         <button id="share-btn" onclick="openShare()">Share</button>
       </div>
     </div>
     <div class="tabs">
-      <div class="tab active" data-tab="explore">Explore</div>
-      <div class="tab" data-tab="itinerary">Itinerary</div>
+      <div class="tab" data-tab="explore">Explore</div>
+      <div class="tab active" data-tab="itinerary">Itinerary</div>
       <div class="tab" data-tab="presets">Ideas</div>
     </div>
     <div class="weather-toggle" id="weather-bar">
@@ -1167,13 +1173,65 @@ const A = [
   // COTSWOLDS (appended — share links index into A)
   {id:"cirencester",name:"Cirencester",cat:"village",lat:51.7189,lng:-1.9680,region:"Cotswolds",wiki:"Cirencester",weather:"rain-ok",duration:"2-3 hrs",rating:4.4,desc:"The 'Capital of the Cotswolds' — honey-stone market town with the Corinium Museum (Roman mosaics, great in rain), a market square, and independent shops.",tips:"Park in the Abbey Grounds car park. Corinium Museum if the weather turns."},
   {id:"arlington-row",name:"Arlington Row",cat:"village",lat:51.7599,lng:-1.8342,region:"Cotswolds",wiki:"Arlington_Row",weather:"either",duration:"30-60 min",rating:4.9,desc:"The most photographed street in England — a steep row of 14th-century weavers' cottages climbing the hillside. Crooked gables, low doorways, tiny gardens.",tips:"Arrive before 10am or after 4pm to avoid coach groups. Short walk from the Bibury car park."},
-  // STAY — browse-only shortlist
-  {id:"stay-angel",name:"The Angel Hotel, Abergavenny",cat:"stay",lat:51.8210,lng:-3.0170,region:"Black Mountains",wiki:"Abergavenny",weather:"rain-ok",duration:"1 night",rating:4.6,desc:"Classic coaching inn on Abergavenny's square — log fires, a famous afternoon tea, and a good wine list. Romantic without being stuffy.",tips:"Fri 20 Nov is the Abergavenny night. Ask for a room at the back — quieter.",priceBand:"£150–220",bookUrl:"https://www.angelabergavenny.com/"},
-  {id:"stay-bear",name:"The Bear Hotel, Crickhowell",cat:"stay",lat:51.8590,lng:-3.1370,region:"Black Mountains",wiki:"Crickhowell",weather:"rain-ok",duration:"1 night",rating:4.7,desc:"15th-century coaching inn with 35 unique rooms, oak beams and a candlelit restaurant. One of the great Welsh coaching inns.",tips:"Strong alternative for either night. Dinner here is excellent.",priceBand:"£120–180",bookUrl:"https://www.bearhotel.co.uk/"},
-  {id:"stay-saracens",name:"The Saracens Head, Symonds Yat",cat:"stay",lat:51.8412,lng:-2.6398,region:"Wye Valley",wiki:"Symonds_Yat",weather:"rain-ok",duration:"1 night",rating:4.5,desc:"Sleep at the Yat itself — river-view rooms above the Wye, the water under your window, and the gorge first thing in the morning. The hand ferry runs just below.",tips:"Good Sat night if you want to wake up at the Yat. Book a river room.",priceBand:"£110–160",bookUrl:"https://www.thesaracensheadinn.co.uk/"},
-  {id:"stay-wild-rabbit",name:"The Wild Rabbit, Kingham",cat:"stay",lat:51.8752,lng:-1.6002,region:"Cotswolds",wiki:"Kingham",weather:"rain-ok",duration:"1 night",rating:4.8,desc:"Six quiet rooms above the pub — good linen, deep baths, and the treat of one truly special night. The splurge of the trip.",tips:"Rooms go fast — book well ahead. Dinner downstairs, then just the stairs to bed.",priceBand:"£220–280",bookUrl:"https://thewildrabbit.co.uk/"},
-  {id:"stay-llanthony",name:"Llanthony Priory Hotel",cat:"stay",lat:51.9432,lng:-3.0352,region:"Black Mountains",wiki:"Llanthony_Priory",weather:"rain-ok",duration:"1 night",rating:4.6,desc:"Seven rooms set into the priory walls — sleep among the ruins with the valley dark around you. The cellar bar is your night spot; total quiet is the point.",tips:"Wildcard romantic night — book directly. No phone signal, which is the point.",priceBand:"£100–150",bookUrl:"https://www.llanthonypriory.co.uk/"},
+  // COTSWOLDS BASE + DAY TRIPS (appended — share links index into A)
+  {id:"stay-cerney",name:"Your stay — South Cerney",cat:"stay",lat:51.6700,lng:-1.9327,region:"South Cerney",wiki:"South_Cerney",weather:"rain-ok",duration:"2 nights",rating:4.5,desc:"Home base for Fri and Sat night, on the edge of the Cotswold Water Park lakes — 15 minutes from Cirencester and about an hour from Bath.",tips:"Pin is the village centre. Checkout is 10am Sunday."},
+  {id:"cerney-lake",name:"South Cerney Lake Walk",cat:"hike",lat:51.6650,lng:-1.9120,region:"South Cerney",wiki:"Cotswold_Water_Park",weather:"either",duration:"1-2 hrs",rating:4.3,desc:"Flat loop around the flooded gravel pits of the Cotswold Water Park on your doorstep — still water, reeds, wildfowl and big skies. Beautiful at sunrise or in low winter light.",tips:"Easy and flat, but paths can be muddy after rain. Fri late afternoon (golden hour, dusk ~4pm) or Sun before the 10am checkout."},
+  {id:"stow",name:"Stow-on-the-Wold (park here)",cat:"village",lat:51.9305,lng:-1.7243,region:"Cotswolds",wiki:"Stow-on-the-Wold",weather:"either",duration:"30-60 min",rating:4.4,desc:"Highest town in the Cotswolds — market square, antique shops, the famous yew-flanked door at St Edward's church. A good place to leave the car and walk down to the Slaughters.",tips:"Park at the Market Square or Fosse Way car park. Walk Stow → Lower Slaughter is roughly 2 miles on footpaths; check the route on OS Maps or AllTrails and allow for mud."},
+  {id:"wild-thyme",name:"Wild Thyme & Honey, Ampney Crucis",cat:"pub",lat:51.7150,lng:-1.8740,region:"Cotswolds",wiki:"Ampney_Crucis",weather:"rain-ok",duration:"1.5-2 hrs",rating:4.6,desc:"Sunday roast stop in Ampney Crucis, Cirencester GL7 5RS — five minutes from the Bibury road, exactly on the way back towards London.",tips:"No availability until 2:45pm on Sunday per your check — so build the day around it: Cirencester late morning, Bibury, then lunch at 2:45. Phone to ask about cancellations or a bar table earlier."},
+  {id:"tetbury",name:"Tetbury",cat:"village",lat:51.6370,lng:-2.1590,region:"Cotswolds",wiki:"Tetbury",weather:"rain-ok",duration:"1-2 hrs",rating:4.3,desc:"Elegant market town of antique shops, galleries and the covered Market House. Easy to browse in the rain.",tips:"A dry-roofed Plan B for Sunday morning, 20 min from South Cerney."},
+  {id:"chedworth",name:"Chedworth Roman Villa",cat:"activity",lat:51.8052,lng:-1.9514,region:"Cotswolds",wiki:"Chedworth_Roman_Villa",weather:"rain-ok",duration:"1-2 hrs",rating:4.5,desc:"One of the largest Roman villas in Britain, with remarkable mosaics and a hypocaust, in a wooded valley. National Trust.",tips:"Winter opening is limited — check the National Trust page for 20–22 Nov before relying on it."},
+  {id:"castle-combe",name:"Castle Combe",cat:"village",lat:51.4934,lng:-2.2279,region:"Wiltshire",wiki:"Castle_Combe",weather:"either",duration:"1 hr",rating:4.6,desc:"Postcard honey-stone village with a bridge over the By Brook — often called the prettiest village in England. About 25 minutes from Bath on the way home.",tips:"Optional Saturday add-on if you leave Bath by 2:30; light is gone by about 4pm."},
+  // BATH
+  {id:"bath-alexandra",name:"Alexandra Park Viewpoint",cat:"viewpoint",lat:51.3713,lng:-2.3623,region:"Bath",wiki:"Alexandra_Park,_Bath",weather:"dry",duration:"45 min",rating:4.8,desc:"The classic panorama over the whole of Bath — the Abbey, the Crescent and the city bowl laid out below. Best on a clear sunny day, and a lovely sunset spot.",tips:"Saturday is the sunnier day — time it for golden hour (sunset ~4:00pm). Drive up, or walk the steep climb from Oldfield Park."},
+  {id:"bath-crescent",name:"Royal Crescent & The Circus",cat:"village",lat:51.3869,lng:-2.3667,region:"Bath",wiki:"Royal_Crescent",weather:"either",duration:"1 hr",rating:4.8,desc:"Bath's two great Georgian set-pieces: the sweeping Royal Crescent and the round, perfectly proportioned Circus a few minutes away. Walk the lawn side for the full curve.",tips:"Stroll through Royal Victoria Park next door. Best in morning light."},
+  {id:"bath-guildhall",name:"Guildhall Market",cat:"village",lat:51.3820,lng:-2.3592,region:"Bath",wiki:"Guildhall,_Bath",weather:"rain-ok",duration:"45 min",rating:4.4,desc:"Covered market, trading for 800 years — food stalls, delis, vintage and independent traders right by the Abbey and Pulteney Bridge.",tips:"A good wet-weather pocket and a handy lunch/snack stop."},
+  {id:"bath-weir",name:"Pulteney Bridge & Weir",cat:"viewpoint",lat:51.3817,lng:-2.3556,region:"Bath",wiki:"Pulteney_Bridge",weather:"dry",duration:"30 min",rating:4.7,desc:"Palladian Pulteney Bridge with its shops, and the curved horseshoe weir just below — best seen from the Parade Gardens or Grand Parade.",tips:"Walk along the riverside path below the weir for the postcard view."},
+  {id:"bath-cafe",name:"Colonna & Smalls (coffee)",cat:"pub",lat:51.3875,lng:-2.3636,region:"Bath",wiki:"Bath,_Somerset",weather:"rain-ok",duration:"45 min",rating:4.7,desc:"Specialty coffee roaster on Chapel Row, a short walk from Queen Square and the Circus — small, warm, and a favourite with locals. My suggestion for the 'nice cafe' slot.",tips:"Tiny room — go mid-morning or mid-afternoon. Alternatives: Fine Cheese Co. cafe or Sally Lunn's for the famous bun. Verify opening hours."},
+  {id:"bath-chilli",name:"Chilli Family Noodles (cash only)",cat:"pub",lat:51.3775,lng:-2.3573,region:"Bath",wiki:"Bath,_Somerset",weather:"rain-ok",duration:"1 hr",rating:4.5,desc:"Sichuan noodles inside Bath's bus station, 1 Dorchester Street BA1 1SS. Fiery, cheap, and a cult favourite.",tips:"Cash only per most listings — bring notes. Ideal for a quick, hot lunch."},
+  {id:"bath-sarthi",name:"Sarthi",cat:"pub",lat:51.3860,lng:-2.3578,region:"Bath",wiki:"Bath,_Somerset",weather:"rain-ok",duration:"1.5-2 hrs",rating:4.5,desc:"Vegetarian/vegan-leaning Indian restaurant in a restored Methodist church, 88 Walcot Street BA1 5BD. Atmospheric for a couple's dinner.",tips:"Book ahead for Saturday evening (01225 462992)."},
+  {id:"bath-angelos",name:"Angelo's",cat:"pub",lat:51.3814,lng:-2.3598,region:"Bath",wiki:"Bath,_Somerset",weather:"rain-ok",duration:"1-2 hrs",rating:4.3,desc:"The only Angelo's I could verify in central Bath is Angelos Bakery at 15 Cheap Street BA1 1NA (bakery/takeaway) — if you meant a sit-down Angelo's, check the address.",tips:"Pin is placed on Cheap Street. Confirm which Angelo's you mean before you commit."},
+  {id:"bath-yakyeti",name:"Yak Yeti Yak",cat:"pub",lat:51.3796,lng:-2.3578,region:"Bath",wiki:"Bath,_Somerset",weather:"rain-ok",duration:"1.5 hrs",rating:4.5,desc:"Long-running Nepalese restaurant at 12 Pierrepont Street BA1 1LA with low cushioned seating in the basement. Cosy for two.",tips:"Book on ResDiary or call 01225 442299. Opium cocktail bar is a few steps away."},
+  {id:"bath-jars",name:"Jars Meze",cat:"pub",lat:51.3825,lng:-2.3598,region:"Bath",wiki:"Bath,_Somerset",weather:"rain-ok",duration:"1.5 hrs",rating:4.5,desc:"Small-plates Mediterranean/Turkish meze at 6 Northumberland Place BA1 5AR, tucked in an alley off the high street. Great for sharing.",tips:"Closed Mondays; check Saturday evening hours and book."},
+  {id:"bath-pub-star",name:"The Star Inn (pub)",cat:"pub",lat:51.3895,lng:-2.3640,region:"Bath",wiki:"Bath,_Somerset",weather:"rain-ok",duration:"1 hr",rating:4.5,desc:"Old-school Georgian pub in The Vineyards with Bellringer ale served from the jug and snug rooms with fires — my pick for a proper pub.",tips:"Suggestion — verify. Other options: The Raven on Queen Street (pies and ales), The Bell on Walcot Street (live music)."},
+  {id:"bath-pub-raven",name:"The Raven (pub)",cat:"pub",lat:51.3822,lng:-2.3632,region:"Bath",wiki:"Bath,_Somerset",weather:"rain-ok",duration:"1 hr",rating:4.4,desc:"Compact real-ale pub on Queen Street known for pies and a rotating cask list. Good start or end to the evening.",tips:"Suggestion — verify."},
+  {id:"bath-bar-opium",name:"Opium (cocktail bar)",cat:"pub",lat:51.3794,lng:-2.3578,region:"Bath",wiki:"Bath,_Somerset",weather:"rain-ok",duration:"1-2 hrs",rating:4.5,desc:"Dark, candlelit cocktail bar in a cellar on Pierrepont Place — a classic date-night nightcap.",tips:"Suggestion — verify hours and whether it's still trading. Easy to pair with Yak Yeti Yak next door."},
+  // PRACTICAL STOPS (parking, shopping, grouped options)
+  {id:"waitrose",name:"Waitrose Cirencester (dinner shop)",cat:"practical",lat:51.7170,lng:-1.9690,region:"Cotswolds",wiki:"Cirencester",weather:"rain-ok",duration:"30 min",rating:4.4,desc:"Sheep Street, Cirencester GL7 1SZ. Shopping for Friday's home-cooked dinner, on the way from Bourton to South Cerney.",tips:"Co-op South Cerney (High St, 7am–8:30pm Mon–Sat) is the backup."},
+  {id:"park-bath",name:"Park: Charlotte Street car park, Bath",cat:"practical",lat:51.3862,lng:-2.3655,region:"Bath",wiki:"Bath,_Somerset",weather:"rain-ok",duration:"All day",rating:4.0,desc:"Open 24 hours, no maximum stay, near Queen Square. Allow about 10 minutes' walk to the Circus and Royal Crescent.",tips:"All-day rate unconfirmed (~£16–22) — check MiPermit. Fallback: Lansdown Park & Ride.",gmq:"Charlotte Street Car Park, Bath"},
+  {id:"bath-dinner",name:"Saturday dinner — pick on the day",cat:"pub",lat:51.3815,lng:-2.3585,region:"Bath",wiki:"Bath,_Somerset",weather:"rain-ok",duration:"1.5-2 hrs",rating:4.5,desc:"Options, no booking: Yak Yeti Yak (Nepalese, 12 Pierrepont St), Jars Meze (6 Northumberland Pl), Sarthi (88 Walcot St), Angelo's (confirm which), Chilli Family Noodles (cash).",tips:"Saturday is busy — walk in about 5:30–6pm. Walk-in policy and hours unconfirmed.",gmq:"Yak Yeti Yak, 12 Pierrepont Street, Bath"},
+  {id:"bath-pubs",name:"Pubs & bars (after dinner)",cat:"pub",lat:51.3835,lng:-2.3605,region:"Bath",wiki:"Bath,_Somerset",weather:"rain-ok",duration:"1-2 hrs",rating:4.4,desc:"The Star Inn, The Raven, The Bell, Opium cocktail bar. Suggestions — verify hours.",tips:"About 1 hour drive back to South Cerney.",gmq:"The Star Inn, The Vineyards, Bath"},
 ];
+
+// Per-stop timing, notes and tap-through links for the itinerary (phone-friendly)
+const MAPS=q=>'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(q);
+const STOP_INFO = {
+  stow:{time:"10:30",note:"Leave London ~8:30. Park at Fosse Way car park (listed free — check signs); Maugersbury Rd is the paid backup. Walk down to Lower Slaughter.",links:[{t:"Fosse Way car park",q:"Fosse Way car park, Stow-on-the-Wold"},{t:"Maugersbury Rd car park",q:"Maugersbury Road car park, Stow-on-the-Wold"}]},
+  slSlaughters:{time:"11:15",note:"Riverside walk Lower → Upper Slaughter. Muddy after rain."},
+  bourton:{time:"12:30",note:"Lunch here, no booking: Bakery on the Water or any riverside café. Stow → Bourton is one-way — taxi/bus back to the car.",links:[{t:"Bakery on the Water",q:"Bakery on the Water, Bourton-on-the-Water"},{t:"Slaughters Country Inn (12–5)",q:"The Slaughters Country Inn, Lower Slaughter"}]},
+  waitrose:{time:"14:15",note:"Friday dinner shop. Shop last — chilled food sits in the car.",links:[{t:"Co-op South Cerney (backup)",q:"Co-op Food, High Street, South Cerney GL7 5UG"}]},
+  "stay-cerney":{time:"15:15",note:"Check in, unpack shopping. Cooking dinner here tonight.",q:"South Cerney, Cirencester"},
+  "cerney-lake":{time:"15:30",note:"Lake walk before dusk (~4pm). Or Sunday before the 10am checkout."},
+  "park-bath":{time:"9:30",note:"Leave South Cerney ~8:30 (about 1 hr). Charlotte St: open 24h, ~£16–22/day — check MiPermit.",links:[{t:"Fallback: Lansdown Park & Ride",q:"Lansdown Park and Ride, Bath"}]},
+  "bath-crescent":{time:"10:00",note:"Walk the Circus, then the Royal Crescent lawn."},
+  "bath-cafe":{time:"11:00",note:"Coffee break near the Circus."},
+  "bath-guildhall":{time:"11:45",note:"Browse the covered market."},
+  "bath-chilli":{time:"12:30",note:"Lunch — cash only."},
+  "bath-weir":{time:"13:30",note:"Pulteney Bridge and the weir, from the riverside."},
+  "bath-alexandra":{time:"15:00",note:"Steep walk or short taxi. Be there ~3:30 for golden hour (sunset ~4pm)."},
+  "bath-dinner":{time:"17:30",note:"Pick on the day — walk in ~5:30–6pm. Choose below; the map button follows your pick.",choices:[{t:"Yak Yeti Yak — Nepalese",q:"Yak Yeti Yak, 12 Pierrepont Street, Bath BA1 1LA"},{t:"Jars Meze — small plates",q:"Jars Meze, 6 Northumberland Place, Bath BA1 5AR"},{t:"Sarthi — Indian, vegetarian-led",q:"Sarthi, 88 Walcot Street, Bath BA1 5BD"},{t:"Angelo's (confirm which one)",q:"Angelos Bakery, 15 Cheap Street, Bath"},{t:"Chilli Family Noodles — cash only",q:"Chilli Family Noodles, 1 Dorchester Street, Bath BA1 1SS"}]},
+  "bath-pubs":{time:"19:30",note:"Pick one. ~1 hr drive back to South Cerney.",choices:[{t:"The Star Inn — traditional pub",q:"The Star Inn, The Vineyards, Bath"},{t:"The Raven — ales & pies",q:"The Raven, Queen Street, Bath"},{t:"The Bell — live music",q:"The Bell Inn, Walcot Street, Bath"},{t:"Opium — cocktails",q:"Opium Bar, Pierrepont Place, Bath"}]},
+  cirencester:{time:"10:30",note:"Check out by 10:00. Market Place, Corinium Museum if wet. Park at Abbey Grounds."},
+  bibury:{time:"12:15",note:"Arlington Row, the Coln, trout farm. Park early."},
+  "wild-thyme":{time:"14:45",note:"Sunday roast — earliest slot 2:45pm. Then leave ~16:30, home ~18:30–19:00.",q:"Wild Thyme & Honey, Ampney Crucis GL7 5RS"}
+};
+function mapsUrlFor(a){
+  const i=STOP_INFO[a.id]||{};
+  const pk=state.picks&&state.picks[a.id];
+  const c=(i.choices&&pk!=null)?i.choices[pk]:null;
+  return MAPS((c&&c.q)||i.q||a.gmq||(a.lat+','+a.lng));
+}
+function setPick(id,v){state.picks[id]=v===''?null:+v;saveLocal();renderList();}
+function openMaps(id){const a=A.find(x=>x.id===id);if(a) window.open(mapsUrlFor(a),'_blank','noopener');}
 
 const CATEGORIES = [
   {id:"all",label:"All",color:"#6b5c4c"},{id:"waterfall",label:"Waterfalls",color:"#4a7ab5"},
@@ -1181,121 +1239,107 @@ const CATEGORIES = [
   {id:"abbey",label:"Abbeys & Ruins",color:"#8b5cc4"},{id:"village",label:"Villages",color:"#7b63b0"},
   {id:"pub",label:"Pubs & Food",color:"#c45448"},
   {id:"drive",label:"Scenic Drives",color:"#d17a2e"},{id:"activity",label:"Activities",color:"#2f9e8f"},
-  {id:"stay",label:"Stay",color:"#3d8fa3"},
+  {id:"stay",label:"Stay",color:"#3d8fa3"},{id:"practical",label:"Parking & Shops",color:"#7a6f5c"},
 ];
 
 // Days are fully flexible — no pre-scoped region
 let DAYS = [
-  {id:1,label:"Fri 20 — Cotswolds",color:"#c47a3e"},
-  {id:2,label:"Sat 21 — Wye Valley & Forest of Dean",color:"#3f5c4c"},
-  {id:3,label:"Sun 22 — Four Falls & Home",color:"#4a6f8a"},
+  {id:1,label:"Fri 20 — Drive & Cotswold villages",color:"#c47a3e"},
+  {id:2,label:"Sat 21 — Bath day trip",color:"#3f5c4c"},
+  {id:3,label:"Sun 22 — Cirencester, Bibury & roast home",color:"#4a6f8a"},
 ];
 
 const PRESETS = [
-  {name:"The Full Route",emoji:"🗺️",desc:"The full three days: Cotswolds classics, Wye Valley & Puzzlewood, then the Four Falls and Henrydd on the way home.",
-   itin:{1:["cirencester","arlington-row","bibury","slSlaughters","bourton","broadway-tower"],
-         2:["symonds-yat","biblins","puzzlewood","cannop-ponds","tintern","sarahs-bridge"],
-         3:["four-falls","sgwd-yr-eira","henryhd"]}},
-  {name:"Gentle Cotswolds",emoji:"🌿",desc:"A slower Friday — fewer villages, longer lunch, no tower climb.",
-   itin:{1:["cirencester","arlington-row","slSlaughters","bourton"],
-         2:["symonds-yat","biblins","tintern","sarahs-bridge"],
-         3:["four-falls","sgwd-yr-eira","crickhowell"]}},
-  {name:"Waterfalls & Woods",emoji:"💧",desc:"Lean into the wet: Puzzlewood, Tintern, and the full falls circuit.",
-   itin:{1:["cirencester","arlington-row","bibury","crickhowell"],
-         2:["puzzlewood","clearwell-caves","biblins","tintern","symonds-yat-walk","sarahs-bridge"],
-         3:["waterfall-country","four-falls","sgwd-yr-eira","sgwd-ddwli"]}},
-  {name:"Castles & Ruins",emoji:"🏰",desc:"Sudeley, Goodrich, Tintern, Llanthony — the stone and the stories.",
-   itin:{1:["cirencester","arlington-row","bourton","sudeley"],
-         2:["ross-on-wye","goodrich","the-kymin","tintern","sarahs-bridge"],
-         3:["four-falls","llanthony"]}},
+  {name:"The Plan",emoji:"🗺️",desc:"Leave London 8–9am Friday: Stow → Slaughters → Bourton, Waitrose, then check in and a lake walk at golden hour. Saturday in Bath. Sunday Cirencester, Bibury, the 2:45pm roast and home.",
+   itin:{1:["stow","slSlaughters","bourton","waitrose","stay-cerney","cerney-lake"],
+         2:["park-bath","bath-crescent","bath-cafe","bath-guildhall","bath-chilli","bath-weir","bath-alexandra","bath-dinner","bath-pubs"],
+         3:["cirencester","bibury","wild-thyme"]}},
+  {name:"Wet Friday",emoji:"🌧️",desc:"If Friday is the wet one: Cirencester and Chedworth on Friday; do the Slaughters walk Sunday if it is drier.",
+   itin:{1:["cirencester","chedworth","waitrose","stay-cerney","cerney-lake"],
+         2:["park-bath","bath-crescent","bath-cafe","bath-guildhall","bath-chilli","bath-weir","bath-alexandra","bath-dinner","bath-pubs"],
+         3:["stow","slSlaughters","bourton","wild-thyme"]}},
+  {name:"Wet Sunday",emoji:"☔",desc:"Sunday looks wet: Corinium Museum, Tetbury antiques, and the roast.",
+   itin:{1:["stow","slSlaughters","bourton","waitrose","stay-cerney","cerney-lake"],
+         2:["park-bath","bath-crescent","bath-cafe","bath-guildhall","bath-chilli","bath-weir","bath-alexandra","bath-dinner","bath-pubs"],
+         3:["cirencester","tetbury","wild-thyme"]}},
+  {name:"Wye Valley Sunday",emoji:"🌲",desc:"The ambitious option: skip the roast, leave at 10am, about 1h15 to Symonds Yat, walk the Wye, then home — back around 7–8pm.",
+   itin:{1:["stow","slSlaughters","bourton","waitrose","stay-cerney","cerney-lake"],
+         2:["park-bath","bath-crescent","bath-cafe","bath-guildhall","bath-chilli","bath-weir","bath-alexandra","bath-dinner","bath-pubs"],
+         3:["symonds-yat","symonds-yat-walk","ross-on-wye"]}},
 ];
 
 const TRAVEL_TIMES = {
+  "bourton|waitrose":35,"waitrose|stay-cerney":15,"park-bath|bath-crescent":10,"bath-alexandra|bath-dinner":15,"bath-dinner|bath-pubs":5,"chedworth|waitrose":20,"bourton|wild-thyme":35,"stay-cerney|park-bath":55,"waitrose|cirencester":5,
   "bibury|bourton":15,"bibury|slSlaughters":20,"bourton|slSlaughters":10,"bourton|broadway-tower":15,
-  "bourton|cleeve-hill":15,"bourton|windrush":5,"broadway-tower|slSlaughters":15,
-  "slSlaughters|sudeley":15,"slSlaughters|wild-rabbit":15,
-  "sudeley|wild-rabbit":10,
-  "broadway-tower|symonds-yat":55,"bourton|symonds-yat":70,"slSlaughters|symonds-yat":55,
-  "sudeley|symonds-yat":50,
-  "symonds-yat|symonds-yat-walk":2,"symonds-yat|biblins":10,"symonds-yat|sarahs-bridge":5,
-  "symonds-yat|tintern":20,"biblins|tintern":15,"tintern|goodrich":15,
-  "symonds-yat|goodrich":15,"symonds-yat|hay":45,"tintern|hay":40,
-  "goodrich|hay":35,"symonds-yat|llanthony":50,"tintern|llanthony":45,
-  "hay|hay-river":5,"hay|hay-bluff":15,"hay|gospel-pass":20,"hay|cats-back":25,
-  "hay|llanthony":30,"hay|sugar-loaf":35,"hay|old-black-lion":2,
-  "hay-bluff|gospel-pass":10,"cats-back|gospel-pass":15,"llanthony|gospel-pass":15,
-  "llanthony|llanthony-walk":5,"llanthony|sugar-loaf":25,"cats-back|llanthony":20,
-  "gospel-pass|sugar-loaf":30,"sugar-loaf|crickhowell":15,
-  "hay|waterfall-country":30,"hay|sgwd-yr-eira":35,"hay|four-falls":35,
+  "bourton|cleeve-hill":15,"bourton|windrush":5,"broadway-tower|slSlaughters":15,"slSlaughters|sudeley":15,
+  "slSlaughters|wild-rabbit":15,"sudeley|wild-rabbit":10,"broadway-tower|symonds-yat":55,"bourton|symonds-yat":70,
+  "slSlaughters|symonds-yat":55,"sudeley|symonds-yat":50,"symonds-yat|symonds-yat-walk":2,"symonds-yat|biblins":10,
+  "symonds-yat|sarahs-bridge":5,"symonds-yat|tintern":20,"biblins|tintern":15,"tintern|goodrich":15,
+  "symonds-yat|goodrich":15,"symonds-yat|hay":45,"tintern|hay":40,"goodrich|hay":35,
+  "symonds-yat|llanthony":50,"tintern|llanthony":45,"hay|hay-river":5,"hay|hay-bluff":15,
+  "hay|gospel-pass":20,"hay|cats-back":25,"hay|llanthony":30,"hay|sugar-loaf":35,
+  "hay|old-black-lion":2,"hay-bluff|gospel-pass":10,"cats-back|gospel-pass":15,"llanthony|gospel-pass":15,
+  "llanthony|llanthony-walk":5,"llanthony|sugar-loaf":25,"cats-back|llanthony":20,"gospel-pass|sugar-loaf":30,
+  "sugar-loaf|crickhowell":15,"hay|waterfall-country":30,"hay|sgwd-yr-eira":35,"hay|four-falls":35,
   "hay|henryhd":45,"hay|penderyn":35,"hay|dan-yr-ogof":40,"hay|llyn-y-fan":45,
-  "waterfall-country|sgwd-yr-eira":5,"waterfall-country|four-falls":5,
-  "waterfall-country|henryhd":30,"waterfall-country|penderyn":15,
-  "waterfall-country|dan-yr-ogof":20,"waterfall-country|llyn-y-fan":35,
-  "waterfall-country|pen-y-fan":30,
-  "crickhowell|waterfall-country":35,
-  "henryhd|pen-y-fan":20,"llyn-y-fan|pen-y-fan":35,"four-falls|sgwd-yr-eira":5,
-  "old-black-lion|waterfall-country":30,
-  "wild-rabbit|bibury":45,"wild-rabbit|bourton":20,"wild-rabbit|broadway-tower":25,
-  "hay|crickhowell":15,"llanthony|crickhowell":25,"llanthony|hay-bluff":20,
-  "sugar-loaf|penderyn":40,"crickhowell|penderyn":35,"crickhowell|henryhd":40,
-  "symonds-yat|puzzlewood":15,"symonds-yat|cannop-ponds":15,"symonds-yat|clearwell-caves":12,
-  "puzzlewood|cannop-ponds":8,"puzzlewood|clearwell-caves":10,"cannop-ponds|clearwell-caves":10,
-  "puzzlewood|the-kymin":20,"cannop-ponds|the-kymin":20,"clearwell-caves|the-kymin":18,
-  "the-kymin|ross-on-wye":15,"the-kymin|goodrich":12,"the-kymin|tintern":25,
-  "ross-on-wye|goodrich":10,"ross-on-wye|symonds-yat":20,"ross-on-wye|hay":50,
-  "skirrid|sugar-loaf":10,"skirrid|crickhowell":12,"skirrid|hay":40,
-  "skirrid|llanthony":30,"skirrid|hay-bluff":35,"skirrid|cats-back":30,
-  "skirrid|penderyn":45,
-  "pontsticill|pen-y-fan":15,"pontsticill|waterfall-country":30,"pontsticill|henryhd":25,
-  "pontsticill|penderyn":30,"pontsticill|crickhowell":25,
-  "sgwd-ddwli|waterfall-country":5,"sgwd-ddwli|sgwd-yr-eira":10,"sgwd-ddwli|four-falls":5,
-  "sgwd-ddwli|henryhd":30,"sgwd-ddwli|hay":35,
-  "biblins|sarahs-bridge":8,"sarahs-bridge|tintern":20,"tintern|wild-rabbit":55,
-  "slSlaughters|windrush":10,"windrush|bibury":20,"four-falls|old-black-lion":35,
-  "sgwd-ddwli|old-black-lion":35,
-  "cirencester|bibury":30,"cirencester|arlington-row":30,"cirencester|bourton":35,
-  "cirencester|slSlaughters":35,"arlington-row|bibury":2,"arlington-row|slSlaughters":20,
-  "arlington-row|bourton":15,"stay-angel|crickhowell":10,"stay-angel|sugar-loaf":15,
-  "stay-angel|waterfall-country":35,"stay-angel|four-falls":35,"stay-angel|symonds-yat":35,
-  "stay-bear|waterfall-country":35,"stay-bear|four-falls":35,"stay-bear|sugar-loaf":15,
-  "stay-saracens|symonds-yat":5,"stay-saracens|tintern":20,"stay-saracens|puzzlewood":15,
-  "stay-angel|stay-bear":10,"stay-wild-rabbit|bibury":45,"stay-llanthony|crickhowell":25,
-  "cirencester|wild-rabbit":30,"cirencester|stay-angel":75,
-  "biblins|puzzlewood":15,"cannop-ponds|tintern":30,"sgwd-yr-eira|henryhd":35,
-  "biblins|symonds-yat-walk":10,"symonds-yat-walk|sarahs-bridge":5,"clearwell-caves|biblins":20,
-  "arlington-row|sudeley":35,"bourton|sudeley":20,"cirencester|sudeley":30,
-  "ross-on-wye|sarahs-bridge":20,"goodrich|sarahs-bridge":10,"four-falls|llanthony":70,
-  "broadway-tower|stay-angel":85,"bourton|stay-angel":75,"bibury|stay-angel":75,
-  "slSlaughters|stay-angel":80,"arlington-row|stay-angel":75,
-  "stay-angel|sarahs-bridge":35,"stay-angel|tintern":35,"stay-angel|puzzlewood":35,
-  "wild-rabbit|stay-angel":90,
-  "sgwd-yr-eira|crickhowell":35,"bibury|crickhowell":80,"tintern|symonds-yat-walk":20,
-  "sarahs-bridge|four-falls":65,"crickhowell|puzzlewood":45,
-  "sarahs-bridge|waterfall-country":65,"sudeley|ross-on-wye":55,
+  "waterfall-country|sgwd-yr-eira":5,"waterfall-country|four-falls":5,"waterfall-country|henryhd":30,"waterfall-country|penderyn":15,
+  "waterfall-country|dan-yr-ogof":20,"waterfall-country|llyn-y-fan":35,"waterfall-country|pen-y-fan":30,"crickhowell|waterfall-country":35,
+  "henryhd|pen-y-fan":20,"llyn-y-fan|pen-y-fan":35,"four-falls|sgwd-yr-eira":5,"old-black-lion|waterfall-country":30,
+  "wild-rabbit|bibury":45,"wild-rabbit|bourton":20,"wild-rabbit|broadway-tower":25,"hay|crickhowell":15,
+  "llanthony|crickhowell":25,"llanthony|hay-bluff":20,"sugar-loaf|penderyn":40,"crickhowell|penderyn":35,
+  "crickhowell|henryhd":40,"symonds-yat|puzzlewood":15,"symonds-yat|cannop-ponds":15,"symonds-yat|clearwell-caves":12,
+  "puzzlewood|cannop-ponds":8,"puzzlewood|clearwell-caves":10,"cannop-ponds|clearwell-caves":10,"puzzlewood|the-kymin":20,
+  "cannop-ponds|the-kymin":20,"clearwell-caves|the-kymin":18,"the-kymin|ross-on-wye":15,"the-kymin|goodrich":12,
+  "the-kymin|tintern":25,"ross-on-wye|goodrich":10,"ross-on-wye|symonds-yat":20,"ross-on-wye|hay":50,
+  "skirrid|sugar-loaf":10,"skirrid|crickhowell":12,"skirrid|hay":40,"skirrid|llanthony":30,
+  "skirrid|hay-bluff":35,"skirrid|cats-back":30,"skirrid|penderyn":45,"pontsticill|pen-y-fan":15,
+  "pontsticill|waterfall-country":30,"pontsticill|henryhd":25,"pontsticill|penderyn":30,"pontsticill|crickhowell":25,
+  "sgwd-ddwli|waterfall-country":5,"sgwd-ddwli|sgwd-yr-eira":10,"sgwd-ddwli|four-falls":5,"sgwd-ddwli|henryhd":30,
+  "sgwd-ddwli|hay":35,"biblins|sarahs-bridge":8,"sarahs-bridge|tintern":20,"tintern|wild-rabbit":55,
+  "slSlaughters|windrush":10,"windrush|bibury":20,"four-falls|old-black-lion":35,"sgwd-ddwli|old-black-lion":35,
+  "cirencester|bibury":30,"cirencester|arlington-row":30,"cirencester|bourton":35,"cirencester|slSlaughters":35,
+  "arlington-row|bibury":2,"arlington-row|slSlaughters":20,"arlington-row|bourton":15,"cirencester|wild-rabbit":30,
+  "biblins|puzzlewood":15,"cannop-ponds|tintern":30,"sgwd-yr-eira|henryhd":35,"biblins|symonds-yat-walk":10,
+  "symonds-yat-walk|sarahs-bridge":5,"clearwell-caves|biblins":20,"arlington-row|sudeley":35,"bourton|sudeley":20,
+  "cirencester|sudeley":30,"ross-on-wye|sarahs-bridge":20,"goodrich|sarahs-bridge":10,"four-falls|llanthony":70,
+  "sgwd-yr-eira|crickhowell":35,"bibury|crickhowell":80,"tintern|symonds-yat-walk":20,"sarahs-bridge|four-falls":65,
+  "crickhowell|puzzlewood":45,"sarahs-bridge|waterfall-country":65,"sudeley|ross-on-wye":55,"stow|slSlaughters":8,
+  "stow|bourton":10,"stow|stay-cerney":40,"bourton|stay-cerney":40,"stay-cerney|cerney-lake":5,
+  "stay-cerney|cirencester":15,"cerney-lake|cirencester":15,"stow|cirencester":40,"sudeley|stow":25,
+  "bourton|wild-rabbit":20,"cirencester|wild-thyme":10,"bibury|wild-thyme":15,"cerney-lake|bibury":25,
+  "tetbury|cirencester":20,"tetbury|wild-thyme":25,"bibury|tetbury":30,"chedworth|cerney-lake":30,
+  "chedworth|cirencester":20,"wild-thyme|bibury":15,"stay-cerney|bath-crescent":55,"bath-crescent|bath-guildhall":10,
+  "bath-guildhall|bath-chilli":8,"bath-chilli|bath-weir":10,"bath-weir|bath-cafe":10,"bath-cafe|bath-alexandra":20,
+  "bath-weir|bath-alexandra":20,"bath-alexandra|bath-yakyeti":15,"bath-yakyeti|bath-bar-opium":2,"bath-alexandra|bath-jars":15,
+  "bath-jars|bath-pub-star":8,"bath-alexandra|bath-pub-star":10,"bath-crescent|bath-alexandra":15,"bath-crescent|bath-cafe":8,
+  "bath-cafe|bath-guildhall":10,"bath-weir|bath-guildhall":4,"bath-alexandra|bath-sarthi":15,"bath-alexandra|bath-angelos":15,
+  "bath-bar-opium|bath-pub-raven":6,"bath-pub-raven|bath-pub-star":10,"bath-crescent|bath-pub-raven":8,"bath-pub-star|bath-bar-opium":12,
+  "bath-guildhall|bath-angelos":3,"bath-yakyeti|bath-weir":6,"bath-jars|bath-bar-opium":8,"bath-sarthi|bath-weir":6,
+  "bath-sarthi|bath-pub-star":10,"stay-cerney|castle-combe":45,"castle-combe|bath-crescent":30,"stay-cerney|symonds-yat":75,
 };
 
 // ===================== STATE =====================
 const DEFAULT_ITIN = {
-  1:["cirencester","arlington-row","bibury","slSlaughters","bourton","broadway-tower"],
-  2:["symonds-yat","biblins","puzzlewood","cannop-ponds","tintern","sarahs-bridge"],
-  3:["four-falls","sgwd-yr-eira","henryhd"]
+  1:["stow","slSlaughters","bourton","waitrose","stay-cerney","cerney-lake"],
+  2:["park-bath","bath-crescent","bath-cafe","bath-guildhall","bath-chilli","bath-weir","bath-alexandra","bath-dinner","bath-pubs"],
+  3:["cirencester","bibury","wild-thyme"]
 };
 const RAIN_SWAPS = {
   1:[
-    {swapOut:"broadway-tower",swapIn:"sudeley",why:"Tower is exposed - Sudeley has interiors and gardens."},
-    {swapOut:"bourton",swapIn:"wild-rabbit",why:"Keep the museum and shops; skip the riverside strolls — book a long lunch by the fire."}
+    {swapOut:"slSlaughters",swapIn:"sudeley",why:"The riverside path turns to mud — Sudeley Castle has interiors and gardens, 25 min from Stow."},
+    {swapOut:"bourton",swapIn:"wild-rabbit",why:"Skip the riverside stroll; book a long lunch by the fire in Kingham."}
   ],
   2:[
-    {swapOut:"symonds-yat",swapIn:"clearwell-caves",why:"The viewpoint path is no fun in wind - go underground."},
-    {swapOut:"puzzlewood",swapIn:"goodrich",why:"Puzzlewood paths turn to soup; Goodrich has a roof and a tea room."}
+    {swapOut:"bath-alexandra",swapIn:"castle-combe",why:"No view in cloud — castle-combe is a short drive (and pretty in any light)."}
   ],
   3:[
-    {swapOut:"four-falls",swapIn:"penderyn",why:"The Four Falls paths are slippery when wet - whisky tastes better."},
-    {swapOut:"sgwd-yr-eira",swapIn:"dan-yr-ogof",why:"Walking behind the falls is a dry-day treat. Caves are entirely undercover."}
+    {swapOut:"bibury",swapIn:"chedworth",why:"Bibury is mostly outdoors — Roman mosaics under a roof at Chedworth (check winter hours)."},
+    {swapOut:"bibury",swapIn:"tetbury",why:"Bibury is mostly outdoors; Tetbury's antique shops are dry."}
   ]
 };
 let state = {
-  activeTab:"explore", activeFilter:"all", weatherFilter:"all",
+  activeTab:"itinerary", activeFilter:"all", weatherFilter:"all",
+  picks:{},
   itinerary:{1:[...DEFAULT_ITIN[1]],2:[...DEFAULT_ITIN[2]],3:[...DEFAULT_ITIN[3]]},
   collapsed:{1:false,2:false,3:false},
   map:null, markers:{}, routeLines:[],
@@ -1412,6 +1456,14 @@ function renderExplore(el){
   }).join('');
 }
 
+function itinInfoHtml(a){
+  const i=STOP_INFO[a.id]||{};
+  return '<h4>'+(i.time?'<span class="itin-time">'+i.time+'</span>':'')+a.name+'</h4>'+
+    (i.note?'<div class="itin-note">'+i.note+'</div>':'')+
+    (i.choices?'<select class="itin-pick" onclick="event.stopPropagation()" onchange="setPick(\''+a.id+'\',this.value)"><option value="">Choose…</option>'+i.choices.map((c,k)=>'<option value="'+k+'"'+(state.picks[a.id]===k?' selected':'')+'>'+c.t+'</option>').join('')+'</select>':'')+
+    (i.links?'<div class="itin-links">'+i.links.map(l=>'<a href="'+MAPS(l.q)+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">'+l.t+' ↗</a>').join('')+'</div>':'')+
+    '<div class="itin-meta">'+a.region+' · '+a.duration+' · ★ '+a.rating+'</div>';
+}
 function renderItinerary(el){
   const searchHtml =
     '<div class="search-add"><input type="text" id="itin-search" placeholder="Search to add a new stop…" oninput="onItinSearch(this.value)"></div>'+
@@ -1434,18 +1486,18 @@ function renderItinerary(el){
         if(i>0){
           const tt = getTravelTime(stops[i-1],stopId);
           totalTime += tt;
-          html += '<div class="travel-time"><div class="line"></div><span>'+tt+' min drive</span><div class="line"></div></div>';
+          html += '<div class="travel-time"><div class="line"></div><span>'+tt+' min</span><div class="line"></div></div>';
         }
         html += '<div class="itin-stop" data-stop="'+a.id+'" draggable="true" data-day="'+day.id+'" data-idx="'+i+'">'+
-          '<div class="itin-top" onclick="openDetail(\''+a.id+'\')">'+
+          '<div class="itin-top" onclick="openMaps(\''+a.id+'\')">'+
             '<div class="itin-num-overlay" style="background:'+dayColor(day.id)+'">'+(i+1)+'</div>'+
             '<img class="itin-img" src="'+getImg(a)+'" alt="'+a.name+'" onclick="event.stopPropagation();openLightbox(this.src)">'+
-            '<div class="itin-info"><h4>'+a.name+'</h4>'+
+            '<div class="itin-info">'+itinInfoHtml(a)+
             '<div class="itin-meta">'+a.region+' · '+a.duration+' · ★ '+a.rating+'</div>'+
             '<div class="itin-desc">'+a.desc+'</div></div></div>'+
           '<div class="itin-actions">'+
             '<div class="drag-handle" title="Drag to reorder">⠿</div>'+
-            '<button class="action-btn map-btn" onclick="event.stopPropagation();focusMap(\''+a.id+'\')">Map</button>'+
+            '<a class="action-btn map-btn" href="'+mapsUrlFor(a)+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">Maps ↗</a>'+'<button class="action-btn" onclick="event.stopPropagation();openDetail(\''+a.id+'\')">Info</button>'+
             '<div class="itin-badges">'+
               '<span style="background:'+color+'18;color:'+color+'">'+catLabel+'</span>'+
               '<span style="background:'+wb+';color:'+wc+'">'+wl+'</span></div>'+
@@ -1660,7 +1712,7 @@ function openDetail(id){
     '<button class="btn-add d1" onclick="addToItinerary(\''+a.id+'\',1);closeDetail()">+ Day 1</button>'+
     '<button class="btn-add d2" onclick="addToItinerary(\''+a.id+'\',2);closeDetail()">+ Day 2</button>'+
     '<button class="btn-add d3" onclick="addToItinerary(\''+a.id+'\',3);closeDetail()">+ Day 3</button>'+
-    '<button class="btn-show" onclick="focusMap(\''+a.id+'\');closeDetail()">Map</button>';
+    '<button class="btn-show" onclick="focusMap(\''+a.id+'\');closeDetail()">Map</button>'+'<a class="btn-show" style="text-decoration:none;text-align:center" href="'+mapsUrlFor(a)+'" target="_blank" rel="noopener">Google Maps ↗</a>';
   document.getElementById('detail-modal').classList.add('open');
 }
 function closeDetail(){document.getElementById('detail-modal').classList.remove('open');}
@@ -1793,7 +1845,8 @@ function fetchWikiImages(){
 function getImg(a){
   if(a.img && typeof a.img === 'string' && a.img.length > 10) return a.img;
   const bg = {waterfall:'#2c4d6e',hike:'#2a4a32',viewpoint:'#6b5420',village:'#4a2f66',pub:'#6b2e28',hotel:'#1a4a5c',stay:'#1a4a5c',abbey:'#4a2f66',drive:'#6b4420',activity:'#1a5c52'}[a.cat]||'#555';
-  return 'data:image/svg+xml;charset=UTF-64,'+btoa('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="260"><rect fill="'+bg+'" width="400" height="260"/><text x="200" y="125" text-anchor="middle" fill="rgba(255,255,255,0.65)" font-family="Georgia,serif" font-size="16">'+a.name+'</text><text x="200" y="150" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-family="sans-serif" font-size="11">'+a.region+'</text></svg>');
+  const esc=t=>String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+  return 'data:image/svg+xml;base64,'+btoa(unescape(encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="260"><rect fill="'+bg+'" width="400" height="260"/><text x="200" y="125" text-anchor="middle" fill="rgba(255,255,255,0.65)" font-family="Georgia,serif" font-size="16">'+esc(a.name)+'</text><text x="200" y="150" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-family="sans-serif" font-size="11">'+esc(a.region)+'</text></svg>')));
 }
 
 // ===================== SHARE & PERSIST =====================
@@ -1808,17 +1861,18 @@ function closeShare(){document.getElementById('share-modal').classList.remove('o
 
 function saveLocal(){
   try{
-    localStorage.setItem('uk-road-trip',JSON.stringify({
-      itinerary:state.itinerary, labels:DAYS.map(d=>d.label)
+    localStorage.setItem('uk-road-trip-v2',JSON.stringify({
+      itinerary:state.itinerary, picks:state.picks, labels:DAYS.map(d=>d.label)
     }));
   }catch(e){}
 }
 function loadLocal(){
   try{
-    const raw=localStorage.getItem('uk-road-trip');
+    const raw=localStorage.getItem('uk-road-trip-v2');
     if(!raw) return false;
     const d=JSON.parse(raw);
     if(d.itinerary) state.itinerary={1:[...(d.itinerary[1]||[])],2:[...(d.itinerary[2]||[])],3:[...(d.itinerary[3]||[])]};
+    if(d.picks) state.picks=d.picks;
     if(d.labels) d.labels.forEach((l,i)=>{if(DAYS[i]) DAYS[i].label=l;});
     return true;
   }catch(e){return false;}
@@ -1827,17 +1881,17 @@ const ID_INDEX = (()=>{const m={};A.forEach((a,i)=>{m[a.id]=i;});return m;})();
 const DEFAULT_LABELS = DAYS.map(d=>d.label);
 
 function encodePlan(){
-  // 6 bits per stop index (max 63 stops), day lengths first, then base64url
+  // 7 bits per stop index (max 127 stops), day lengths first, then base64url
   const idxs = [];
   [1,2,3].forEach(d=>{
     const ids = state.itinerary[d]
       .map(id=>ID_INDEX[id])
       .filter(n=>n!=null)
-      .map(n=>Math.min(63,n));
+      .map(n=>Math.min(127,n));
     idxs.push(ids.length, ...ids);
   });
   const bits = [];
-  idxs.forEach(n=>{ for(let i=5;i>=0;i--) bits.push((n>>i)&1); });
+  idxs.forEach(n=>{ for(let i=6;i>=0;i--) bits.push((n>>i)&1); });
   let bin = '';
   for(let i=0;i<bits.length;i+=8){
     let byte = 0;
@@ -1871,15 +1925,15 @@ function decodePlan(){
       }
       const read6 = (off)=>{
         let v = 0;
-        for(let j=0;j<6;j++) v = (v<<1) | (bits[off+j]||0);
+        for(let j=0;j<7;j++) v = (v<<1) | (bits[off+j]||0);
         return v;
       };
       state.itinerary = {1:[],2:[],3:[]};
       let off = 0;
       [1,2,3].forEach(d=>{
-        const len = read6(off); off += 6;
+        const len = read6(off); off += 7;
         for(let k=0;k<len;k++){
-          const n = read6(off); off += 6;
+          const n = read6(off); off += 7;
           const a = A[n];
           if(a) state.itinerary[d].push(a.id);
         }
@@ -2044,9 +2098,9 @@ function downloadShareHTML(){
     '@media(max-width:560px){.stop{flex-wrap:wrap}.stop img{width:100%;height:160px}.hero h1{font-size:1.7rem}}'+
     '</style></head><body>'+
     '<div class="hero"><h1>UK Road Trip</h1>'+
-    '<div class="sub">Cotswolds · Wye Valley · Bannau Brycheiniog</div>'+
+    '<div class="sub">Cotswolds · Bath</div>'+
     '<div class="dates">20–22 November 2026 · ~'+totalDrive+' min driving between stops</div></div>'+
-    '<div class="note">Cotswolds on Friday, Wye Valley & Forest of Dean on Saturday, Four Falls walk Sunday then home. Daylight ~7:40am–3:50pm each day.</div>'+
+    '<div class="note">Drive up Friday and walk the Cotswold villages, Bath on Saturday, Cirencester, Bibury and a Sunday roast before heading home. Daylight ~7:20am–4:05pm each day.</div>'+
     '<div class="wrap">'+daysHtml+'</div>'+
     '<footer>See you out there</footer>'+
     '<script>'+

@@ -1196,33 +1196,33 @@ const A = [
   {id:"bath-pub-raven",name:"The Raven (pub)",cat:"pub",lat:51.3822,lng:-2.3632,region:"Bath",wiki:"Bath,_Somerset",weather:"rain-ok",duration:"1 hr",rating:4.4,desc:"Compact real-ale pub on Queen Street known for pies and a rotating cask list. Good start or end to the evening.",tips:"Suggestion — verify."},
   {id:"bath-bar-opium",name:"Opium (cocktail bar)",cat:"pub",lat:51.3794,lng:-2.3578,region:"Bath",wiki:"Bath,_Somerset",weather:"rain-ok",duration:"1-2 hrs",rating:4.5,desc:"Dark, candlelit cocktail bar in a cellar on Pierrepont Place — a classic date-night nightcap.",tips:"Suggestion — verify hours and whether it's still trading. Easy to pair with Yak Yeti Yak next door."},
   // PRACTICAL STOPS (parking, shopping, grouped options)
-  {id:"waitrose",name:"Waitrose Cirencester (dinner shop)",cat:"practical",lat:51.7170,lng:-1.9690,region:"Cotswolds",wiki:"Cirencester",weather:"rain-ok",duration:"30 min",rating:4.4,desc:"Sheep Street, Cirencester GL7 1SZ. Shopping for Friday's home-cooked dinner, on the way from Bourton to South Cerney.",tips:"Co-op South Cerney (High St, 7am–8:30pm Mon–Sat) is the backup."},
-  {id:"park-bath",name:"Park: Charlotte Street car park, Bath",cat:"practical",lat:51.3862,lng:-2.3655,region:"Bath",wiki:"Bath,_Somerset",weather:"rain-ok",duration:"All day",rating:4.0,desc:"Open 24 hours, no maximum stay, near Queen Square. Allow about 10 minutes' walk to the Circus and Royal Crescent.",tips:"All-day rate unconfirmed (~£16–22) — check MiPermit. Fallback: Lansdown Park & Ride.",gmq:"Charlotte Street Car Park, Bath"},
-  {id:"bath-dinner",name:"Saturday dinner — pick on the day",cat:"pub",lat:51.3815,lng:-2.3585,region:"Bath",wiki:"Bath,_Somerset",weather:"rain-ok",duration:"1.5-2 hrs",rating:4.5,desc:"Options, no booking: Yak Yeti Yak (Nepalese, 12 Pierrepont St), Jars Meze (6 Northumberland Pl), Sarthi (88 Walcot St), Angelo's (confirm which), Chilli Family Noodles (cash).",tips:"Saturday is busy — walk in about 5:30–6pm. Walk-in policy and hours unconfirmed.",gmq:"Yak Yeti Yak, 12 Pierrepont Street, Bath"},
-  {id:"bath-pubs",name:"Pubs & bars (after dinner)",cat:"pub",lat:51.3835,lng:-2.3605,region:"Bath",wiki:"Bath,_Somerset",weather:"rain-ok",duration:"1-2 hrs",rating:4.4,desc:"The Star Inn, The Raven, The Bell, Opium cocktail bar. Suggestions — verify hours.",tips:"About 1 hour drive back to South Cerney.",gmq:"The Star Inn, The Vineyards, Bath"},
+  {id:"waitrose",name:"Waitrose Cirencester (dinner shop)",cat:"practical",lat:51.7170,lng:-1.9690,region:"Cotswolds",wiki:"Cirencester",weather:"rain-ok",duration:"30 min",rating:4.4,desc:"Sheep Street, Cirencester GL7 1SZ. Shopping for Friday's home-cooked dinner, on the way from Bourton to South Cerney.",tips:"Co-op South Cerney is the backup."},
+  {id:"park-bath",name:"Park: Charlotte Street car park, Bath",cat:"practical",lat:51.3862,lng:-2.3655,region:"Bath",wiki:"Bath,_Somerset",weather:"rain-ok",duration:"All day",rating:4.0,desc:"All-day parking near Queen Square, about 10 minutes' walk to the Circus and Royal Crescent.",tips:"Fallback: Lansdown Park & Ride.",gmq:"Charlotte Street Car Park, Bath"},
+  {id:"bath-dinner",name:"Saturday dinner — pick on the day",cat:"pub",lat:51.3815,lng:-2.3585,region:"Bath",wiki:"Bath,_Somerset",weather:"rain-ok",duration:"1.5-2 hrs",rating:4.5,desc:"Yak Yeti Yak, Jars Meze, Sarthi, Angelo's or Chilli Family Noodles — choose on the day.",tips:"Saturday is busy — go early.",gmq:"Yak Yeti Yak, 12 Pierrepont Street, Bath"},
+  {id:"bath-pubs",name:"Pubs & bars (after dinner)",cat:"pub",lat:51.3835,lng:-2.3605,region:"Bath",wiki:"Bath,_Somerset",weather:"rain-ok",duration:"1-2 hrs",rating:4.4,desc:"The Star Inn, The Raven, The Bell or Opium cocktail bar.",tips:"About 1 hour drive back to South Cerney.",gmq:"The Star Inn, The Vineyards, Bath"},
 ];
 
 // Per-stop timing, notes and tap-through links for the itinerary (phone-friendly)
 const MAPS=q=>'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(q);
 const STOP_INFO = {
-  stow:{time:"10:30",note:"Leave London ~8:30. Park at Fosse Way car park (listed free — check signs); Maugersbury Rd is the paid backup. Walk down to Lower Slaughter.",links:[{t:"Fosse Way car park",q:"Fosse Way car park, Stow-on-the-Wold"},{t:"Maugersbury Rd car park",q:"Maugersbury Road car park, Stow-on-the-Wold"}]},
+  stow:{time:"10:30",note:"Leave London ~8:30. Park here, then walk down to Lower Slaughter.",links:[{t:"Fosse Way car park",q:"Fosse Way car park, Stow-on-the-Wold"}]},
   slSlaughters:{time:"11:15",note:"Riverside walk Lower → Upper Slaughter. Muddy after rain."},
-  bourton:{time:"12:30",note:"Lunch here, no booking: Bakery on the Water or any riverside café. Stow → Bourton is one-way — taxi/bus back to the car.",links:[{t:"Bakery on the Water",q:"Bakery on the Water, Bourton-on-the-Water"},{t:"Slaughters Country Inn (12–5)",q:"The Slaughters Country Inn, Lower Slaughter"}]},
-  waitrose:{time:"14:15",note:"Friday dinner shop. Shop last — chilled food sits in the car.",links:[{t:"Co-op South Cerney (backup)",q:"Co-op Food, High Street, South Cerney GL7 5UG"}]},
+  bourton:{time:"12:30",note:"Lunch here, no booking. Stow → Bourton is one-way — taxi or bus back to the car.",links:[{t:"Bakery on the Water",q:"Bakery on the Water, Bourton-on-the-Water"},{t:"Slaughters Country Inn",q:"The Slaughters Country Inn, Lower Slaughter"}]},
+  waitrose:{time:"14:15",note:"Friday dinner shop. Shop last — chilled food sits in the car.",links:[{t:"Co-op South Cerney (backup)",q:"Co-op Food, High Street, South Cerney"}]},
   "stay-cerney":{time:"15:15",note:"Check in, unpack shopping. Cooking dinner here tonight.",q:"South Cerney, Cirencester"},
-  "cerney-lake":{time:"15:30",note:"Lake walk before dusk (~4pm). Or Sunday before the 10am checkout."},
-  "park-bath":{time:"9:30",note:"Leave South Cerney ~8:30 (about 1 hr). Charlotte St: open 24h, ~£16–22/day — check MiPermit.",links:[{t:"Fallback: Lansdown Park & Ride",q:"Lansdown Park and Ride, Bath"}]},
+  "cerney-lake":{time:"15:30",note:"Lake walk before dusk. Or Sunday before checkout."},
+  "park-bath":{time:"9:30",note:"Leave South Cerney ~8:30 (about 1 hr). Park at Charlotte Street.",links:[{t:"Fallback: Lansdown Park & Ride",q:"Lansdown Park and Ride, Bath"}]},
   "bath-crescent":{time:"10:00",note:"Walk the Circus, then the Royal Crescent lawn."},
   "bath-cafe":{time:"11:00",note:"Coffee break near the Circus."},
   "bath-guildhall":{time:"11:45",note:"Browse the covered market."},
-  "bath-chilli":{time:"12:30",note:"Lunch — cash only."},
+  "bath-chilli":{time:"12:30",note:"Lunch (cash)."},
   "bath-weir":{time:"13:30",note:"Pulteney Bridge and the weir, from the riverside."},
-  "bath-alexandra":{time:"15:00",note:"Steep walk or short taxi. Be there ~3:30 for golden hour (sunset ~4pm)."},
-  "bath-dinner":{time:"17:30",note:"Pick on the day — walk in ~5:30–6pm. Choose below; the map button follows your pick.",choices:[{t:"Yak Yeti Yak — Nepalese",q:"Yak Yeti Yak, 12 Pierrepont Street, Bath BA1 1LA"},{t:"Jars Meze — small plates",q:"Jars Meze, 6 Northumberland Place, Bath BA1 5AR"},{t:"Sarthi — Indian, vegetarian-led",q:"Sarthi, 88 Walcot Street, Bath BA1 5BD"},{t:"Angelo's (confirm which one)",q:"Angelos Bakery, 15 Cheap Street, Bath"},{t:"Chilli Family Noodles — cash only",q:"Chilli Family Noodles, 1 Dorchester Street, Bath BA1 1SS"}]},
-  "bath-pubs":{time:"19:30",note:"Pick one. ~1 hr drive back to South Cerney.",choices:[{t:"The Star Inn — traditional pub",q:"The Star Inn, The Vineyards, Bath"},{t:"The Raven — ales & pies",q:"The Raven, Queen Street, Bath"},{t:"The Bell — live music",q:"The Bell Inn, Walcot Street, Bath"},{t:"Opium — cocktails",q:"Opium Bar, Pierrepont Place, Bath"}]},
-  cirencester:{time:"10:30",note:"Check out by 10:00. Market Place, Corinium Museum if wet. Park at Abbey Grounds."},
+  "bath-alexandra":{time:"15:00",note:"Steep walk or short taxi. Aim for golden hour."},
+  "bath-dinner":{time:"17:30",note:"Pick on the day, no booking. Choose below; the map button follows your pick.",choices:[{t:"Yak Yeti Yak — Nepalese",q:"Yak Yeti Yak, 12 Pierrepont Street, Bath BA1 1LA"},{t:"Jars Meze — small plates",q:"Jars Meze, 6 Northumberland Place, Bath BA1 5AR"},{t:"Sarthi — Indian, vegetarian-led",q:"Sarthi, 88 Walcot Street, Bath BA1 5BD"},{t:"Angelo's (confirm which one)",q:"Angelos Bakery, 15 Cheap Street, Bath"},{t:"Chilli Family Noodles — cash only",q:"Chilli Family Noodles, 1 Dorchester Street, Bath BA1 1SS"}]},
+  "bath-pubs":{time:"19:30",note:"Pick one. ~1 hr drive back.",choices:[{t:"The Star Inn — traditional pub",q:"The Star Inn, The Vineyards, Bath"},{t:"The Raven — ales & pies",q:"The Raven, Queen Street, Bath"},{t:"The Bell — live music",q:"The Bell Inn, Walcot Street, Bath"},{t:"Opium — cocktails",q:"Opium Bar, Pierrepont Place, Bath"}]},
+  cirencester:{time:"10:30",note:"Check out 10:00. Market Place; Corinium Museum if wet."},
   bibury:{time:"12:15",note:"Arlington Row, the Coln, trout farm. Park early."},
-  "wild-thyme":{time:"14:45",note:"Sunday roast — earliest slot 2:45pm. Then leave ~16:30, home ~18:30–19:00.",q:"Wild Thyme & Honey, Ampney Crucis GL7 5RS"}
+  "wild-thyme":{time:"14:45",note:"Sunday roast at 2:45pm, then drive home (~2 hrs).",q:"Wild Thyme & Honey, Ampney Crucis GL7 5RS"}
 };
 function mapsUrlFor(a){
   const i=STOP_INFO[a.id]||{};

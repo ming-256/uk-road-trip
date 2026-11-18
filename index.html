@@ -1224,11 +1224,43 @@ const STOP_INFO = {
   bibury:{time:"12:15",note:"Arlington Row, the Coln, trout farm. Park early."},
   "wild-thyme":{time:"14:45",note:"Sunday roast at 2:45pm, then drive home (~2 hrs).",q:"Wild Thyme & Honey, Ampney Crucis GL7 5RS"}
 };
+// Google Maps searches by place name/address (not raw coordinates) so the pin lands on the real venue
+const GMQ = {
+  stow:"Fosse Way car park, Stow-on-the-Wold",
+  slSlaughters:"Lower Slaughter, Gloucestershire",
+  bourton:"Bourton-on-the-Water, Gloucestershire",
+  waitrose:"Waitrose, Sheep Street, Cirencester GL7 1SZ",
+  "stay-cerney":"South Cerney, Cirencester",
+  "cerney-lake":"Cotswold Country Park and Beach, South Cerney",
+  "park-bath":"Charlotte Street Car Park, Bath",
+  "bath-crescent":"Royal Crescent, Bath",
+  "bath-cafe":"Colonna & Smalls, Chapel Row, Bath",
+  "bath-guildhall":"Guildhall Market, Bath",
+  "bath-chilli":"Chilli Family Noodles, Dorchester Street, Bath",
+  "bath-weir":"Pulteney Weir, Bath",
+  "bath-alexandra":"Alexandra Park, Bath",
+  "bath-dinner":"restaurants in Bath city centre",
+  "bath-pubs":"pubs in Bath city centre",
+  cirencester:"Market Place, Cirencester",
+  bibury:"Arlington Row, Bibury",
+  arlingtonRow:"Arlington Row, Bibury",
+  "arlington-row":"Arlington Row, Bibury",
+  "wild-thyme":"Wild Thyme & Honey, Ampney Crucis GL7 5RS",
+  sudeley:"Sudeley Castle, Winchcombe",
+  "wild-rabbit":"The Wild Rabbit, Kingham",
+  chedworth:"Chedworth Roman Villa",
+  tetbury:"Tetbury Market House, Tetbury",
+  "castle-combe":"Castle Combe, Wiltshire",
+  "symonds-yat":"Symonds Yat Rock viewing point",
+  "symonds-yat-walk":"Symonds Yat Rock viewing point",
+  "ross-on-wye":"Ross-on-Wye town centre"
+};
 function mapsUrlFor(a){
   const i=STOP_INFO[a.id]||{};
   const pk=state.picks&&state.picks[a.id];
   const c=(i.choices&&pk!=null)?i.choices[pk]:null;
-  return MAPS((c&&c.q)||i.q||a.gmq||(a.lat+','+a.lng));
+  const clean=a.name.replace(/\s*\(.*?\)/g,'').replace(/^Park:\s*/,'').replace(/^Your stay — /,'');
+  return MAPS((c&&c.q)||GMQ[a.id]||i.q||a.gmq||(clean+', '+a.region));
 }
 function setPick(id,v){state.picks[id]=v===''?null:+v;saveLocal();renderList();}
 function openMaps(id){const a=A.find(x=>x.id===id);if(a) window.open(mapsUrlFor(a),'_blank','noopener');}
